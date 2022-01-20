@@ -1,4 +1,4 @@
-package com.setana.treenity.utils
+package com.setana.treenity.buildconfig
 
 object Constants {
 

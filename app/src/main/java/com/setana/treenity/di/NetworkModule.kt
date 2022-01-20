@@ -1,7 +1,7 @@
 package com.setana.treenity.di
 
-import com.setana.treenity.api.ImageService
-import com.setana.treenity.utils.Constants
+import com.setana.treenity.data.api.ImageService
+import com.setana.treenity.buildconfig.Constants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

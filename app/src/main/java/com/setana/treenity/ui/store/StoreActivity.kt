@@ -1,16 +1,16 @@
-package com.setana.treenity
+package com.setana.treenity.ui.store
 
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.setana.treenity.adapter.ImageAdapter
 import com.setana.treenity.databinding.ActivityMainBinding
-import com.setana.treenity.viewmodel.ImageViewModel
+import com.setana.treenity.ui.store.adapter.ImageAdapter
+
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class StoreActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var imageAdapter: ImageAdapter
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.recyclerView.apply {
             adapter = imageAdapter
-            layoutManager = LinearLayoutManager(this@MainActivity)
+            layoutManager = LinearLayoutManager(this@StoreActivity)
             setHasFixedSize(true)
         }
 

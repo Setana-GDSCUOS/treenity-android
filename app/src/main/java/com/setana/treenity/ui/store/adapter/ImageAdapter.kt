@@ -1,4 +1,4 @@
-package com.setana.treenity.adapter
+package com.setana.treenity.ui.store.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.setana.treenity.databinding.ImageLayoutBinding
 
-import com.setana.treenity.model.ImageItem
+import com.setana.treenity.data.model.ImageItem
 
 class ImageAdapter : RecyclerView.Adapter<ImageAdapter.ImageViewHolder>(){
 

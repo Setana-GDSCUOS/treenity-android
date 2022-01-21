@@ -1,7 +1,8 @@
 package com.setana.treenity.di
 
-import com.setana.treenity.data.api.ImageService
-import com.setana.treenity.buildconfig.Constants
+import com.setana.treenity.BuildConfig
+import com.setana.treenity.data.api.ImageApiService
+
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,15 +17,15 @@ import javax.inject.Singleton
 object AppModule {
 
     @Provides
-    fun provideBaseUrl() = Constants.BASE_URL
+    fun provideBaseUrl() = BuildConfig.BASE_URL
 
     @Provides
     @Singleton
-    fun provideRetrofitInstance(BASE_URL:String): ImageService =
+    fun provideRetrofitInstance(BASE_URL:String): ImageApiService =
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(ImageService::class.java)
+            .create(ImageApiService::class.java)
 
 }

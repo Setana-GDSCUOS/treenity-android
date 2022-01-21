@@ -1,4 +1,4 @@
-package com.setana.treenity.model
+package com.setana.treenity.data.model
 
 data class ImageItem(
     val description: String,

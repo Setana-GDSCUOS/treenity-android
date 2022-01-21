@@ -1,6 +1,6 @@
-package com.setana.treenity.repository
+package com.setana.treenity.data.repository
 
-import com.setana.treenity.api.ImageApiService
+import com.setana.treenity.data.api.ImageApiService
 import javax.inject.Inject
 
 class ImageRepository

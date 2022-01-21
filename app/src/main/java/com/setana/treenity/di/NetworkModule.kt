@@ -17,7 +17,7 @@ import javax.inject.Singleton
 object AppModule {
 
     @Provides
-    fun provideBaseUrl() = BuildConfig.BASE_URL
+    fun provideBaseUrl() = BuildConfig.BASE_URL_TEST
 
     @Provides
     @Singleton

@@ -26,18 +26,18 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField "String", "CLIENT_ID", '"53pciNgOkE2AMvrHDVCSuQLXbu5e7QL1HhTW84HNdSs"'
-            buildConfigField "String", "END_POINT", '"/photos"'
-            buildConfigField "String", "BASE_URL", '"https://api.unsplash.com"'
+            buildConfigField "String", "CLIENT_ID_TEST", '"53pciNgOkE2AMvrHDVCSuQLXbu5e7QL1HhTW84HNdSs"'
+            buildConfigField "String", "END_POINT_TEST", '"/photos"'
+            buildConfigField "String", "BASE_URL_TEST", '"https://api.unsplash.com"'
         }
 
         debug {
             applicationIdSuffix ".debug"
             debuggable true
 
-            buildConfigField "String", "CLIENT_ID", '"53pciNgOkE2AMvrHDVCSuQLXbu5e7QL1HhTW84HNdSs"'
-            buildConfigField "String", "END_POINT", '"/photos"'
-            buildConfigField "String", "BASE_URL", '"https://api.unsplash.com"'
+            buildConfigField "String", "CLIENT_ID_TEST", '"53pciNgOkE2AMvrHDVCSuQLXbu5e7QL1HhTW84HNdSs"'
+            buildConfigField "String", "END_POINT_TEST", '"/photos"'
+            buildConfigField "String", "BASE_URL_TEST", '"https://api.unsplash.com"'
         }
     }
 

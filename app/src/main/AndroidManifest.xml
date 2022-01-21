@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.setana.treenity">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:name=".TreenityApplication"
         android:allowBackup="true"
@@ -11,6 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Treenity">
         <activity
+
             android:name=".SignInActivity"
             android:exported="true">
             <intent-filter>

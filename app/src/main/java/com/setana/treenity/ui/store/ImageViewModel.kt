@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.setana.treenity.data.model.ImageItem
 import com.setana.treenity.data.repository.ImageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,7 +26,7 @@ constructor(private val repository: ImageRepository) : ViewModel() {
         getAllImages()
     }
 
-    private fun getAllImages() = viewModelScope.launch {
+    private fun getAllImages() = viewModelScope.launch(Dispatchers.IO){
 
         repository.getAllImages().let { response ->
 
@@ -34,6 +35,7 @@ constructor(private val repository: ImageRepository) : ViewModel() {
             } else {
                 Log.d("your tag", "getAllImages Error: ${response.errorBody()}")
             }
+            // 나중에 TAG companion object로 constant 처리 부탁드려요
         }
 
     }

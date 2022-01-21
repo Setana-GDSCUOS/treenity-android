@@ -17,6 +17,8 @@ class ImageAdapter : RecyclerView.Adapter<ImageAdapter.ImageViewHolder>(){
     ) :
         RecyclerView.ViewHolder(binding.root)
 
+    // 지금 보니까 bind 함수가 빠져있는데 일반적으로 onBindViewHolder가 아닌 Recycler Holder 클래스 내부에 별도의 bind 함수를 구현하여 바인딩을 진행합니다! 한번 알아보시면 도움이 될 것 같아요!
+
 
     private val diffCallBack = object : DiffUtil.ItemCallback<ImageItem>() {
         override fun areItemsTheSame(oldItem: ImageItem, newItem: ImageItem): Boolean {

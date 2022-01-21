@@ -19,33 +19,19 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildFeatures {
-        viewBinding true
-    }
-
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-            buildConfigField "String", "CLIENT_ID_TEST", '"53pciNgOkE2AMvrHDVCSuQLXbu5e7QL1HhTW84HNdSs"'
-            buildConfigField "String", "END_POINT_TEST", '"/photos"'
-            buildConfigField "String", "BASE_URL_TEST", '"https://api.unsplash.com"'
-
             buildConfigField "String", "OAUTH_WEB_CLIENT_KEY", '"788851558102-s83rof880p8spfrnpa0ahumioo83bip2.apps.googleusercontent.com"'
-
         }
 
         debug {
             applicationIdSuffix ".debug"
             debuggable true
 
-            buildConfigField "String", "CLIENT_ID_TEST", '"53pciNgOkE2AMvrHDVCSuQLXbu5e7QL1HhTW84HNdSs"'
-            buildConfigField "String", "END_POINT_TEST", '"/photos"'
-            buildConfigField "String", "BASE_URL_TEST", '"https://api.unsplash.com"'
-
             buildConfigField "String", "OAUTH_WEB_CLIENT_KEY", '"788851558102-s83rof880p8spfrnpa0ahumioo83bip2.apps.googleusercontent.com"'
-
         }
     }
 
@@ -65,41 +51,13 @@ android {
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.5.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
-
-    // Retrofit
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation "com.squareup.okhttp3:okhttp:4.9.0"
-
-    // Coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2'
-
-    // Coroutine Lifecycle Scopes
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.1"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
-    implementation "androidx.activity:activity-ktx:1.2.2"
-
-    //dagger-hilt
-    implementation "com.google.dagger:hilt-android:2.37"
-    kapt "com.google.dagger:hilt-android-compiler:2.37"
-    implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
-    kapt "androidx.hilt:hilt-compiler:1.0.0-beta01" // singletonComponent 사용을 위해 필요
-
-    //coil : image load
-    implementation("io.coil-kt:coil:1.1.1")
-
-    //Used coroutine image loader instead of Glide.
-
-
+    implementation 'androidx.core:core-ktx:1.3.2'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     // Import the BoM for the Firebase platform
     implementation platform('com.google.firebase:firebase-bom:29.0.3')
@@ -115,8 +73,7 @@ dependencies {
     // Also declare the dependency for the Google Play services library and specify its version
     implementation 'com.google.android.gms:play-services-auth:20.0.1'
     
-    // // Hilt
-    // implementation "com.google.dagger:hilt-android:2.28-alpha"
-    // kapt "com.google.dagger:hilt-android-compiler:2.28-alpha"
-
+    // Hilt
+    implementation "com.google.dagger:hilt-android:2.28-alpha"
+    kapt "com.google.dagger:hilt-android-compiler:2.28-alpha"
 }

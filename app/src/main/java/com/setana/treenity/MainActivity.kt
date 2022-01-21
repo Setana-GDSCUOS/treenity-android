@@ -37,8 +37,8 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.responseImages.observe(this, { response ->
 
-            if(response != null) {
-                imageAdapter.submitList(response)
+            response?.let {
+                imageAdapter.submitList(it)
             }
         })
     }

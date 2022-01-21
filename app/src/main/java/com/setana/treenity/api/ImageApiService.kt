@@ -8,7 +8,7 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 
 
-interface ImageService {
+interface ImageApiService {
 
     @Headers("Accept-Version: v1", "Authorization: Client-ID $CLIENT_ID")
     @GET(END_POINT)

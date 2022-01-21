@@ -16,14 +16,12 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    @Provides
-    fun provideBaseUrl() = BuildConfig.BASE_URL_TEST
 
     @Provides
     @Singleton
-    fun provideRetrofitInstance(BASE_URL:String): ImageApiService =
+    fun provideRetrofitInstance(): ImageApiService =
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BuildConfig.BASE_URL_TEST)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ImageApiService::class.java)

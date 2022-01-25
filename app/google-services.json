@@ -75,6 +75,14 @@
           }
         },
         {
+          "client_id": "788851558102-vq3ls3pote2rsk8io85e901nhk1ie22h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.setana.treenity.debug",
+            "certificate_hash": "63ad6f78dad3514c5e91fb02bf4fd4139d953cd0"
+          }
+        },
+        {
           "client_id": "788851558102-s83rof880p8spfrnpa0ahumioo83bip2.apps.googleusercontent.com",
           "client_type": 3
         }

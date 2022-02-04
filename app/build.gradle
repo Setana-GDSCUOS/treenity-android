@@ -6,6 +6,9 @@ plugins {
     id 'dagger.hilt.android.plugin'
 }
 
+def Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
 android {
     compileSdk 31
 
@@ -34,7 +37,7 @@ android {
 
             buildConfigField "String", "OAUTH_WEB_CLIENT_KEY", '"788851558102-s83rof880p8spfrnpa0ahumioo83bip2.apps.googleusercontent.com"'
             buildConfigField "String", "OAUTH_ANDROID_CLIENT_KEY", '"788851558102-0qmugufi2hbplicjagk32a204r3btatk.apps.googleusercontent.com"'
-            buildConfigField("String", "ANDROID_API_KEY", ANDROID_API_KEY)
+            buildConfigField("String", "ANDROID_API_KEY", properties.getProperty("ANDROID_API_KEY"))
         }
 
         debug {
@@ -47,7 +50,7 @@ android {
 
             buildConfigField "String", "OAUTH_WEB_CLIENT_KEY", '"788851558102-s83rof880p8spfrnpa0ahumioo83bip2.apps.googleusercontent.com"'
             buildConfigField "String", "OAUTH_ANDROID_CLIENT_KEY", '"788851558102-0qmugufi2hbplicjagk32a204r3btatk.apps.googleusercontent.com"'
-            buildConfigField("String", "ANDROID_API_KEY", ANDROID_API_KEY)
+            buildConfigField("String", "ANDROID_API_KEY", properties.getProperty("ANDROID_API_KEY"))
         }
     }
 

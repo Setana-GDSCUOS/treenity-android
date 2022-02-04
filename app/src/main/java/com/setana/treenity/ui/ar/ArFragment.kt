@@ -17,6 +17,7 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.ar.core.Anchor
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.setana.treenity.R
+import com.setana.treenity.databinding.ArFragmentBinding
 import io.github.sceneview.ar.ArSceneView
 import io.github.sceneview.ar.node.ArNode
 import io.github.sceneview.ar.node.CursorNode
@@ -30,6 +31,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     lateinit var sceneView: ArSceneView
     lateinit var loadingView: View
     lateinit var actionButton: ExtendedFloatingActionButton
+    lateinit var arFragmentBinding: ArFragmentBinding
 
     lateinit var cursorNode: CursorNode
     var modelNode: ArNode? = null
@@ -41,15 +43,18 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         actionButton.isGone = value
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?){
         super.onViewCreated(view, savedInstanceState)
-        sceneView = view.findViewById(R.id.sceneView)
+        // fragment의 lifecycle에 의한 메모리 누수 방지를 위해 inflate 말고 bind 사용
+        arFragmentBinding = ArFragmentBinding.bind(view)
+
+        sceneView = arFragmentBinding.sceneView
 
         sceneView.onTouchAr = { hitResult, _ ->
             createButtonNode(hitResult.createAnchor())
         }
-        loadingView = view.findViewById(R.id.loadingView)
-        actionButton = view.findViewById<ExtendedFloatingActionButton>(R.id.actionButton).apply {
+        loadingView = arFragmentBinding.loadingView
+        actionButton =arFragmentBinding.actionButton.apply {
             val bottomMargin = (layoutParams as ViewGroup.MarginLayoutParams).bottomMargin
             doOnApplyWindowInsets { systemBarsInsets ->
                 (layoutParams as ViewGroup.MarginLayoutParams).bottomMargin =
@@ -66,6 +71,8 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         }
         sceneView.addChild(cursorNode)
     }
+
+
     fun createButtonNode(anchor: Anchor) {
         isLoading = true
         modelNode = ArNode(

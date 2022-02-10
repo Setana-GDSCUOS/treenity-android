@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Treenity</string>
+    <string name="place_object">Not Implemented yet</string>
+    <string name="move_object">Not Implemented yet</string>
 </resources>

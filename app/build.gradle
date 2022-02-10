@@ -6,6 +6,9 @@ plugins {
     id 'dagger.hilt.android.plugin'
 }
 
+def Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
 android {
     compileSdk 31
 
@@ -33,6 +36,8 @@ android {
             buildConfigField "String", "BASE_URL_TEST", '"https://api.unsplash.com"'
 
             buildConfigField "String", "OAUTH_WEB_CLIENT_KEY", '"788851558102-s83rof880p8spfrnpa0ahumioo83bip2.apps.googleusercontent.com"'
+            buildConfigField "String", "OAUTH_ANDROID_CLIENT_KEY", '"788851558102-0qmugufi2hbplicjagk32a204r3btatk.apps.googleusercontent.com"'
+            buildConfigField("String", "ANDROID_API_KEY", properties.getProperty("ANDROID_API_KEY"))
         }
 
         debug {
@@ -44,6 +49,8 @@ android {
             buildConfigField "String", "BASE_URL_TEST", '"https://api.unsplash.com"'
 
             buildConfigField "String", "OAUTH_WEB_CLIENT_KEY", '"788851558102-s83rof880p8spfrnpa0ahumioo83bip2.apps.googleusercontent.com"'
+            buildConfigField "String", "OAUTH_ANDROID_CLIENT_KEY", '"788851558102-0qmugufi2hbplicjagk32a204r3btatk.apps.googleusercontent.com"'
+            buildConfigField("String", "ANDROID_API_KEY", properties.getProperty("ANDROID_API_KEY"))
         }
     }
 
@@ -111,4 +118,9 @@ dependencies {
     //coil : image load
     implementation("io.coil-kt:coil:1.1.1")
     //Used coroutine image loader instead of Glide.
+
+    // AR + 3D
+    implementation 'io.github.sceneview:arsceneview:0.0.3'
+    //ARCore might be included in SceneView
+    implementation 'com.google.ar:core:1.23.0'
 }

@@ -89,7 +89,7 @@ dependencies {
 
     // Also declare the dependency for the Google Play services library and specify its version
     implementation 'com.google.android.gms:play-services-auth:20.0.1'
-    
+
 //    // Hilt
 //    implementation "com.google.dagger:hilt-android:2.28-alpha"
 //    kapt "com.google.dagger:hilt-android-compiler:2.28-alpha"

@@ -31,13 +31,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <meta-data
+            android:name="com.google.ar.core"
+            android:value="required"/>
+        <meta-data
+            android:name="com.google.android.ar.ANDROID_API_KEY"
+            android:value="com.setana.treenity.BuildConfig.ANDROID_API_KEY"/>
     </application>
-
-    <meta-data
-        android:name="com.google.ar.core"
-        android:value="required"/>
-    <meta-data
-        android:name="com.google.android.ar.ANDROID_API_KEY"
-        android:value="com.setana.treenity.BuildConfig.ANDROID_API_KEY"/>
-
 </manifest>

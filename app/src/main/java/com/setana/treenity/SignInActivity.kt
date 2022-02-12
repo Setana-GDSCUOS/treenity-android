@@ -33,7 +33,7 @@ class SignInActivity : AppCompatActivity() {
         // Configure Google Sign In
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(BuildConfig.OAUTH_WEB_CLIENT_KEY)
+            .requestIdToken(BuildConfig.OAUTH_ANDROID_CLIENT_KEY)
             .requestEmail()
             .build()
 

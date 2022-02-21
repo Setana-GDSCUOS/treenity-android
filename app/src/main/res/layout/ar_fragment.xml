@@ -23,7 +23,7 @@
         android:layout_marginBottom="32dp"
         android:backgroundTint="@color/translucent"
         android:gravity="center_vertical|left"
-        android:text="@string/place_object"
+        android:text="@string/plant_button"
         android:textColor="@android:color/white"
         android:visibility="gone"
         app:icon="@drawable/ic_anchor"

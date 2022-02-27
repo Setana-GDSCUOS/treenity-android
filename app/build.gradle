@@ -123,7 +123,4 @@ dependencies {
     implementation 'io.github.sceneview:arsceneview:0.0.3'
     //ARCore might be included in SceneView
     implementation 'com.google.ar:core:1.23.0'
-
-    //Location
-    implementation "com.google.android.gms:play-services-location:19.0.1"
 }

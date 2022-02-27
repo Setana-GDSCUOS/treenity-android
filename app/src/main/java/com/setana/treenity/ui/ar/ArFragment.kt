@@ -1,30 +1,17 @@
 package com.setana.treenity.ui.ar
 
-import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
-import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationRequest
-import android.os.Build
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isGone
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.ar.core.Anchor
 import com.google.ar.core.Anchor.CloudAnchorState
@@ -52,17 +39,8 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     lateinit var cursorNode: CursorNode
     lateinit var session: ArSession
 
-    // 위치
-    lateinit var mLocationRequest: com.google.android.gms.location.LocationRequest // 위치 정보 요청의 매개변수를 저장하는
-    private var mFusedLocationProviderClient: FusedLocationProviderClient? = null // 현재 위치를 가져오기 위한 변수
-    private var mLastLocation: Location? = null // 위치 값을 가지고 있는 객체
-    private val REQUEST_PERMISSION_LOCATION = 10
-
-
-
     //테스트용
     lateinit var clipboardManager: ClipboardManager
-
 
     var cloudAnchorManager = CloudAnchorManager()
     var modelNode: ArNode? = null
@@ -77,7 +55,6 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         }
 
     /** 메인을 담당할 부분이다. Fragment 전체를 담당 */
-    @RequiresApi(Build.VERSION_CODES.S)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?){
         super.onViewCreated(view, savedInstanceState)
         // fragment의 lifecycle에 의한 메모리 누수 방지를 위해 inflate 말고 bind 사용
@@ -111,21 +88,14 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             cloudAnchorManager.onUpdate()
         }
         // sceneView.onArSessionCreated(session) = {}
-        // 위치 업데이트 시 주위의 앵커를 불러오기 위한 부분
-        checkPermissionForLocation(requireContext())
-        mLocationRequest = com.google.android.gms.location.LocationRequest.create()
-        mLocationRequest.priority = LocationRequest.QUALITY_HIGH_ACCURACY
-        mLocationRequest.interval = 5 * 1000
-        startLocationUpdates()
+
     }
-
-
 
     /**
      * 기본적인 상호작용 가능한 노드를 생성하는 함수
      * 메뉴나 씨앗심기 동작등을 작성할 때 사용 가능
      * */
-    private fun createButtonNode(anchor: Anchor) {
+    fun createButtonNode(anchor: Anchor) {
         isLoading = true
         modelNode = ArNode(
             modelGlbFileLocation = "models/sphere.glb",
@@ -168,13 +138,8 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         sceneView.addChild(modelNode!!)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        stopLocationUpdates()
-    }
-
     /** Cloud Anchor Mode 로 등록 가능한 Tree Anchor 를 생성하는 함수 */
-    private fun plantTreeAnchor(anchor: Anchor) {
+    fun plantTreeAnchor(anchor: Anchor) {
         // 세션이 Cloud Anchor를 사용할 수 있게 Configure 해줌
         configureSession()
         var cloudAnchor:Anchor? = null
@@ -199,7 +164,6 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                 onHostedAnchor(cloudAnchor)
             }
             else{
-                // 여기에서 Session.FeatureMapQuality 확인해서 미리 실패 확률을 줄이도록 할 것
                 // 등록에 실패했을 시 또는 등록된 경우가 아닐 시 재등록 허용
                 cloudAnchor = cloudAnchorManager.hostCloudAnchor(session,anchor,1,
                     object : CloudAnchorManager.CloudAnchorResultListener {
@@ -320,91 +284,4 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         config.lightEstimationMode = Config.LightEstimationMode.DISABLED
         session.configure(config)
     }
-
-
-    // 위치 권한이 있는지 확인하는 메서드
-
-    fun checkPermissionForLocation(context: Context): Boolean {
-        // Android 6.0 Marshmallow 이상에서는 지리 확보(위치) 권한에 추가 런타임 권한이 필요합니다.
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                true
-            } else {
-                // 권한이 없으므로 권한 요청 알림 보내기
-                ActivityCompat.requestPermissions(requireActivity(), arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_PERMISSION_LOCATION)
-                false
-            }
-        } else {
-            true
-        }
-    }
-
-    // 사용자에게 권한 요청 후 결과에 대한 처리 로직
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode == REQUEST_PERMISSION_LOCATION) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startLocationUpdates()
-                // View Button 활성화 상태 변경
-            } else {
-                Toast.makeText(requireContext(), "권한이 없어 해당 기능을 실행할 수 없습니다.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    protected fun startLocationUpdates() {
-        //FusedLocationProviderClient의 인스턴스를 생성.
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        mFusedLocationProviderClient!!.lastLocation
-            .addOnSuccessListener { location : Location? ->
-                // Got last known location. In some rare situations this can be null.
-                mLastLocation = location
-            }
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(requireContext(),Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return
-        }
-        mFusedLocationProviderClient!!.requestLocationUpdates(mLocationRequest,
-            mLocationCallback,
-            Looper.getMainLooper())
-
-        // 기기의 위치에 관한 정기 업데이트를 요청하는 메서드 실행
-        // 지정한 루퍼 스레드(Looper.myLooper())에서 콜백(mLocationCallback)으로 위치 업데이트를 요청합니다.
-        /*Looper.myLooper()?.let {
-            mFusedLocationProviderClient!!.requestLocationUpdates(mLocationRequest, mLocationCallback,
-                it
-            )
-        }
-*/
-    }
-
-    // 시스템으로 부터 위치 정보를 콜백으로 받음
-    private val mLocationCallback = object : LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult) {
-            // 시스템에서 받은 location 정보를 onLocationChanged()에 전달
-            locationResult.lastLocation
-            onLocationChanged(locationResult.lastLocation)
-        }
-    }
-    // 위치가 바뀌면 인식해서 전달하는 메소드
-    fun onLocationChanged(location: Location) {
-        var distance = location.distanceTo(mLastLocation)
-        // 위치 정확도 관련해서도 추가하면 좋을 듯
-        if (distance > 1) {
-            Toast.makeText(
-                requireContext(),
-                "1m 이상의 이동 감지. 이동한 거리는 $distance m 입니다.",
-                Toast.LENGTH_SHORT
-            )
-                .show()
-        }
-        mLastLocation = location
-    }
-    // 위치 업데이터를 제거 하는 메서드
-    private fun stopLocationUpdates() {
-        // 지정된 위치 결과 리스너에 대한 모든 위치 업데이트를 제거
-        mFusedLocationProviderClient!!.removeLocationUpdates(mLocationCallback)
-    }
-
-
-
 }

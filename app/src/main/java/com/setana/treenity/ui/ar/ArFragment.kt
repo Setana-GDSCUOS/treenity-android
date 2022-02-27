@@ -1,6 +1,8 @@
 package com.setana.treenity.ui.ar
 
 import android.Manifest
+import android.animation.ObjectAnimator
+import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -12,12 +14,12 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isGone
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -26,6 +28,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.ar.core.Anchor
 import com.google.ar.core.Anchor.CloudAnchorState
 import com.google.ar.core.Config
@@ -36,7 +39,9 @@ import io.github.sceneview.ar.ArSceneView
 import io.github.sceneview.ar.arcore.ArSession
 import io.github.sceneview.ar.node.ArNode
 import io.github.sceneview.ar.node.CursorNode
+import io.github.sceneview.ar.scene.PlaneRenderer
 import io.github.sceneview.utils.doOnApplyWindowInsets
+
 
 /** Ar화면의 MainView를 담당하는 Fragment
  * SceneView 부연설명 포함
@@ -49,8 +54,17 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     lateinit var actionButton: ExtendedFloatingActionButton
     lateinit var arFragmentBinding: ArFragmentBinding
 
+    // Floating Action Button
+    lateinit var fabMain: FloatingActionButton
+    lateinit var fabProfile: FloatingActionButton
+    lateinit var fabSeed: FloatingActionButton
+
+
     lateinit var cursorNode: CursorNode
     lateinit var session: ArSession
+
+    // 나무 심기 모드 액티베이트
+    private var isSeeding = false
 
     // 위치
     lateinit var mLocationRequest: com.google.android.gms.location.LocationRequest // 위치 정보 요청의 매개변수를 저장하는
@@ -58,7 +72,8 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     private var mLastLocation: Location? = null // 위치 값을 가지고 있는 객체
     private val REQUEST_PERMISSION_LOCATION = 10
 
-
+    // Floating Action Button
+    private var isFabOpen = false
 
     //테스트용
     lateinit var clipboardManager: ClipboardManager
@@ -73,7 +88,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         set(value) {
             field = value
             loadingView.isGone = !value
-            actionButton.isGone = value
+            //actionButton.isGone = value
         }
 
     /** 메인을 담당할 부분이다. Fragment 전체를 담당 */
@@ -82,33 +97,73 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         super.onViewCreated(view, savedInstanceState)
         // fragment의 lifecycle에 의한 메모리 누수 방지를 위해 inflate 말고 bind 사용
         arFragmentBinding = ArFragmentBinding.bind(view)
-        sceneView = arFragmentBinding.sceneView
-        // 뷰의 터치된 장소에 노드를 생성 hitResult가 터치된 장소.
-        sceneView.onTouchAr = { hitResult, _ ->
-            createButtonNode(hitResult.createAnchor())
+        //  FAB 추가
+        fabMain = arFragmentBinding.fabMain
+        fabProfile = arFragmentBinding.fabProfile
+        fabSeed = arFragmentBinding.fabSeed
+        fabMain.setImageResource(R.drawable.ic_ar_floating_main_open)
+
+        fabMain.setOnClickListener{
+            toggleFab()
         }
+        fabProfile.setOnClickListener{
+            // Todo 마이페이지 액티비티로의 연결
+            Toast.makeText(requireContext(), "Move to MyPage.", Toast.LENGTH_SHORT).show()
+        }
+        fabSeed.setOnClickListener{
+            // Todo 씨앗 템창으로 연결 악 씨앗 템창 언제만들어!!!
+            Toast.makeText(requireContext(), "Tap plane to plant.", Toast.LENGTH_SHORT).show()
+            isSeeding = true
+        }
+
+        sceneView = arFragmentBinding.sceneView
+        // 뷰의 터치된 장소에 노드를 생성 hitResult 가 터치된 장소.
+        // 씨앗심기 모드에서만 노드 생성 가능
+        sceneView.onTouchAr = { hitResult, _ ->
+            if(isSeeding) {
+                createButtonNode(hitResult.createAnchor())
+            }
+        }
+        // 씨앗심기 모드로 편입됨.
+
         loadingView = arFragmentBinding.loadingView
+        // 액션버튼은 화면의 직관성을 떨어뜨린다 판단하여 제외. 테스트용으로만 사용중
+
         actionButton =arFragmentBinding.actionButton.apply {
             val bottomMargin = (layoutParams as ViewGroup.MarginLayoutParams).bottomMargin
             doOnApplyWindowInsets { systemBarsInsets ->
                 (layoutParams as ViewGroup.MarginLayoutParams).bottomMargin =
                     systemBarsInsets.bottom + bottomMargin
             }
+            /*
             setOnClickListener{
-                onResolveButtonPressed()
+                //onResolveButtonPressed()
+                cursorNode.createAnchor()?.let{
+                    if(isSeeding) {
+                        createButtonNode(it)
+                    }
+                }
             }
+             */
         }
+        actionButton.isGone = true
         // 지면에 뜨는 CursorNode 생성하여 객제에 할당
         cursorNode = CursorNode(context = requireContext(), coroutineScope = lifecycleScope)
-        cursorNode.onTrackingChanged = { _, isTracking ->
+        /*cursorNode.onTrackingChanged = { _, isTracking ->
             if (!isLoading) {
                 actionButton.isGone = !isTracking
             }
         }
+         */
+
         sceneView.addChild(cursorNode)
         sceneView.onArFrameUpdated = {
             // CloudAnchorManager의 onUpdate는 Frame이 업데이트되어 Session이 갱신될 때 작동하도록 설계되어 있음.
             cloudAnchorManager.onUpdate()
+            //val planeRenderer = sceneView.planeRenderer
+            //planeRenderer.isEnabled = true
+            //planeRenderer.isVisible = true
+            //sceneView.planeRenderer.material?.setFloat(PlaneRenderer.MATERIAL_SPOTLIGHT_RADIUS,100f)
         }
         // sceneView.onArSessionCreated(session) = {}
         // 위치 업데이트 시 주위의 앵커를 불러오기 위한 부분
@@ -119,6 +174,10 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         startLocationUpdates()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        stopLocationUpdates()
+    }
 
 
     /**
@@ -132,9 +191,9 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             context = requireContext(),
             coroutineScope = lifecycleScope,
             onModelLoaded = {
-                actionButton.text = getString(R.string.hosted_tree)
+                //actionButton.text = getString(R.string.hosted_tree)
                 //actionButton.icon = resources.getDrawable(R.drawable.ic_target)
-                actionButton.icon = ResourcesCompat.getDrawable(resources,R.drawable.ic_target,null)
+                //actionButton.icon = ResourcesCompat.getDrawable(resources,R.drawable.ic_target,null)
                 ViewRenderable.builder()
                     .setView(requireContext(),R.layout.title_button_plant)
                     .build()
@@ -158,6 +217,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             }
         )
         modelNode!!.anchor=anchor
+        /*
         modelNode!!.onTap = { _, _ ->
             Log.v("onTap" ,"버튼 앵커 클릭")
             // 버튼이 Tap 되면 기 설치된 버튼 노드를 보이지 않게 설정하면서
@@ -165,13 +225,28 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             modelNode!!.isVisible = false
             plantTreeAnchor(anchor)
         }
+         */
         sceneView.addChild(modelNode!!)
+        // 이곳에 심으시겠습니까?
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Position Check")
+        builder.setMessage("Press continue to plant your tree here")
+        builder.setPositiveButton("Continue"){
+            _, _ ->
+            modelNode!!.destroy()
+            plantTreeAnchor(anchor)
+            isSeeding = false
+        }
+        builder.setNegativeButton("Cancel"){
+            _, _ ->
+            Toast.makeText(requireContext(), "Seeding plant canceled", Toast.LENGTH_SHORT).show()
+            modelNode!!.destroy()
+        }
+        val alertDialog:AlertDialog = builder.create()
+        alertDialog.window!!.setGravity(Gravity.BOTTOM)
+        alertDialog.show()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        stopLocationUpdates()
-    }
 
     /** Cloud Anchor Mode 로 등록 가능한 Tree Anchor 를 생성하는 함수 */
     private fun plantTreeAnchor(anchor: Anchor) {
@@ -184,9 +259,9 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             context = requireContext(),
             coroutineScope = lifecycleScope,
             onModelLoaded = {
-                actionButton.text = getString(R.string.host_tree)
+                //actionButton.text = getString(R.string.host_tree)
                 //actionButton.icon = resources.getDrawable(R.drawable.ic_target)
-                actionButton.icon = ResourcesCompat.getDrawable(resources,R.drawable.ic_target,null)
+                //actionButton.icon = ResourcesCompat.getDrawable(resources,R.drawable.ic_target,null)
                 isLoading = false
             }
         )
@@ -208,7 +283,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                         }
                     })
             }
-            actionButton.text = getString(R.string.hosting_tree)
+            //actionButton.text = getString(R.string.hosting_tree)
         }
         // 등록된 cloudAnchor 의 위치로 재설정
         // 상기 등록 구문에서 hostCloudAnchor 를 통해 anchor 의 위치가 재설정 된 바 있음
@@ -226,7 +301,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     private fun onHostedAnchor(anchor:Anchor?){
         if (anchor != null) {
             val anchorState = anchor.cloudAnchorState
-            actionButton.text = getString(R.string.resolve_tree)
+            //actionButton.text = getString(R.string.resolve_tree)
             if(anchorState== CloudAnchorState.SUCCESS){
                 clipboardManager = activity?.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
                 val clipData:ClipData = ClipData.newPlainText("label",anchor.cloudAnchorId)
@@ -279,9 +354,9 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                 context = requireContext(),
                 coroutineScope = lifecycleScope,
                 onModelLoaded = {
-                    actionButton.text = getString(R.string.hosted_tree)
+                    //.text = getString(R.string.hosted_tree)
                     //actionButton.icon = resources.getDrawable(R.drawable.ic_target)
-                    actionButton.icon = ResourcesCompat.getDrawable(resources,R.drawable.ic_target,null)
+                    //actionButton.icon = ResourcesCompat.getDrawable(resources,R.drawable.ic_target,null)
 
                     isLoading = false
                 }
@@ -294,8 +369,12 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         }
     }
 
+    /**
+     * 아이디를 가진 Cloud Anchor를 로드하기 위한 과정이 여기 기입되어 있음
+     * 추후 데이터베이스에서부터의 연결에 활용
+     */
     @Synchronized
-    private fun onResolveButtonPressed() {
+    private fun cloudAnchorLoadFromCode() {
         // 세션이 configure 될 충분한 시간을 확보하기 위해 여기서 configure
         configureSession()
         // Custom Dialog 동적으로 생성
@@ -346,7 +425,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                 startLocationUpdates()
                 // View Button 활성화 상태 변경
             } else {
-                Toast.makeText(requireContext(), "권한이 없어 해당 기능을 실행할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "You have no permission.", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -389,7 +468,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     fun onLocationChanged(location: Location) {
         var distance = location.distanceTo(mLastLocation)
         // 위치 정확도 관련해서도 추가하면 좋을 듯
-        if (distance > 1) {
+        if (distance > 10) {
             Toast.makeText(
                 requireContext(),
                 "1m 이상의 이동 감지. 이동한 거리는 $distance m 입니다.",
@@ -405,6 +484,22 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         mFusedLocationProviderClient!!.removeLocationUpdates(mLocationCallback)
     }
 
-
-
+    /**
+     * 토글버튼 애니메이션
+     * */
+    private fun toggleFab(){
+        // 플로팅 액션 버튼 닫기
+        if(isFabOpen){
+            ObjectAnimator.ofFloat(fabSeed, "translationY", 0f).apply{ start()}
+            ObjectAnimator.ofFloat(fabProfile, "translationY", 0f).apply{ start()}
+            fabMain.setImageResource(R.drawable.ic_ar_floating_main_open)
+        }
+        // 플로팅 액션 버튼 열기
+        else{
+            ObjectAnimator.ofFloat(fabSeed, "translationY", -200f).apply{ start()}
+            ObjectAnimator.ofFloat(fabProfile, "translationY", -400f).apply{ start()}
+            fabMain.setImageResource(R.drawable.ic_ar_floating_main_close)
+        }
+        isFabOpen = !isFabOpen
+    }
 }

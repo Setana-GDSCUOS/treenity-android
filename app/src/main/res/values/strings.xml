@@ -1,5 +1,11 @@
 <resources>
     <string name="app_name">Treenity</string>
+    <string name="plant_button">tap to plant seed on the cursor</string>
+    <string name="host_tree">tap tree to resolve tree</string>
+    <string name="hosting_tree">now hosting anchors</string>
+    <string name="hosted_tree">anchor hosting finished</string>
+    <string name="resolve_tree">tap and enter tree code</string>
+    <string name="ar_floating_main">main button to open menu for profile or planting seed</string>
     <string name="map_id">e4bbb8637888b8b5</string>
     <string name="place_object">Not Implemented yet</string>
     <string name="move_object">Not Implemented yet</string>

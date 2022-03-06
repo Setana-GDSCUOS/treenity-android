@@ -184,8 +184,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
 
     private fun setupViewModel() {
         mapViewModel.treeListLiveData.observe(this, { treeList ->
+            googleMap.clear()
             treeList?.let { it ->
-                googleMap.clear()
                 Log.d(TAG, treeList.toString())
                 for (tree in it) {
                     val coordinate = LatLng(tree.latitude, tree.longitude)

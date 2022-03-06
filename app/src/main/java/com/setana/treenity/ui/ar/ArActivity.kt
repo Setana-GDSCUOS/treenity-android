@@ -9,7 +9,7 @@ import com.setana.treenity.R
 import com.setana.treenity.databinding.ActivityArBinding
 import io.github.sceneview.utils.doOnApplyWindowInsets
 import io.github.sceneview.utils.setFullScreen
-
+/** Fragment 의 우월한(?) 생명주기 + 카메라의 원활한 사용을 위해 Activity 에서는 바로 Fragment 띄움 */
 class ArActivity : AppCompatActivity(R.layout.activity_ar) {
 
     private lateinit var activityArBinding: ActivityArBinding

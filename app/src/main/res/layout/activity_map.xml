@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.setana.treenity.ui.map.MapActivity" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_map_sub1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_baseline_format_list_bulleted_24"
+        app:fabSize="mini"
+        app:layout_anchor="@id/fab_map_main"
+        app:layout_anchorGravity="center" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_map_sub2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_baseline_refresh_24"
+        app:fabSize="mini"
+        app:layout_anchor="@id/fab_map_main"
+        app:layout_anchorGravity="center" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_map_main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="29dp"
+        android:layout_marginEnd="30dp"
+        android:src="@drawable/ic_baseline_map_24"
+        app:layout_dodgeInsetEdges="bottom"
+        app:layout_anchorGravity="end"
+        app:layout_anchor="@id/speedDial_anchor"
+        android:contentDescription="@string/app_name" />
+
+    <View
+        android:id="@+id/speedDial_anchor"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:layout_anchor="@id/bottom_sheet"
+        app:layout_insetEdge="bottom" />
+
+    <include
+        android:id="@+id/bottom_sheet"
+        layout="@layout/map_bottom_sheet" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

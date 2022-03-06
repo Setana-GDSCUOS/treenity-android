@@ -4,6 +4,7 @@ plugins {
     id 'com.google.gms.google-services'
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
 def Properties properties = new Properties()
@@ -37,7 +38,8 @@ android {
 
             buildConfigField "String", "OAUTH_WEB_CLIENT_KEY", '"788851558102-s83rof880p8spfrnpa0ahumioo83bip2.apps.googleusercontent.com"'
             buildConfigField "String", "OAUTH_ANDROID_CLIENT_KEY", '"788851558102-0qmugufi2hbplicjagk32a204r3btatk.apps.googleusercontent.com"'
-            buildConfigField("String", "ANDROID_API_KEY", properties.getProperty("ANDROID_API_KEY"))
+            buildConfigField "String", "MAPS_API_KEY", '"AIzaSyBNXJenOBvL5KU7EIRD_YxsmwQasPcgVXQ"'
+            // buildConfigField("String", "ANDROID_API_KEY", properties.getProperty("ANDROID_API_KEY"))
         }
 
         debug {
@@ -50,7 +52,8 @@ android {
 
             buildConfigField "String", "OAUTH_WEB_CLIENT_KEY", '"788851558102-s83rof880p8spfrnpa0ahumioo83bip2.apps.googleusercontent.com"'
             buildConfigField "String", "OAUTH_ANDROID_CLIENT_KEY", '"788851558102-0qmugufi2hbplicjagk32a204r3btatk.apps.googleusercontent.com"'
-            buildConfigField("String", "ANDROID_API_KEY", properties.getProperty("ANDROID_API_KEY"))
+            buildConfigField "String", "MAPS_API_KEY", '"AIzaSyBNXJenOBvL5KU7EIRD_YxsmwQasPcgVXQ"'
+            // buildConfigField("String", "ANDROID_API_KEY", properties.getProperty("ANDROID_API_KEY"))
         }
     }
 
@@ -97,7 +100,8 @@ dependencies {
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation "com.squareup.okhttp3:okhttp:4.9.0"
+    implementation "com.squareup.okhttp3:okhttp:3.4.2"
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.4.2'
 
     // Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
@@ -123,4 +127,10 @@ dependencies {
     implementation 'io.github.sceneview:arsceneview:0.0.3'
     //ARCore might be included in SceneView
     implementation 'com.google.ar:core:1.23.0'
+
+    // Google map
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
+
+    // Google Location
+    implementation 'com.google.android.gms:play-services-location:19.0.1'
 }

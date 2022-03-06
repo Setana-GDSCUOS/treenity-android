@@ -3,10 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/projects/treenity-android/app/src/main/res/layout/activity_main.xml" value="0.7333333333333334" />
-        <entry key="..\:/projects/treenity-android/app/src/main/res/layout/activity_store.xml" value="0.1015625" />
-        <entry key="..\:/projects/treenity-android/app/src/main/res/layout/image_layout.xml" value="0.13645833333333332" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.21467391304347827" />
+        <entry key="app/src/main/res/layout/activity_map.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/map_bottom_sheet.xml" value="0.47896778634836223" />
+        <entry key="app/src/main/res/xml/rounded.xml" value="0.15534420289855072" />
       </map>
     </option>
   </component>

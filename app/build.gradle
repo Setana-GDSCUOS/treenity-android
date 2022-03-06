@@ -31,29 +31,17 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-
-            buildConfigField "String", "CLIENT_ID_TEST", '"53pciNgOkE2AMvrHDVCSuQLXbu5e7QL1HhTW84HNdSs"'
-            buildConfigField "String", "END_POINT_TEST", '"/photos"'
-            buildConfigField "String", "BASE_URL_TEST", '"https://api.unsplash.com"'
-
-            buildConfigField "String", "OAUTH_WEB_CLIENT_KEY", '"788851558102-s83rof880p8spfrnpa0ahumioo83bip2.apps.googleusercontent.com"'
-            buildConfigField "String", "OAUTH_ANDROID_CLIENT_KEY", '"788851558102-0qmugufi2hbplicjagk32a204r3btatk.apps.googleusercontent.com"'
-            buildConfigField "String", "MAPS_API_KEY", '"AIzaSyBNXJenOBvL5KU7EIRD_YxsmwQasPcgVXQ"'
-            // buildConfigField("String", "ANDROID_API_KEY", properties.getProperty("ANDROID_API_KEY"))
         }
 
         debug {
             applicationIdSuffix ".debug"
             debuggable true
-
-            buildConfigField "String", "CLIENT_ID_TEST", '"53pciNgOkE2AMvrHDVCSuQLXbu5e7QL1HhTW84HNdSs"'
-            buildConfigField "String", "END_POINT_TEST", '"/photos"'
-            buildConfigField "String", "BASE_URL_TEST", '"https://api.unsplash.com"'
-
-            buildConfigField "String", "OAUTH_WEB_CLIENT_KEY", '"788851558102-s83rof880p8spfrnpa0ahumioo83bip2.apps.googleusercontent.com"'
-            buildConfigField "String", "OAUTH_ANDROID_CLIENT_KEY", '"788851558102-0qmugufi2hbplicjagk32a204r3btatk.apps.googleusercontent.com"'
-            buildConfigField "String", "MAPS_API_KEY", '"AIzaSyBNXJenOBvL5KU7EIRD_YxsmwQasPcgVXQ"'
-            // buildConfigField("String", "ANDROID_API_KEY", properties.getProperty("ANDROID_API_KEY"))
+            buildConfigField("String", "CLIENT_ID_TEST", properties.getProperty("CLIENT_ID_TEST"))
+            buildConfigField("String", "END_POINT_TEST", properties.getProperty("END_POINT_TEST"))
+            buildConfigField("String", "BASE_URL_TEST", properties.getProperty("BASE_URL_TEST"))
+            buildConfigField("String", "MAPS_API_KEY", properties.getProperty("MAPS_API_KEY"))
+            buildConfigField("String", "OAUTH_WEB_CLIENT_KEY", properties.getProperty("OAUTH_WEB_CLIENT_KEY"))
+            buildConfigField("String", "OAUTH_ANDROID_CLIENT_KEY", properties.getProperty("OAUTH_ANDROID_CLIENT_KEY"))
         }
     }
 
@@ -100,6 +88,8 @@ dependencies {
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    // OkHttp3 (lower version for using interceptor)
     implementation "com.squareup.okhttp3:okhttp:3.4.2"
     implementation 'com.squareup.okhttp3:logging-interceptor:3.4.2'
 

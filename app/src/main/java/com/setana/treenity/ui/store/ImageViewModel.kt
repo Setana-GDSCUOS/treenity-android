@@ -16,6 +16,7 @@ import javax.inject.Inject
 class ImageViewModel
 @Inject
 constructor(private val repository: ImageRepository) : ViewModel() {
+    //TODO StoreViewModel 로 이름 바꾸기
 
     private val _response = MutableLiveData<List<ImageItem>>()
 

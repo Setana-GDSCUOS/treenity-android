@@ -1,4 +1,4 @@
-package com.setana.treenity
+package com.setana.treenity.ui.signin
 
 import android.content.Intent
 import android.os.Bundle
@@ -12,7 +12,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.setana.treenity.BuildConfig
 import com.setana.treenity.databinding.ActivitySignInBinding
+import com.setana.treenity.ui.map.MapActivity
 
 class SignInActivity : AppCompatActivity() {
 
@@ -29,6 +31,9 @@ class SignInActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         activitySignInBinding = ActivitySignInBinding.inflate(layoutInflater)
         setContentView(activitySignInBinding.root)
+
+        val intent = Intent(this, MapActivity::class.java)
+        startActivity(intent)
 
         // Configure Google Sign In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)

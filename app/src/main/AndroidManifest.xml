@@ -2,8 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.setana.treenity">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-feature android:name="android.hardware.camera.ar" android:required="true"/>
 
     <application
@@ -15,19 +17,37 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Treenity">
 
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
         <activity
             android:name=".ui.store.StoreActivity"
             android:exported="true">
         </activity>
+
+        <activity
+            android:name=".ui.map.MapActivity"
+            android:exported="true">
+        </activity>
+
         <activity
             android:name=".ui.ar.ArActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
+
         <activity
-            android:name=".SignInActivity"
+            android:name=".ui.signin.SignInActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

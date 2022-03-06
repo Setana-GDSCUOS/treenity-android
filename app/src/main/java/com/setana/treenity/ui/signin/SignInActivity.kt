@@ -32,8 +32,8 @@ class SignInActivity : AppCompatActivity() {
         activitySignInBinding = ActivitySignInBinding.inflate(layoutInflater)
         setContentView(activitySignInBinding.root)
 
-        val intent = Intent(this, MapActivity::class.java)
-        startActivity(intent)
+//        val intent = Intent(this, MapActivity::class.java)
+//        startActivity(intent)
 
         // Configure Google Sign In
 

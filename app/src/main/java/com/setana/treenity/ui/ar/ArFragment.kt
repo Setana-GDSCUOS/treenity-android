@@ -2,6 +2,7 @@ package com.setana.treenity.ui.ar
 
 import android.Manifest
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -22,6 +23,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -444,7 +446,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             }
         }
     }
-
+    @SuppressLint ("missing permission")
     protected fun startLocationUpdates() {
         //FusedLocationProviderClient의 인스턴스를 생성.
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
@@ -490,6 +492,8 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                 Toast.LENGTH_SHORT
             )
                 .show()
+            // 일정 거리 이상 이동시 주변의 나무 불러옴
+            arViewModel.listAroundTrees(location.latitude,location.longitude)
         }
         mLastLocation = location
     }
@@ -538,4 +542,5 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
         })
     }
+
 }

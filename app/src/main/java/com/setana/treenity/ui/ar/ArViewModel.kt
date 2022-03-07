@@ -1,14 +1,47 @@
 package com.setana.treenity.ui.ar
 
-class ArViewModel {
-    // Tree ID 따로 만들 것인지 CAID를 tree ID로 쓸 것인지 창구님과 논의
-    /** 위치 변화시 호출되어 서버에 위치 정보를 전송하고 주변 앵커를 획득하는 함수 */
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.setana.treenity.data.api.dto.GetAroundArTreeResponseDTO
+import com.setana.treenity.data.repository.TreeRepository
+import com.setana.treenity.util.Event
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-    /** 씨앗 심기 기능 실행시 호출되어 서버에 CAID와 유저정보, 위치정보를 전달하는 함수,
-     *  (나무 ID 전달받을 수 있음) */
+@HiltViewModel
+class ArViewModel @Inject constructor(
+    private val treeRepository: TreeRepository
+): ViewModel() {
+    private val _treeListLiveData: MutableLiveData<List<GetAroundArTreeResponseDTO>> = MutableLiveData()
+    val treeListLiveData: LiveData<List<GetAroundArTreeResponseDTO>> = _treeListLiveData
 
-    /** 물주기 기능 실행시 호출되어 서버에 CAID(or Tree ID) 전송,
-     *  성장정보를 획득하여 수정 요청 후 다시 받아오는 함수 */
+    private val _showErrorToast = MutableLiveData<Event<String>>()
+    val showErrorToast: LiveData<Event<String>> = _showErrorToast
 
-    /** 나무 정보 보기 기능 실행시 호출되어, 서버에 CAID(or Tree ID) 전송, 정보를 받아오는 함수 */
+    private fun setToastMessage(content: String) {
+        _showErrorToast.value = Event(content)
+    }
+
+    fun listAroundTrees(lat: Double, lng: Double) = viewModelScope.launch(Dispatchers.Main) {
+        val handler = CoroutineExceptionHandler { _, throwable ->
+            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            throwable.message?.let { Log.d("ArViewModel.kt", it) }
+        }
+
+        withContext(Dispatchers.IO + handler) {
+            val response = treeRepository.getAroundArTrees(lat, lng)
+            if (response.isSuccessful) {
+                _treeListLiveData.postValue(response.body())
+            } else {
+                setToastMessage(response.message())
+            }
+        }
+    }
 }

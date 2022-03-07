@@ -8,6 +8,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.location.LocationRequest
 import android.os.Build
@@ -18,15 +19,21 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isGone
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.CircleOptions
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.ar.core.Anchor
@@ -35,6 +42,9 @@ import com.google.ar.core.Config
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.setana.treenity.R
 import com.setana.treenity.databinding.ArFragmentBinding
+import com.setana.treenity.ui.map.MapActivity
+import com.setana.treenity.ui.map.MapViewModel
+import com.setana.treenity.util.EventObserver
 import io.github.sceneview.ar.ArSceneView
 import io.github.sceneview.ar.arcore.ArSession
 import io.github.sceneview.ar.node.ArNode
@@ -74,6 +84,11 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
     // Floating Action Button
     private var isFabOpen = false
+
+    // 뷰모델
+
+
+    private val arViewModel: ArViewModel by viewModels()
 
     //테스트용
     lateinit var clipboardManager: ClipboardManager
@@ -501,5 +516,26 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             fabMain.setImageResource(R.drawable.ic_ar_floating_main_close)
         }
         isFabOpen = !isFabOpen
+    }
+
+    /**
+    * 뷰모델과의 상호작용 부분입니다.
+    * */
+
+    private fun setupViewModel() {
+        arViewModel.treeListLiveData.observe(this) { treeList ->
+            treeList?.let { it ->
+                for (arTree in it) {
+                    val coordinate = LatLng(arTree.latitude, arTree.longitude)
+                    val cloudAnchorID = arTree.cloudAnchorID
+                    val node = "null" // 객체 넣어줘야됨
+                    // node?.tag = arTree.treeId
+                }
+            }
+        }
+
+        arViewModel.showErrorToast.observe(this, EventObserver {
+            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        })
     }
 }

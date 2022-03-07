@@ -6,4 +6,5 @@ class TreeApiHelperImpl @Inject constructor(
     private val treeApiService: TreeApiService
 ): TreeApiHelper {
     override suspend fun getAroundTrees(lat: Double, lng: Double) = treeApiService.getAroundTrees(lat, lng)
+    override suspend fun getAroundArTrees(lat: Double, lng: Double) = treeApiService.getAroundArTrees(lat, lng)
 }

@@ -2,7 +2,7 @@ package com.setana.treenity.data.api.dto
 
 import java.io.Serializable
 
-data class GetAroundTreeResponseDTO(
+data class GetAroundArTreeResponseDTO(
     val treeId: Long,
     val latitude: Double,
     val longitude: Double,
@@ -11,9 +11,10 @@ data class GetAroundTreeResponseDTO(
     // val level: Int,
     val distance: Double,
     val userId: Long,
-    val username: String
+    val username: String,
+    val cloudAnchorID: String
 ) : Serializable {
     companion object {
-        val EMPTY = GetAroundTreeResponseDTO(0, 0.0, 0.0, "", 0.0, 0, "")
+        val EMPTY = GetAroundArTreeResponseDTO(0, 0.0, 0.0, "", 0.0, 0, "", "")
     }
 }

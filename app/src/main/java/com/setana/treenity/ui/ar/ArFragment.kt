@@ -47,6 +47,7 @@ import com.setana.treenity.databinding.ArFragmentBinding
 import com.setana.treenity.ui.map.MapActivity
 import com.setana.treenity.ui.map.MapViewModel
 import com.setana.treenity.util.EventObserver
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sceneview.ar.ArSceneView
 import io.github.sceneview.ar.arcore.ArSession
 import io.github.sceneview.ar.node.ArNode
@@ -60,6 +61,8 @@ import io.github.sceneview.utils.doOnApplyWindowInsets
  * Anchor는 3D공간상의 위치정보
  * ArNode는 모델을 포함하는 3D 공간상의 개채로 앵커를 포함하면 해당 위치에 표시됨
  * */
+
+@AndroidEntryPoint
 class ArFragment : Fragment(R.layout.ar_fragment) {
     lateinit var sceneView: ArSceneView
     lateinit var loadingView: View
@@ -88,8 +91,6 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     private var isFabOpen = false
 
     // 뷰모델
-
-
     private val arViewModel: ArViewModel by viewModels()
 
     //테스트용
@@ -114,25 +115,16 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         super.onViewCreated(view, savedInstanceState)
         // fragment의 lifecycle에 의한 메모리 누수 방지를 위해 inflate 말고 bind 사용
         arFragmentBinding = ArFragmentBinding.bind(view)
+
+        setUpScene()
         //  FAB 추가
-        fabMain = arFragmentBinding.fabMain
-        fabProfile = arFragmentBinding.fabProfile
-        fabSeed = arFragmentBinding.fabSeed
-        fabMain.setImageResource(R.drawable.ic_ar_floating_main_open)
+        setUpFab()
+        // 위치 업데이트 시 주위의 앵커를 불러오기 위한 부분
+        setUpLocationCheck()
+        setupViewModel()
+    }
 
-        fabMain.setOnClickListener{
-            toggleFab()
-        }
-        fabProfile.setOnClickListener{
-            // Todo 마이페이지 액티비티로의 연결
-            Toast.makeText(requireContext(), "Move to MyPage.", Toast.LENGTH_SHORT).show()
-        }
-        fabSeed.setOnClickListener{
-            // Todo 씨앗 템창으로 연결 악 씨앗 템창 언제만들어!!!
-            Toast.makeText(requireContext(), "Tap plane to plant.", Toast.LENGTH_SHORT).show()
-            isSeeding = true
-        }
-
+    private fun setUpScene(){
         sceneView = arFragmentBinding.sceneView
         // 뷰의 터치된 장소에 노드를 생성 hitResult 가 터치된 장소.
         // 씨앗심기 모드에서만 노드 생성 가능
@@ -183,12 +175,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             //sceneView.planeRenderer.material?.setFloat(PlaneRenderer.MATERIAL_SPOTLIGHT_RADIUS,100f)
         }
         // sceneView.onArSessionCreated(session) = {}
-        // 위치 업데이트 시 주위의 앵커를 불러오기 위한 부분
-        checkPermissionForLocation(requireContext())
-        mLocationRequest = com.google.android.gms.location.LocationRequest.create()
-        mLocationRequest.priority = LocationRequest.QUALITY_HIGH_ACCURACY
-        mLocationRequest.interval = 5 * 1000
-        startLocationUpdates()
+
     }
 
     override fun onDestroy() {
@@ -419,7 +406,13 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
 
     // 위치 권한이 있는지 확인하는 메서드
-
+    private fun setUpLocationCheck(){
+        checkPermissionForLocation(requireContext())
+        mLocationRequest = com.google.android.gms.location.LocationRequest.create()
+        mLocationRequest.priority = LocationRequest.QUALITY_HIGH_ACCURACY
+        mLocationRequest.interval = 5 * 1000
+        startLocationUpdates()
+    }
     fun checkPermissionForLocation(context: Context): Boolean {
         // Android 6.0 Marshmallow 이상에서는 지리 확보(위치) 권한에 추가 런타임 권한이 필요합니다.
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -503,6 +496,27 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         mFusedLocationProviderClient!!.removeLocationUpdates(mLocationCallback)
     }
 
+
+    private fun setUpFab(){
+        fabMain = arFragmentBinding.fabMain
+        fabProfile = arFragmentBinding.fabProfile
+        fabSeed = arFragmentBinding.fabSeed
+        fabMain.setImageResource(R.drawable.ic_ar_floating_main_open)
+
+        fabMain.setOnClickListener{
+            toggleFab()
+        }
+        fabProfile.setOnClickListener{
+            // Todo 마이페이지 액티비티로의 연결
+            Toast.makeText(requireContext(), "Move to MyPage.", Toast.LENGTH_SHORT).show()
+        }
+        fabSeed.setOnClickListener{
+            // Todo 씨앗 템창으로 연결 악 씨앗 템창 언제만들어!!!
+            Toast.makeText(requireContext(), "Tap plane to plant.", Toast.LENGTH_SHORT).show()
+            isSeeding = true
+        }
+    }
+
     /**
      * 토글버튼 애니메이션
      * */
@@ -527,7 +541,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     * */
 
     private fun setupViewModel() {
-        arViewModel.treeListLiveData.observe(this) { treeList ->
+        arViewModel.treeListLiveData.observe(viewLifecycleOwner) { treeList ->
             treeList?.let { it ->
                 for (arTree in it) {
                     val coordinate = LatLng(arTree.latitude, arTree.longitude)
@@ -538,7 +552,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             }
         }
 
-        arViewModel.showErrorToast.observe(this, EventObserver {
+        arViewModel.showErrorToast.observe(viewLifecycleOwner, EventObserver {
             Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
         })
     }

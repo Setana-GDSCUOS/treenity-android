@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId "com.setana.treenity"
-        minSdk 26
+        minSdk 29
         targetSdk 31
         versionCode 1
         versionName "1.0"
@@ -127,4 +127,19 @@ dependencies {
 
     // Lottie
     implementation "com.airbnb.android:lottie:3.5.0"
+
+    // MPAndroidChart
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
+    // card view
+    implementation "androidx.cardview:cardview:1.0.0"
+
+    // settings
+    implementation 'androidx.preference:preference-ktx:1.2.0'
+
+    // swipe layout
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+
+    // work manager
+    implementation 'androidx.work:work-runtime-ktx:2.7.1'
 }

@@ -3,11 +3,14 @@ package com.setana.treenity.ui.loading
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.airbnb.lottie.LottieDrawable
 import com.google.firebase.auth.FirebaseAuth
@@ -16,6 +19,7 @@ import com.setana.treenity.ui.ar.ArActivity
 import com.setana.treenity.ui.signin.SignInActivity
 import com.setana.treenity.util.EventObserver
 import com.setana.treenity.util.PermissionUtils
+import com.setana.treenity.util.StepDetectorService
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -23,6 +27,10 @@ class LoadingActivity : AppCompatActivity() {
     private var permissionDenied = false
     private lateinit var activityLoadingBinding: ActivityLoadingBinding
     private val loadingViewModel: LoadingViewModel by viewModels()
+
+    // sensor permission
+    private val MY_PERMISSION_ACCESS_ALL = 100
+    val permission = arrayOf(Manifest.permission.ACTIVITY_RECOGNITION)
 
     companion object {
         private const val TAG = "LoadingActivity"
@@ -42,7 +50,15 @@ class LoadingActivity : AppCompatActivity() {
 
         setupUI()
         setupViewModel()
+
+        // 걷는 것 인식하기 위한 권한 요청
+        ActivityCompat.requestPermissions(this, permission, MY_PERMISSION_ACCESS_ALL)
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) { // 허용 할 경우, 바로 서비스 on
+            Toast.makeText(this, "Activity Sensor is Activated", Toast.LENGTH_SHORT).show()
+        }
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -143,6 +159,18 @@ class LoadingActivity : AppCompatActivity() {
             startArActivity()
         } else {
             permissionDenied = true
+        }
+
+        // Physical Activity 권한 승인 여부
+        if (requestCode > 0) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED) {
+                Toast.makeText(this, "You can address your authorization by clicking setting icon", Toast.LENGTH_SHORT).show()
+            } else { // 승인을 했다면
+                val intent = Intent(this, StepDetectorService::class.java)
+                startService(intent)
+
+                Toast.makeText(this, "Activity Sensor is Activated", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

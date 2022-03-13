@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
     <uses-feature android:name="android.hardware.camera.ar" android:required="true"/>
 
     <application
@@ -26,6 +27,8 @@
 
         <activity android:name=".ui.signin.SignInActivity" />
 
+        <activity android:name=".ui.mypage.SettingsActivity" />
+
         <activity
             android:name=".ui.loading.LoadingActivity"
             android:exported="true">
@@ -34,6 +37,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name=".util.StepDetectorService"/>
 
         <!--meta-data tag must be in application tag-->
         <meta-data

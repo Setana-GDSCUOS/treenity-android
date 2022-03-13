@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
     <uses-feature android:name="android.hardware.camera.ar" android:required="true"/>
 
     <application
@@ -52,6 +53,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name=".util.StepDetectorService"/>
         <meta-data
             android:name="com.google.android.ar.ANDROID_API_KEY"
             android:value="com.setana.treenity.BuildConfig.ANDROID_API_KEY"/>

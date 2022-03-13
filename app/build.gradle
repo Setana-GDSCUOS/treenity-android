@@ -123,4 +123,7 @@ dependencies {
 
     // Google Location
     implementation 'com.google.android.gms:play-services-location:19.0.1'
+
+    // settings
+    implementation 'androidx.preference:preference-ktx:1.2.0'
 }

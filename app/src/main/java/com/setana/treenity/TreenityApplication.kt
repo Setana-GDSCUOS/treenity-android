@@ -5,4 +5,8 @@ import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class TreenityApplication : Application() {
+
+    companion object {
+        var steps = 0
+    }
 }

@@ -1,9 +1,15 @@
 package com.setana.treenity.ui.signin
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -15,8 +21,14 @@ import com.google.firebase.ktx.Firebase
 import com.setana.treenity.BuildConfig
 import com.setana.treenity.databinding.ActivitySignInBinding
 import com.setana.treenity.ui.map.MapActivity
+import com.setana.treenity.util.StepDetectorService
 
 class SignInActivity : AppCompatActivity() {
+
+    // sensor permission
+    private val MY_PERMISSION_ACCESS_ALL = 100
+    @RequiresApi(Build.VERSION_CODES.Q) // api level 29 부터 신체 활동 센서가 달려있음
+    val permission = arrayOf(Manifest.permission.ACTIVITY_RECOGNITION)
 
     companion object {
         private const val TAG = "SignInActivity"
@@ -48,6 +60,23 @@ class SignInActivity : AppCompatActivity() {
 
         activitySignInBinding.signInButton.setOnClickListener {
             signIn()
+        }
+    }
+
+    // 첫 신체 활동 권한 요청에서 거부를 눌렀을 때
+    override fun onRequestPermissionsResult( requestCode: Int, permissions: Array<out String>, grantResults: IntArray ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode > 0) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACTIVITY_RECOGNITION
+                ) == PackageManager.PERMISSION_DENIED) {
+                Toast.makeText(this, "You can address your authorization by clicking setting icon", Toast.LENGTH_SHORT).show()
+            } else { // 승인은 했다면
+                val intent = Intent(this, StepDetectorService::class.java)
+                startService(intent)
+
+                Toast.makeText(this, "Activity Sensor is Activated", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

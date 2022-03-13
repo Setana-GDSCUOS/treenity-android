@@ -43,6 +43,7 @@ import com.google.ar.core.Anchor.CloudAnchorState
 import com.google.ar.core.Config
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.setana.treenity.R
+import com.setana.treenity.data.api.dto.PostTreeDTO
 import com.setana.treenity.databinding.ArFragmentBinding
 import com.setana.treenity.ui.map.MapActivity
 import com.setana.treenity.ui.map.MapViewModel
@@ -121,7 +122,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         setUpFab()
         // 위치 업데이트 시 주위의 앵커를 불러오기 위한 부분
         setUpLocationCheck()
-        setupViewModel()
+        setUpViewModel()
     }
 
     private fun setUpScene(){
@@ -130,7 +131,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         // 씨앗심기 모드에서만 노드 생성 가능
         sceneView.onTouchAr = { hitResult, _ ->
             if(isSeeding) {
-                createButtonNode(hitResult.createAnchor())
+                createSeed(hitResult.createAnchor())
             }
         }
         // 씨앗심기 모드로 편입됨.
@@ -188,7 +189,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
      * 기본적인 상호작용 가능한 노드를 생성하는 함수
      * 메뉴나 씨앗심기 동작등을 작성할 때 사용 가능
      * */
-    private fun createButtonNode(anchor: Anchor) {
+    private fun createSeed(anchor: Anchor) {
         isLoading = true
         modelNode = ArNode(
             modelGlbFileLocation = "models/sphere.glb",
@@ -249,6 +250,9 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         val alertDialog:AlertDialog = builder.create()
         alertDialog.window!!.setGravity(Gravity.BOTTOM)
         alertDialog.show()
+        // Todo
+        // 나무이름 등록 - 수정가능하게? 나중에 하는게 좋지 않을까
+        // 템창도 생각해보니 다이얼로그에서 스크롤로 처리가능
     }
 
 
@@ -311,6 +315,10 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                 val clipData:ClipData = ClipData.newPlainText("label",anchor.cloudAnchorId)
                 clipboardManager.setPrimaryClip(clipData)
                 Toast.makeText(requireContext(), "클립보드로 앵커의 아이디가 전송되었습니다.", Toast.LENGTH_SHORT).show()
+                // 데이터 공유받아서 다 들어가야 됨
+                val postTreeDTO= PostTreeDTO(1L,"default","nunu","yuzuriha",anchor.cloudAnchorId)
+                arViewModel.postHostedTree(postTreeDTO)
+
             }else if(anchorState == CloudAnchorState.ERROR_HOSTING_DATASET_PROCESSING_FAILED || anchorState == CloudAnchorState.ERROR_INTERNAL){
                 Toast.makeText(requireContext(), "3D 공간의 정보가 부족합니다. 다시 시도해 주세요", Toast.LENGTH_SHORT).show()
             }
@@ -325,7 +333,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
     /** 등록된 cloudAnchor 를 ID 를 통해 받아옴, session configure 은 Resolve 버튼의 리스너에서 처리 */
     @Synchronized
-    fun resolveAnchor(cloudAnchorId:String) {
+    fun resolveAnchor(cloudAnchorId:String, treeId: Long) {
         isLoading = true
         cloudAnchorManager.resolveCloudAnchor(
             session,
@@ -335,7 +343,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                     if(anchor!!.cloudAnchorState==CloudAnchorState.SUCCESS){
                         Toast.makeText(requireContext(), "나무가 로드되었습니다. 설치한 공간을 비춰보세요.", Toast.LENGTH_SHORT).show()
                         //onResolvedAnchor 해서 나무 노드 생성하는거 만들기
-                        onResolvedAnchor(anchor)
+                        onResolvedAnchor(anchor, treeId)
                     }
                     else{
                         Toast.makeText(requireContext(), "로드 에러 : " + anchor.cloudAnchorState.toString(), Toast.LENGTH_SHORT).show()
@@ -350,7 +358,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
      * 로드된 앵커 위에 노드를 덧씌워 준다.
      * */
     @Synchronized
-    private fun onResolvedAnchor(anchor:Anchor?){
+    private fun onResolvedAnchor(anchor:Anchor?, treeId: Long){
         if(anchor!=null){
             modelNode = ArNode(
                 //로드하는 모델의 종류는 서버에서 받아와야 함
@@ -367,6 +375,8 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             )
             modelNode!!.onTap = { _,_ ->
                 Toast.makeText(requireContext(), "로드된 나무도 상호작용 가능", Toast.LENGTH_SHORT).show()
+                val tree = arViewModel.treeListLiveData.value?.find { it.treeId == treeId }
+                // Todo tree 정보 다이얼로그나 표지판 형식으로 띄우기
             }
             modelNode!!.anchor = anchor
             sceneView.addChild(modelNode!!)
@@ -385,7 +395,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         val dialog = ResolveDialogFragment.setOkListener(object : ResolveDialogFragment.OkListener {
             override fun onOkPressed(dialogValue: String) {
                 Toast.makeText(requireContext(), "서버에서 나무 정보를 로드합니다...", Toast.LENGTH_SHORT).show()
-                resolveAnchor(dialogValue)
+                //resolveAnchor(dialogValue)
             }
         })
         dialog.show(requireActivity().supportFragmentManager, "Resolve")
@@ -487,6 +497,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                 .show()
             // 일정 거리 이상 이동시 주변의 나무 불러옴
             arViewModel.listAroundTrees(location.latitude,location.longitude)
+
         }
         mLastLocation = location
     }
@@ -540,13 +551,16 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     * 뷰모델과의 상호작용 부분입니다.
     * */
 
-    private fun setupViewModel() {
+    private fun setUpViewModel() {
+        // 세션은 빠르게 세팅해줘야 안 튕기고 잘 돌아감 여기서 하는 것도 안 될 수 있음
+        configureSession()
         arViewModel.treeListLiveData.observe(viewLifecycleOwner) { treeList ->
             treeList?.let { it ->
                 for (arTree in it) {
                     val coordinate = LatLng(arTree.latitude, arTree.longitude)
                     val cloudAnchorID = arTree.cloudAnchorID
-                    val node = "null" // 객체 넣어줘야됨
+                    val treeId = arTree.treeId
+                    resolveAnchor(cloudAnchorID, treeId)
                     // node?.tag = arTree.treeId
                 }
             }

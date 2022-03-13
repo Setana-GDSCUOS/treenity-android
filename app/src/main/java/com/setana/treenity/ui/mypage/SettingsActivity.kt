@@ -27,7 +27,6 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
 
     // sensor permission
     private val activityPermission = 100
-    @RequiresApi(Build.VERSION_CODES.Q) // api level 29 부터 신체 활동 센서가 달려있음
     val permission = arrayOf(Manifest.permission.ACTIVITY_RECOGNITION)
 
     override fun onCreate(savedInstanceState: Bundle?) {

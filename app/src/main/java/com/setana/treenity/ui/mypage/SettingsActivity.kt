@@ -53,7 +53,6 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
 
     // 이벤트 작성 nickname 변경될 때, push 알람 설정 true 되었을 때 서버로 POST 요청보낼 것
     @SuppressLint("InflateParams")
-    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
 
         // 닉네임 변경되었을 때

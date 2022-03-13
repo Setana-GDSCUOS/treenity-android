@@ -9,6 +9,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -60,6 +61,13 @@ class SignInActivity : AppCompatActivity() {
 
         activitySignInBinding.signInButton.setOnClickListener {
             signIn()
+        }
+
+        // 걷는 것 인식하기 위한 권한 요청
+        ActivityCompat.requestPermissions(this, permission, MY_PERMISSION_ACCESS_ALL)
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) { // 허용 할 경우, 바로 서비스 on
+            Toast.makeText(this, "Activity Sensor is Activated", Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -22,11 +22,4 @@
         android:autofillHints="Username"
         android:inputType="text" />
 
-    <Button
-        android:id="@+id/btn_request_register"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Register"
-        android:layout_marginHorizontal="40sp" />
-
 </androidx.appcompat.widget.LinearLayoutCompat>

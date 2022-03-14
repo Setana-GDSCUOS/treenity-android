@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.setana.treenity.data.api.dto.GetAroundTreeResponseDTO
 import com.setana.treenity.data.api.dto.LoginByFirebaseTokenResponseDTO
 import com.setana.treenity.data.api.dto.RegisterCurrentFirebaseUserRequestDTO
+import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
 import com.setana.treenity.data.repository.UserRepository
 import com.setana.treenity.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +28,9 @@ class LoadingViewModel @Inject constructor(
 
     private val _registerResponseLiveData: MutableLiveData<Response<Void>> = MutableLiveData()
     val registerResponseLiveData: LiveData<Response<Void>> = _registerResponseLiveData
+
+    private val _updateWalkLogsResponseLiveData: MutableLiveData<Response<Void>> = MutableLiveData()
+    val updateWalkLogsResponseLiveData: LiveData<Response<Void>> = _updateWalkLogsResponseLiveData
 
     private val _showErrorToast = MutableLiveData<Event<String>>()
     val showErrorToast: LiveData<Event<String>> = _showErrorToast
@@ -58,6 +62,20 @@ class LoadingViewModel @Inject constructor(
                 val response =
                     userRepository.registerCurrentFirebaseUser(registerCurrentFirebaseUserRequestDTO)
                 _registerResponseLiveData.postValue(response)
+            }
+        }
+
+    fun updateUserWalkLogs(userId: String, updateUserWalkLogsRequestDTO: UpdateUserWalkLogsRequestDTO) =
+        viewModelScope.launch(Dispatchers.Main) {
+            val handler = CoroutineExceptionHandler { _, throwable ->
+                setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+                throwable.message?.let { Log.d("SignInViewModel.kt", it) }
+            }
+
+            withContext(Dispatchers.IO + handler) {
+                val response =
+                    userRepository.updateUserWalkLogs(userId, updateUserWalkLogsRequestDTO)
+                _updateWalkLogsResponseLiveData.postValue(response)
             }
         }
 }

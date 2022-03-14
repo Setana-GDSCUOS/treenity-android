@@ -6,6 +6,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface UserApiService {
     @GET("auth")
@@ -14,5 +15,11 @@ interface UserApiService {
     @POST("auth")
     suspend fun registerCurrentFirebaseUser(
         @Body registerCurrentFirebaseUserRequestDTO: RegisterCurrentFirebaseUserRequestDTO
+    ): Response<Void>
+
+    @POST("/user/{uid}/walk-logs")
+    suspend fun updateUserWalkLogs(
+        @Path(value = "uid", encoded = true) userId: String,
+        // @Body registerCurrentFirebaseUserRequestDTO: RegisterCurrentFirebaseUserRequestDTO
     ): Response<Void>
 }

@@ -15,10 +15,6 @@ import androidx.fragment.app.DialogFragment
  * Utility class for access to runtime permissions.
  */
 object PermissionUtils {
-    /**
-     * Requests the fine location permission. If a rationale with an additional explanation should
-     * be shown to the user, displays a dialog that triggers the request.
-     */
     @JvmStatic
     fun requestPermission(
         activity: AppCompatActivity, requestId: Int,
@@ -66,7 +62,7 @@ object PermissionUtils {
             finishActivity =
                 arguments?.getBoolean(ARGUMENT_FINISH_ACTIVITY) ?: false
             return AlertDialog.Builder(activity)
-                .setMessage("R.string.location_permission_denied")
+                .setMessage("Please check your permission.")
                 .setPositiveButton(android.R.string.ok, null)
                 .create()
         }
@@ -75,7 +71,7 @@ object PermissionUtils {
             super.onDismiss(dialog)
             if (finishActivity) {
                 Toast.makeText(
-                    activity, "R.string.permission_required_toast",
+                    activity, "Please check your permission.",
                     Toast.LENGTH_SHORT
                 ).show()
                 activity?.finish()
@@ -118,7 +114,7 @@ object PermissionUtils {
             finishActivity =
                 arguments?.getBoolean(ARGUMENT_FINISH_ACTIVITY) ?: false
             return AlertDialog.Builder(activity)
-                .setMessage("R.string.permission_rationale_location")
+                .setMessage("This permission is needed by our service.")
                 .setPositiveButton(android.R.string.ok) { dialog, which -> // After click on Ok, request the permission.
                     ActivityCompat.requestPermissions(
                         activity!!,

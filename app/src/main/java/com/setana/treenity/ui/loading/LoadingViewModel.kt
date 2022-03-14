@@ -25,6 +25,9 @@ class LoadingViewModel @Inject constructor(
     private val _userInfoLiveData: MutableLiveData<Response<LoginByFirebaseTokenResponseDTO>> = MutableLiveData()
     val userInfoLiveData: LiveData<Response<LoginByFirebaseTokenResponseDTO>> = _userInfoLiveData
 
+    private val _registerResponseLiveData: MutableLiveData<Response<Void>> = MutableLiveData()
+    val registerResponseLiveData: LiveData<Response<Void>> = _registerResponseLiveData
+
     private val _showErrorToast = MutableLiveData<Event<String>>()
     val showErrorToast: LiveData<Event<String>> = _showErrorToast
 
@@ -43,4 +46,18 @@ class LoadingViewModel @Inject constructor(
             _userInfoLiveData.postValue(response)
         }
     }
+
+    fun registerCurrentFirebaseUser(registerCurrentFirebaseUserRequestDTO: RegisterCurrentFirebaseUserRequestDTO) =
+        viewModelScope.launch(Dispatchers.Main) {
+            val handler = CoroutineExceptionHandler { _, throwable ->
+                setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+                throwable.message?.let { Log.d("SignInViewModel.kt", it) }
+            }
+
+            withContext(Dispatchers.IO + handler) {
+                val response =
+                    userRepository.registerCurrentFirebaseUser(registerCurrentFirebaseUserRequestDTO)
+                _registerResponseLiveData.postValue(response)
+            }
+        }
 }

@@ -1,19 +1,28 @@
 package com.setana.treenity.ui.loading
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.airbnb.lottie.LottieDrawable
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.setana.treenity.R
+import com.setana.treenity.data.api.dto.RegisterCurrentFirebaseUserRequestDTO
 import com.setana.treenity.databinding.ActivityLoadingBinding
 import com.setana.treenity.ui.ar.ArActivity
 import com.setana.treenity.ui.signin.SignInActivity
@@ -24,17 +33,18 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class LoadingActivity : AppCompatActivity() {
+    private lateinit var auth: FirebaseAuth
     private var permissionDenied = false
     private lateinit var activityLoadingBinding: ActivityLoadingBinding
     private val loadingViewModel: LoadingViewModel by viewModels()
 
-    // sensor permission
-    private val MY_PERMISSION_ACCESS_ALL = 100
-    val permission = arrayOf(Manifest.permission.ACTIVITY_RECOGNITION)
-
     companion object {
         private const val TAG = "LoadingActivity"
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+        private val permissions = arrayOf(
+            Manifest.permission.ACTIVITY_RECOGNITION,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        private const val PERMISSION_REQUEST_CODE = 1
     }
 
     /**
@@ -51,12 +61,7 @@ class LoadingActivity : AppCompatActivity() {
         setupUI()
         setupViewModel()
 
-        // 걷는 것 인식하기 위한 권한 요청
-        ActivityCompat.requestPermissions(this, permission, MY_PERMISSION_ACCESS_ALL)
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) { // 허용 할 경우, 바로 서비스 on
-            Toast.makeText(this, "Activity Sensor is Activated", Toast.LENGTH_SHORT).show()
-        }
+        auth = Firebase.auth
     }
 
 
@@ -84,30 +89,77 @@ class LoadingActivity : AppCompatActivity() {
                 if (it.isSuccessful) {
                     Log.d("SetupViewModel", "로그인 성공")
 
-                    // If login success, start AR activity
+                    // If login success, check permission and start AR activity
                     val userId = it.body()?.userId
                     userId?.let {
                         // TODO Intent
                     }
-                    startArActivity()
+                    if (checkAndRequestPermissions()) {
+                        startStepDetectorService()
+                        // startArActivity()
+                    }
                 } else {
                     Log.d("SetupViewModel", response.message())
-
-                    // If login fail, start SignInActivity
-                    startSignInActivity()
+                    // If login fail
+                    showRegisterDialog()
                 }
             }
         })
-        loadingViewModel.showErrorToast.observe(this, EventObserver{
+
+        loadingViewModel.registerResponseLiveData.observe(this, { response ->
+            response?.let {
+                if (it.isSuccessful) {
+                    Log.d(TAG, "회원가입 성공")
+                    verifyUser()
+                } else {
+                    Log.d(TAG, "회원가입 실패")
+                    showRegisterDialog()
+                }
+            }
+        })
+
+        loadingViewModel.showErrorToast.observe(this, EventObserver {
             Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
         })
+    }
+
+    @SuppressLint("InflateParams")
+    private fun showRegisterDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_registration, null)
+        val usernameEditText = dialogView.findViewById<EditText>(R.id.et_username)
+        val userProfileImageView = dialogView.findViewById<ImageView>(R.id.iv_user_profile_image)
+        val currentUser = auth.currentUser
+
+        currentUser?.let { user ->
+            usernameEditText.setText(user.displayName)
+            userProfileImageView.load(user.photoUrl) {
+                transformations(CircleCropTransformation())
+            }
+        }
+
+        AlertDialog.Builder(this).apply {
+            setTitle("Registration")
+            setView(dialogView)
+            setPositiveButton(android.R.string.ok) { _, _ ->
+                val registerCurrentFirebaseUserRequestDTO =
+                    RegisterCurrentFirebaseUserRequestDTO(usernameEditText.text.toString())
+                currentUser?.let { _ ->
+                    loadingViewModel.registerCurrentFirebaseUser(
+                        registerCurrentFirebaseUserRequestDTO
+                    )
+                }
+            }
+            setNegativeButton(
+                android.R.string.cancel
+            ) { dialog, _ -> dialog.cancel() }
+            show()
+        }
     }
 
     /**
      * Auth
      */
     private fun verifyUser() {
-        val auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
         if (currentUser == null) {
             val intent = Intent(this, SignInActivity::class.java)
@@ -126,18 +178,34 @@ class LoadingActivity : AppCompatActivity() {
     /**
      * Permission & Start ArActivity
      */
-    private fun startArActivity() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
-            //val intent = Intent(this, ArActivity::class.java)
-            //startActivity(intent)
-        } else {
-            PermissionUtils.requestPermission(
-                this, LOCATION_PERMISSION_REQUEST_CODE,
-                Manifest.permission.ACCESS_FINE_LOCATION, true
-            )
+    private fun checkAndRequestPermissions(): Boolean {
+        Log.d(TAG, "check permissions")
+        val listPermissionsNeeded = arrayListOf<String>()
+        permissions.forEach {
+            if (ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED) {
+                listPermissionsNeeded.add(it)
+            }
         }
+        if (listPermissionsNeeded.isNotEmpty()) {
+            Log.d(TAG, "listPermissionsNeeded isNotEmpty")
+            ActivityCompat.requestPermissions(
+                this,
+                listPermissionsNeeded.toTypedArray(),
+                PERMISSION_REQUEST_CODE
+            )
+            return false
+        }
+        return true
+    }
+
+    private fun startArActivity() {
+        val intent = Intent(this, ArActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun startStepDetectorService() {
+        val intent = Intent(this, StepDetectorService::class.java)
+        startService(intent)
     }
 
     override fun onRequestPermissionsResult(
@@ -145,32 +213,19 @@ class LoadingActivity : AppCompatActivity() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
+        if (requestCode != PERMISSION_REQUEST_CODE) {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
             return
         }
-        if (PermissionUtils.isPermissionGranted(
-                permissions,
-                grantResults,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
+        if (permissions.all {
+                ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
+            }
         ) {
-            Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
-            startArActivity()
+            Toast.makeText(this, "All Permission Granted", Toast.LENGTH_SHORT).show()
+            startStepDetectorService()
+            // startArActivity()
         } else {
             permissionDenied = true
-        }
-
-        // Physical Activity 권한 승인 여부
-        if (requestCode > 0) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED) {
-                Toast.makeText(this, "You can address your authorization by clicking setting icon", Toast.LENGTH_SHORT).show()
-            } else { // 승인을 했다면
-                val intent = Intent(this, StepDetectorService::class.java)
-                startService(intent)
-
-                Toast.makeText(this, "Activity Sensor is Activated", Toast.LENGTH_SHORT).show()
-            }
         }
     }
 
@@ -184,6 +239,6 @@ class LoadingActivity : AppCompatActivity() {
 
     private fun showMissingPermissionError() {
         PermissionUtils.PermissionDeniedDialog.newInstance(true)
-            .show(supportFragmentManager, "dialog")
+            .show(supportFragmentManager, "Missing Permission")
     }
 }

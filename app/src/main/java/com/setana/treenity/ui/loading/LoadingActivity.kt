@@ -23,6 +23,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.setana.treenity.R
 import com.setana.treenity.data.api.dto.RegisterCurrentFirebaseUserRequestDTO
+import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
 import com.setana.treenity.databinding.ActivityLoadingBinding
 import com.setana.treenity.ui.ar.ArActivity
 import com.setana.treenity.ui.signin.SignInActivity
@@ -30,6 +31,9 @@ import com.setana.treenity.util.EventObserver
 import com.setana.treenity.util.PermissionUtils
 import com.setana.treenity.util.StepDetectorService
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.HashMap
 
 @AndroidEntryPoint
 class LoadingActivity : AppCompatActivity() {
@@ -64,9 +68,8 @@ class LoadingActivity : AppCompatActivity() {
         auth = Firebase.auth
     }
 
-
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         verifyUser()
     }
 
@@ -92,16 +95,31 @@ class LoadingActivity : AppCompatActivity() {
                     // If login success, check permission and start AR activity
                     val userId = it.body()?.userId
                     userId?.let {
-                        // TODO Intent
-                    }
-                    if (checkAndRequestPermissions()) {
-                        startStepDetectorService()
-                        // startArActivity()
+                        val dateWalk = HashMap<String, String>()
+                        dateWalk[SimpleDateFormat("yyyy-MM-dd").format(Date())] = "1000"
+                        dateWalk["2022-03-16"] = "2000"
+                        dateWalk["2022-03-17"] = "3000"
+                        val updateUserWalkLogsRequestDTO = UpdateUserWalkLogsRequestDTO(dateWalk)
+                        loadingViewModel.updateUserWalkLogs(userId.toString(), updateUserWalkLogsRequestDTO)
                     }
                 } else {
                     Log.d("SetupViewModel", response.message())
                     // If login fail
                     showRegisterDialog()
+                }
+            }
+        })
+
+        loadingViewModel.updateWalkLogsResponseLiveData.observe(this, { response ->
+            response?.let {
+                if (it.isSuccessful) {
+                    Log.d(TAG, "걸음 수 전송 성공")
+                    if (checkAndRequestPermissions()) {
+                        startStepDetectorService()
+                        // startArActivity()
+                    }
+                } else {
+                    Log.d(TAG, "걸음 수 전송 실패")
                 }
             }
         })

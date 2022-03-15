@@ -17,7 +17,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Treenity">
+        android:theme="@style/BaseAppTheme">
 
         <activity android:name=".ui.store.StoreActivity" />
 
@@ -31,7 +31,8 @@
 
         <activity
             android:name=".ui.loading.LoadingActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -27,7 +27,7 @@ class ArViewModel @Inject constructor(
     val showErrorToast: LiveData<Event<String>> = _showErrorToast
 
     private fun setToastMessage(content: String) {
-        _showErrorToast.value = Event(content)
+        _showErrorToast.postValue(Event(content))
     }
 
     fun listAroundTrees(lat: Double, lng: Double) = viewModelScope.launch(Dispatchers.Main) {

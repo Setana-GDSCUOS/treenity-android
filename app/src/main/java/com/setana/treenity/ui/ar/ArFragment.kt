@@ -190,6 +190,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
      * 메뉴나 씨앗심기 동작등을 작성할 때 사용 가능
      * */
     private fun createSeed(anchor: Anchor) {
+        configureSession()
         isLoading = true
         modelNode = ArNode(
             modelGlbFileLocation = "models/sphere.glb",
@@ -316,7 +317,8 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                 clipboardManager.setPrimaryClip(clipData)
                 Toast.makeText(requireContext(), "클립보드로 앵커의 아이디가 전송되었습니다.", Toast.LENGTH_SHORT).show()
                 // 데이터 공유받아서 다 들어가야 됨
-                val postTreeDTO= PostTreeDTO(1L,"default","nunu","yuzuriha",anchor.cloudAnchorId)
+
+                val postTreeDTO= PostTreeDTO(mLastLocation!!.longitude,mLastLocation!!.latitude,anchor.cloudAnchorId,0)
                 arViewModel.postHostedTree(postTreeDTO)
 
             }else if(anchorState == CloudAnchorState.ERROR_HOSTING_DATASET_PROCESSING_FAILED || anchorState == CloudAnchorState.ERROR_INTERNAL){
@@ -553,7 +555,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
     private fun setUpViewModel() {
         // 세션은 빠르게 세팅해줘야 안 튕기고 잘 돌아감 여기서 하는 것도 안 될 수 있음
-        configureSession()
+
         arViewModel.treeListLiveData.observe(viewLifecycleOwner) { treeList ->
             treeList?.let { it ->
                 for (arTree in it) {

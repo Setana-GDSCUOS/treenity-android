@@ -8,5 +8,5 @@ interface TreeRepository {
     suspend fun getAroundTrees(lat: Double, lng: Double): Response<List<GetAroundTreeResponseDTO>>
     suspend fun getAroundArTrees(lat: Double, lng: Double): Response<List<GetAroundArTreeResponseDTO>>
     // Interface 방식의 장점? 가독성인가
-    suspend fun postTree(postTreeDTO: PostTreeDTO) : Response<PostTreeResponseDTO>
+    suspend fun postTree(postTreeDTO: PostTreeDTO) : Call<PostTreeDTO>
 }

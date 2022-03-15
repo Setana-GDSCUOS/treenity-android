@@ -1,18 +1,24 @@
 package com.setana.treenity.data.api.dto
 
+import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 data class PostTreeDTO (
-    val longitude: Double,
-    val latitude: Double,
+    @SerializedName("cloudAnchorID")
     val cloudAnchorID: String,
+    @SerializedName("latitude")
+    val latitude: Double,
+    @SerializedName("longitude")
+    val longitude: Double,
+    @SerializedName("name")
+    val treeName : String,
     //val userId: Long,
-    val userItemId: Long,
+    @SerializedName("userItemId")
+    val userItemId: Long
     //val userName: String
-    // val treeName : String,
 ) : Serializable {
     companion object {
-        val EMPTY = PostTreeDTO(0.0,0.0,"",0)
+        val EMPTY = PostTreeDTO("",0.0,0.0,"",0)
         //val EMPTY = PostTreeDTO(0, 0.0, 0.0, "", 0.0, 0, "", "")
     }
 }

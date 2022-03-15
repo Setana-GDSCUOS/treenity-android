@@ -318,7 +318,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                 Toast.makeText(requireContext(), "클립보드로 앵커의 아이디가 전송되었습니다.", Toast.LENGTH_SHORT).show()
                 // 데이터 공유받아서 다 들어가야 됨
 
-                val postTreeDTO= PostTreeDTO(mLastLocation!!.longitude,mLastLocation!!.latitude,anchor.cloudAnchorId,0)
+                val postTreeDTO= PostTreeDTO(anchor.cloudAnchorId,mLastLocation!!.latitude,mLastLocation!!.longitude,"RAON",0)
                 arViewModel.postHostedTree(postTreeDTO)
 
             }else if(anchorState == CloudAnchorState.ERROR_HOSTING_DATASET_PROCESSING_FAILED || anchorState == CloudAnchorState.ERROR_INTERNAL){

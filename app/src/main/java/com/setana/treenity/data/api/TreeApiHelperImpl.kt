@@ -11,7 +11,7 @@ class TreeApiHelperImpl @Inject constructor(
 ): TreeApiHelper {
     override suspend fun getAroundTrees(lat: Double, lng: Double) = treeApiService.getAroundTrees(lat, lng)
     override suspend fun getAroundArTrees(lat: Double, lng: Double) = treeApiService.getAroundArTrees(lat, lng)
-    override suspend fun postTree(postTreeDTO: PostTreeDTO): Call<PostTreeDTO> = treeApiService.postTree(postTreeDTO)
+    override suspend fun postTree(postTreeDTO: PostTreeDTO): Response<Void> = treeApiService.postTree(postTreeDTO)
     override suspend fun waterTree(treeId: Long) {
         TODO("Not yet implemented")
     }

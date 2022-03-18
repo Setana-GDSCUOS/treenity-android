@@ -4,14 +4,14 @@ import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 data class PostTreeDTO (
-    @SerializedName("cloudAnchorID")
-    val cloudAnchorID: String,
+    @SerializedName("cloudAnchorId")
+    val cloudAnchorId: String,
     @SerializedName("latitude")
     val latitude: Double,
     @SerializedName("longitude")
     val longitude: Double,
     @SerializedName("name")
-    val treeName : String,
+    val name : String,
     //val userId: Long,
     @SerializedName("userItemId")
     val userItemId: Long

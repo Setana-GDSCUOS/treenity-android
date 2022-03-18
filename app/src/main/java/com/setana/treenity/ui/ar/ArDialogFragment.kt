@@ -11,8 +11,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
 
-
-// 클라우드 앵커 테스트를 위한 커스텀 다이얼로그
+// Todo 원래 테스트용 다이얼로그였는데 개조해서 물주기용 다이얼로그로 쓸 예정
 class ResolveDialogFragment : DialogFragment() {
     interface OkListener {
 

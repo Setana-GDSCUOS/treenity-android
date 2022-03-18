@@ -20,7 +20,6 @@ interface TreeApiService {
     ): Response<List<GetAroundArTreeResponseDTO>>
 
     @Headers("Content-Type: application/json")
-    @POST("users/1/trees") // API 상세 경로, format : json
-    suspend fun postTree(@Body postTreeDTO: PostTreeDTO
-    ): Call<PostTreeDTO>
+    @POST("trees") // API 상세 경로, format : json
+    suspend fun postTree(@Body postTreeDTO: PostTreeDTO): Response<Void>
 }

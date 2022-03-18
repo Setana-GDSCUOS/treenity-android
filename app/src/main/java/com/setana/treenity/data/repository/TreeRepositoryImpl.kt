@@ -16,6 +16,6 @@ class TreeRepositoryImpl @Inject constructor(
         remoteSource.getAroundTrees(lat, lng)
     override suspend fun getAroundArTrees(lat: Double, lng: Double): Response<List<GetAroundArTreeResponseDTO>> =
         remoteSource.getAroundArTrees(lat, lng)
-    override suspend fun postTree(postTreeDTO: PostTreeDTO): Call<PostTreeDTO> =
+    override suspend fun postTree(postTreeDTO: PostTreeDTO): Response<Void> =
         remoteSource.postTree(postTreeDTO)
 }

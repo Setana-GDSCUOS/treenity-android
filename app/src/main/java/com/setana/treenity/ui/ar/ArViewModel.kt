@@ -23,6 +23,9 @@ class ArViewModel @Inject constructor(
     private val _treeListLiveData: MutableLiveData<List<GetAroundArTreeResponseDTO>> = MutableLiveData()
     val treeListLiveData: LiveData<List<GetAroundArTreeResponseDTO>> = _treeListLiveData
 
+    //private val _treeIdLiveData: MutableLiveData<Long> = MutableLiveData()
+    //val treeIdLiveData: LiveData<Long> = _treeIdLiveData
+
     private val _showErrorToast = MutableLiveData<Event<String>>()
     val showErrorToast: LiveData<Event<String>> = _showErrorToast
 
@@ -53,10 +56,24 @@ class ArViewModel @Inject constructor(
         }
         withContext(Dispatchers.IO + handler) {
             val response = treeRepository.postTree(dto)
-            if (response.isSuccessful) {
-                // Todo 등록된 나무의 id를 받아서 View 에 전송 - 이건 live 가 필요할까? 아무래도 리로드가...
-            } else {
-                setToastMessage(response.message())
+            /*if (response.code() == 200) {
+                //_treeIdLiveData.postValue(response.body)
+            } else if(response.code()==500){
+
+            }
+            else{
+                setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            }*/
+            when(response.code()){
+              200  -> {
+
+              }
+              500 -> {
+                  setToastMessage("주변에 나무가 너무 많습니다. 다른 곳에 나무를 심어주세요")
+              }
+              else -> {
+
+              }
             }
         }
     }

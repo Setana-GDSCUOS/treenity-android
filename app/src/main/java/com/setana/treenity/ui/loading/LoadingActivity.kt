@@ -21,7 +21,11 @@ import com.airbnb.lottie.LottieDrawable
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.setana.treenity.R
+import com.setana.treenity.TreenityApplication.Companion.DAILY_WALK_LOG
+import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.data.api.dto.RegisterCurrentFirebaseUserRequestDTO
 import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
 import com.setana.treenity.databinding.ActivityLoadingBinding
@@ -29,7 +33,8 @@ import com.setana.treenity.ui.ar.ArActivity
 import com.setana.treenity.ui.signin.SignInActivity
 import com.setana.treenity.util.EventObserver
 import com.setana.treenity.util.PermissionUtils
-import com.setana.treenity.util.StepDetectorService
+import com.setana.treenity.service.StepDetectorService
+import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
@@ -95,11 +100,19 @@ class LoadingActivity : AppCompatActivity() {
                     // If login success, check permission and start AR activity
                     val userId = it.body()?.userId
                     userId?.let {
-                        val dateWalk = HashMap<String, String>()
-                        dateWalk[SimpleDateFormat("yyyy-MM-dd").format(Date())] = "1000"
-                        dateWalk["2022-03-16"] = "2000"
-                        dateWalk["2022-03-17"] = "3000"
-                        val updateUserWalkLogsRequestDTO = UpdateUserWalkLogsRequestDTO(dateWalk)
+                        // 저장된 걸음 수 불러오기 (from sharedpref)
+                        val hashMapString = PREFS.getString(DAILY_WALK_LOG_KEY, "")
+                        val type = object: TypeToken<HashMap<String, String>>(){}.type
+                        val hashMap = Gson().fromJson<HashMap<String, String>>(hashMapString, type)
+
+                        // Sharedpref
+                        Log.d(TAG, "hashMapString : $hashMap")
+                        // Global Variable
+                        Log.d(TAG, "Global val : $DAILY_WALK_LOG")
+                        Toast.makeText(this, "hashMapString : $hashMap \n Global val : $DAILY_WALK_LOG",Toast.LENGTH_SHORT).show()
+
+                        val updateUserWalkLogsRequestDTO = UpdateUserWalkLogsRequestDTO(hashMap)
+
                         loadingViewModel.updateUserWalkLogs(userId.toString(), updateUserWalkLogsRequestDTO)
                     }
                 } else {

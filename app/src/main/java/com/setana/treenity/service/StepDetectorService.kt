@@ -3,17 +3,14 @@ package com.setana.treenity.service
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.IBinder
-import androidx.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
 import com.google.gson.Gson
-import com.setana.treenity.TreenityApplication
 import com.setana.treenity.TreenityApplication.Companion.DAILY_WALK_LOG
 import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY

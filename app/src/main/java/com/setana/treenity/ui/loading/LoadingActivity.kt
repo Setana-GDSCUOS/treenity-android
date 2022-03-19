@@ -24,7 +24,6 @@ import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.setana.treenity.R
-import com.setana.treenity.TreenityApplication.Companion.DAILY_WALK_LOG
 import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.data.api.dto.RegisterCurrentFirebaseUserRequestDTO
 import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
@@ -35,6 +34,7 @@ import com.setana.treenity.ui.signin.SignInActivity
 import com.setana.treenity.util.EventObserver
 import com.setana.treenity.util.PermissionUtils
 import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
+import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
@@ -55,26 +55,35 @@ class LoadingActivity : AppCompatActivity() {
         private const val PERMISSION_REQUEST_CODE = 1
     }
 
-    /**
-     * 1. Activity Setup
-     * 2. Auth
-     * 3. Permission
-     * 4. Send Walk Data
-     * 5. Service Check?
-     * 6. Start Activity
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setupUI()
         setupViewModel()
-
-        auth = Firebase.auth
+        initializeAuth()
     }
 
     override fun onStart() {
         super.onStart()
         verifyUser()
+    }
+
+    /**
+     * Start Activity or Service Methods
+     */
+    private fun startSignInActivity() {
+        val intent = Intent(this, SignInActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun startArActivity() {
+        val intent = Intent(this, ArActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun startStepDetectorService() {
+        val intent = Intent(this, StepDetectorService::class.java)
+        startService(intent)
     }
 
     /**
@@ -98,9 +107,13 @@ class LoadingActivity : AppCompatActivity() {
 
                     // If login success, check permission and start AR activity
                     val userId = it.body()?.userId
-                    userId?.let {
+                    userId?.let { uid ->
+                        // User ID 저장
+                        // 꺼내쓸 때는 PREFS.getLong(USER_ID_KEY, -1) 후 -1인지 아닌지 확인
+                        // 로그아웃 시 setLong -1 필요
+                        PREFS.setLong(USER_ID_KEY, uid)
 
-                        // 저장된 걸음 수 불러오기 (from sharedpref)
+                        // 저장된 걸음 수 불러오기 (from SharedPreference)
                         val hashMapString = PREFS.getString(DAILY_WALK_LOG_KEY, "")
                         val type = object : TypeToken<HashMap<String, String>>() {}.type
                         val hashMap = Gson().fromJson<HashMap<String, String>>(hashMapString, type)
@@ -111,20 +124,10 @@ class LoadingActivity : AppCompatActivity() {
                                 ).format(Date()) to "0"
                             )
 
-                        // Sharedpref
-                        Log.d(TAG, "hashMapString : $hashMap")
-                        // Global Variable
-                        Log.d(TAG, "Global val : $DAILY_WALK_LOG")
-                        Toast.makeText(
-                            this,
-                            "hashMapString : $hashMap \n Global val : $DAILY_WALK_LOG",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
                         val updateUserWalkLogsRequestDTO = UpdateUserWalkLogsRequestDTO(hashMap)
 
                         loadingViewModel.updateUserWalkLogs(
-                            userId.toString(),
+                            uid.toString(),
                             updateUserWalkLogsRequestDTO
                         )
                     }
@@ -179,47 +182,46 @@ class LoadingActivity : AppCompatActivity() {
             userProfileImageView.load(user.photoUrl) {
                 transformations(CircleCropTransformation())
             }
-        }
 
-        AlertDialog.Builder(this).apply {
-            setTitle("Registration")
-            setView(dialogView)
-            setPositiveButton(android.R.string.ok) { _, _ ->
-                val registerCurrentFirebaseUserRequestDTO =
-                    RegisterCurrentFirebaseUserRequestDTO(usernameEditText.text.toString())
-                currentUser?.let { _ ->
+            AlertDialog.Builder(this).apply {
+                setTitle("Registration")
+                setView(dialogView)
+                setPositiveButton(android.R.string.ok) { _, _ ->
+                    val registerCurrentFirebaseUserRequestDTO =
+                        RegisterCurrentFirebaseUserRequestDTO(usernameEditText.text.toString())
                     loadingViewModel.registerCurrentFirebaseUser(
                         registerCurrentFirebaseUserRequestDTO
                     )
                 }
+                setNegativeButton(
+                    android.R.string.cancel
+                ) { dialog, _ -> dialog.cancel() }
+                show()
             }
-            setNegativeButton(
-                android.R.string.cancel
-            ) { dialog, _ -> dialog.cancel() }
-            show()
         }
     }
 
     /**
      * Auth
      */
+    private fun initializeAuth() {
+        // Firebase 오브젝트 초기화
+        auth = Firebase.auth
+        // 앱 데이터 삭제 후, 혹은 외부에서 로그아웃 이후 다른 계정으로 로그인 시 이전 uid로 요청하는 현상을 방지하기 위해 초기화
+        PREFS.setLong(USER_ID_KEY, -1)
+    }
+
     private fun verifyUser() {
         val currentUser = auth.currentUser
         if (currentUser == null) {
             startSignInActivity()
         } else {
-            // val userRequest = RegisterCurrentFirebaseUserRequestDTO(currentUser.displayName.toString())
             loadingViewModel.loginByFirebaseToken()
         }
     }
 
-    private fun startSignInActivity() {
-        val intent = Intent(this, SignInActivity::class.java)
-        startActivity(intent)
-    }
-
     /**
-     * Permission & Start ArActivity
+     * Permission Check
      */
     private fun checkAndRequestPermissions(): Boolean {
         Log.d(TAG, "check permissions")
@@ -239,16 +241,6 @@ class LoadingActivity : AppCompatActivity() {
             return false
         }
         return true
-    }
-
-    private fun startArActivity() {
-        val intent = Intent(this, ArActivity::class.java)
-        startActivity(intent)
-    }
-
-    private fun startStepDetectorService() {
-        val intent = Intent(this, StepDetectorService::class.java)
-        startService(intent)
     }
 
     override fun onRequestPermissionsResult(

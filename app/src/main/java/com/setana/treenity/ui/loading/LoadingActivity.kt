@@ -29,16 +29,15 @@ import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.data.api.dto.RegisterCurrentFirebaseUserRequestDTO
 import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
 import com.setana.treenity.databinding.ActivityLoadingBinding
+import com.setana.treenity.service.StepDetectorService
 import com.setana.treenity.ui.ar.ArActivity
 import com.setana.treenity.ui.signin.SignInActivity
 import com.setana.treenity.util.EventObserver
 import com.setana.treenity.util.PermissionUtils
-import com.setana.treenity.service.StepDetectorService
 import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.HashMap
 
 @AndroidEntryPoint
 class LoadingActivity : AppCompatActivity() {
@@ -100,20 +99,34 @@ class LoadingActivity : AppCompatActivity() {
                     // If login success, check permission and start AR activity
                     val userId = it.body()?.userId
                     userId?.let {
+
                         // 저장된 걸음 수 불러오기 (from sharedpref)
                         val hashMapString = PREFS.getString(DAILY_WALK_LOG_KEY, "")
-                        val type = object: TypeToken<HashMap<String, String>>(){}.type
+                        val type = object : TypeToken<HashMap<String, String>>() {}.type
                         val hashMap = Gson().fromJson<HashMap<String, String>>(hashMapString, type)
+                            ?: hashMapOf(
+                                SimpleDateFormat(
+                                    "yyyy-MM-dd",
+                                    Locale.US
+                                ).format(Date()) to "0"
+                            )
 
                         // Sharedpref
                         Log.d(TAG, "hashMapString : $hashMap")
                         // Global Variable
                         Log.d(TAG, "Global val : $DAILY_WALK_LOG")
-                        Toast.makeText(this, "hashMapString : $hashMap \n Global val : $DAILY_WALK_LOG",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this,
+                            "hashMapString : $hashMap \n Global val : $DAILY_WALK_LOG",
+                            Toast.LENGTH_SHORT
+                        ).show()
 
                         val updateUserWalkLogsRequestDTO = UpdateUserWalkLogsRequestDTO(hashMap)
 
-                        loadingViewModel.updateUserWalkLogs(userId.toString(), updateUserWalkLogsRequestDTO)
+                        loadingViewModel.updateUserWalkLogs(
+                            userId.toString(),
+                            updateUserWalkLogsRequestDTO
+                        )
                     }
                 } else {
                     Log.d("SetupViewModel", response.message())
@@ -193,8 +206,7 @@ class LoadingActivity : AppCompatActivity() {
     private fun verifyUser() {
         val currentUser = auth.currentUser
         if (currentUser == null) {
-            val intent = Intent(this, SignInActivity::class.java)
-            startActivity(intent)
+            startSignInActivity()
         } else {
             // val userRequest = RegisterCurrentFirebaseUserRequestDTO(currentUser.displayName.toString())
             loadingViewModel.loginByFirebaseToken()

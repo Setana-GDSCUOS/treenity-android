@@ -7,6 +7,7 @@ class PreferenceManager(context: Context) {
     companion object {
         const val PREFS_FILENAME = "treenity_preference"
         const val DAILY_WALK_LOG_KEY = "DAILY_WALK_LOG_KEY"
+        const val USER_ID_KEY = "USER_ID_KEY"
     }
     private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_FILENAME, 0)
 

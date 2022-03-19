@@ -1,18 +1,21 @@
-package com.setana.treenity.util
+package com.setana.treenity.service
 
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.IBinder
-import androidx.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
-import com.setana.treenity.TreenityApplication
+import com.google.gson.Gson
+import com.setana.treenity.TreenityApplication.Companion.DAILY_WALK_LOG
+import com.setana.treenity.TreenityApplication.Companion.PREFS
+import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
+import java.text.SimpleDateFormat
+import java.util.*
 
 class StepDetectorService : Service(), SensorEventListener {
 
@@ -51,22 +54,29 @@ class StepDetectorService : Service(), SensorEventListener {
         // 안 넘었을 경우, 그대로 저장
         if(mSteps >= 100) {
             mSteps = (mSteps / 100) * 100
-            TreenityApplication.steps = mSteps
-
-            val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
-            val editor: SharedPreferences.Editor = sharedPref.edit()
-
-            editor.putInt("steps", mSteps) // steps 이라는 키워드로 저장
+            storeStepToGlobalHashMap(mSteps)
+            storeStepToSharedPreference()
         }
 
-        TreenityApplication.steps = mSteps
+        storeStepToGlobalHashMap(mSteps)
 
         // 로그 기록용
-        Log.d("tag", "onSensorChanged: your step feature is ${TreenityApplication.steps}")
+        Log.d("tag", "onSensorChanged: your step feature is ${DAILY_WALK_LOG[getDateString()]}")
     }
 
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
         Log.d("SERVICE", p0.toString())
+    }
+
+    private fun getDateString() = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
+
+    private fun storeStepToGlobalHashMap(step: Int) {
+        DAILY_WALK_LOG[getDateString()] = step.toString()
+    }
+
+    private fun storeStepToSharedPreference() {
+        val hashMapString = Gson().toJson(DAILY_WALK_LOG)
+        PREFS.setString(DAILY_WALK_LOG_KEY, hashMapString)
     }
 
 }

@@ -4,26 +4,30 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.airbnb.lottie.LottieDrawable
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.setana.treenity.R
 import com.setana.treenity.data.api.dto.GetAroundTreeResponseDTO
@@ -33,9 +37,6 @@ import com.setana.treenity.util.PermissionUtils.PermissionDeniedDialog.Companion
 import com.setana.treenity.util.PermissionUtils.isPermissionGranted
 import com.setana.treenity.util.PermissionUtils.requestPermission
 import dagger.hilt.android.AndroidEntryPoint
-import com.google.android.gms.maps.model.CircleOptions
-
-import com.google.android.gms.maps.model.Circle
 
 
 @AndroidEntryPoint
@@ -46,11 +47,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     private lateinit var googleMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
+    private lateinit var loadingAnimationFrameLayout: FrameLayout
     private var lastKnownLocation: Location? = null
     private var permissionDenied = false
     private var isFABOpen = false
-
     private val mapViewModel: MapViewModel by viewModels()
+    private val cancellationTokenSource = CancellationTokenSource()
 
     companion object {
         private const val TAG = "MapActivity"
@@ -64,16 +66,45 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         setupViewModel()
     }
 
+    override fun onStop() {
+        super.onStop()
+        cancellationTokenSource.cancel()
+    }
+
     private fun setupUI() {
         setupViewBinding()
+        setupLoadingAnimationFrameLayout()
+        showLoadingAnimation()
         setupMap()
         setupBottomSheet()
         setupFloatingActionButton()
     }
 
+    private fun showLoadingAnimation() {
+        loadingAnimationFrameLayout.visibility = View.VISIBLE
+        playLottieAnimation()
+    }
+
+    private fun hideLoadingAnimation() {
+        loadingAnimationFrameLayout.visibility = View.INVISIBLE
+//        val lottieAnimationView = activityMapBinding.lottieLoading
+//        lottieAnimationView.pauseAnimation()
+    }
+
+    private fun playLottieAnimation() {
+        val lottieAnimationView = activityMapBinding.lottieLoading
+        lottieAnimationView.setAnimation("loading.json")
+        lottieAnimationView.repeatCount = LottieDrawable.INFINITE
+        lottieAnimationView.playAnimation()
+    }
+
     private fun setupViewBinding() {
         activityMapBinding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(activityMapBinding.root)
+    }
+
+    private fun setupLoadingAnimationFrameLayout() {
+        loadingAnimationFrameLayout = activityMapBinding.frameLottieHolder
     }
 
     private fun setupMap() {
@@ -172,13 +203,28 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED
         ) {
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location: Location? ->
+            showLoadingAnimation()
+            if (lastKnownLocation == null) {
+                fusedLocationClient.getCurrentLocation(
+                    PRIORITY_HIGH_ACCURACY,
+                    cancellationTokenSource.token
+                ).addOnSuccessListener { location ->
                     lastKnownLocation = location
                     lastKnownLocation?.let {
                         mapViewModel.listAroundTrees(it.latitude, it.longitude)
                     }
+                }.addOnFailureListener {
+                    Toast.makeText(this, "현재 위치를 불러오는 중 문제가 발생하였습니다.", Toast.LENGTH_SHORT).show()
                 }
+            } else {
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location: Location? ->
+                        lastKnownLocation = location
+                        lastKnownLocation?.let {
+                            mapViewModel.listAroundTrees(it.latitude, it.longitude)
+                        }
+                    }
+            }
         }
     }
 
@@ -213,11 +259,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                                 )
                             )
                             .radius(500.0)
-                            .strokeColor(Color.BLUE)
-                            .fillColor(0x220000FF)
+                            .strokeColor(0xFF7FB414.toInt())
+                            .fillColor(0x22A0E418)
                     )
                 }
             }
+            hideLoadingAnimation()
         })
 
         mapViewModel.showErrorToast.observe(this, EventObserver {

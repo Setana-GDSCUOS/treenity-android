@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="10dp"
-    android:background="@xml/rounded"
+    android:background="@xml/map_bottomsheet_bg"
     android:orientation="vertical"
     android:padding="15dp"
     app:behavior_hideable="true"

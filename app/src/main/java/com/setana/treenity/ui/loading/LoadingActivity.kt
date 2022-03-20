@@ -150,6 +150,10 @@ class LoadingActivity : AppCompatActivity() {
             response?.let {
                 if (it.isSuccessful) {
                     Log.d(TAG, "걸음 수 전송 성공")
+                    // SharedPreference 초기화
+                    PREFS.setString(DAILY_WALK_LOG_KEY, "")
+
+                    // 권한 확인 후 Activity 및 Service 실행
                     if (checkAndRequestPermissions()) {
                         startStepDetectorService()
                         // TODO onRequestPermissionsResult 코드 중복 제거

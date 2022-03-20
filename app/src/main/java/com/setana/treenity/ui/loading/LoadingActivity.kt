@@ -213,6 +213,7 @@ class LoadingActivity : AppCompatActivity() {
                 loadingViewModel.registerCurrentFirebaseUser(
                     registerCurrentFirebaseUserRequestDTO
                 )
+                dialog.dismiss()
             }
 
             dialog.setOnCancelListener {

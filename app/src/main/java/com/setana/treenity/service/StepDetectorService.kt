@@ -11,6 +11,7 @@ import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.setana.treenity.TreenityApplication.Companion.DAILY_WALK_LOG
 import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
@@ -28,40 +29,51 @@ class StepDetectorService : Service(), SensorEventListener {
 
         if(countSensor != null){
             sensorManager.registerListener(this, countSensor, SensorManager.SENSOR_DELAY_NORMAL)
+            /*
+            1.SENSOR_DELAY_FASTEST  0 ms 최대한 빠르게
+            2.SENSOR_DELAY_GAME     20,000ms 게임에 적합한 속도
+            3.SENSOR_DELAY_UI       60,000ms UI 수정에 적합한 속도
+            4.SENSOR_DELAY_NORMAL   200,000ms 화면 방향 변화를 모니터링하기에 적합한 속도
+             */
         }else{
             Toast.makeText(this, "Sensor Not Detected", Toast.LENGTH_SHORT).show()
         }
 
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     override fun onBind(p0: Intent?): IBinder? {
         return null
     }
 
+    private var mSteps = 0
+    private var mStepBuffer = 0
     override fun onSensorChanged(sensor: SensorEvent?) {
-
-        if (stepsBeforeDetection < 1) {
-            // initial value
-            if (sensor != null) {
-                stepsBeforeDetection = sensor.values[0].toInt()
-            }
-        }
-        // 리셋 안된 값 + 현재값 - 리셋 안된 값
-        var mSteps = sensor!!.values[0].toInt() - stepsBeforeDetection
-
-        // 100 넘었을 때 100단위로 잘라서 저장할 것 + sharedPreference
-        // 안 넘었을 경우, 그대로 저장
-        if(mSteps >= 100) {
-            mSteps = (mSteps / 100) * 100
+        sensor?.let {
+            val currentDetectedSteps =
+                if (stepsBeforeDetection == 0) stepsBeforeDetection else it.values[0].toInt() - stepsBeforeDetection
+            mSteps += currentDetectedSteps
+            mStepBuffer += currentDetectedSteps
             storeStepToGlobalHashMap(mSteps)
-            storeStepToSharedPreference()
+            if (mStepBuffer >= 10) {
+                storeStepToSharedPreference()
+                mStepBuffer = 0
+            }
+            stepsBeforeDetection = it.values[0].toInt()
         }
-
-        storeStepToGlobalHashMap(mSteps)
-
         // 로그 기록용
-        Log.d("tag", "onSensorChanged: your step feature is ${DAILY_WALK_LOG[getDateString()]}")
+        // Log.d("tag", "onSensorChanged: your step feature is ${DAILY_WALK_LOG[getDateString()]}")
+
+        val hashMapString = PREFS.getString(DAILY_WALK_LOG_KEY, "")
+        val type = object : TypeToken<HashMap<String, String>>() {}.type
+        val hashMap = Gson().fromJson<HashMap<String, String>>(hashMapString, type)
+            ?: hashMapOf(
+                SimpleDateFormat(
+                    "yyyy-MM-dd",
+                    Locale.US
+                ).format(Date()) to "0"
+            )
+        Log.d("tag", "onSensorChanged: your step feature is $hashMap")
     }
 
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {

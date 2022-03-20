@@ -1,6 +1,6 @@
 package com.setana.treenity.service
 
-import android.app.Service
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
@@ -17,10 +17,20 @@ import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.core.app.NotificationCompat
+import android.app.*
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+import com.setana.treenity.ui.loading.LoadingActivity
+
 
 class StepDetectorService : Service(), SensorEventListener {
 
     private var stepsBeforeDetection = 0
+
+    companion object {
+        const val CHANNEL_ID = "channel_id"
+    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
@@ -39,7 +49,53 @@ class StepDetectorService : Service(), SensorEventListener {
             Toast.makeText(this, "Sensor Not Detected", Toast.LENGTH_SHORT).show()
         }
 
+        // 신체 활동 센서 켜져 있는 거 확인되면 notification 띄움 -> "Pedometer service is running" + 유저가 권한 끄면 그 즉시 notification 사라지는 거 확인!
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
+            showNotification()
+        }
+
         return START_NOT_STICKY
+    }
+
+    private fun showNotification() {
+
+        val intent = Intent(applicationContext, LoadingActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            applicationContext,
+            0, intent, 0
+        )
+
+        val notification = NotificationCompat.Builder(
+            applicationContext,
+            CHANNEL_ID
+        )
+            .setContentTitle("Notification")
+            .setContentText("Pedometer service is running")
+            .setSmallIcon(com.setana.treenity.R.drawable.mypage_settings_alarm_icon)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
+            .setDefaults(Notification.FLAG_NO_CLEAR) // swipe 해도 지워지지 않음
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC) // 잠금화면에도 보여줌
+        
+        val channelName = "Channel Name"
+        val channelDescription = "Channel Description"
+        val channelImportance = NotificationManager.IMPORTANCE_HIGH
+
+        val channel = NotificationChannel(CHANNEL_ID, channelName, channelImportance).apply {
+            description = channelDescription
+        }
+
+        val notificationManager = applicationContext.getSystemService(
+            Context.NOTIFICATION_SERVICE
+        ) as NotificationManager
+
+        notificationManager.createNotificationChannel(channel)
+
+        startForeground(10, notification.build()) // swipe 해도 사라지지 않음 -> 설정으로 끌 수 있음
+        // TODO id가 뭘 의미하는 지 잘 모르겠음..
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -89,6 +145,12 @@ class StepDetectorService : Service(), SensorEventListener {
     private fun storeStepToSharedPreference() {
         val hashMapString = Gson().toJson(DAILY_WALK_LOG)
         PREFS.setString(DAILY_WALK_LOG_KEY, hashMapString)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        
+        // TODO: 발걸음 수 POST 요청
     }
 
 }

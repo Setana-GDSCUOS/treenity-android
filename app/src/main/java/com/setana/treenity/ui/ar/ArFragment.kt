@@ -4,14 +4,10 @@ import android.Manifest
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.app.Application
-import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.Context.CLIPBOARD_SERVICE
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.location.Location
 import android.location.LocationRequest
 import android.os.Build
@@ -22,25 +18,17 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.CircleOptions
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.ar.core.Anchor
@@ -50,25 +38,18 @@ import com.google.ar.sceneform.Camera
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.setana.treenity.R
+import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.data.api.dto.*
-import com.setana.treenity.data.model.ArTree
-import com.setana.treenity.data.model.Tree
 import com.setana.treenity.databinding.ArFragmentBinding
-import com.setana.treenity.databinding.ArInfoDialogBinding
-import com.setana.treenity.ui.map.MapActivity
-import com.setana.treenity.ui.map.MapViewModel
 import com.setana.treenity.util.EventObserver
+import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.internal.aggregatedroot.codegen._com_setana_treenity_TreenityApplication
-import io.github.sceneview.SceneView
 import io.github.sceneview.ar.ArSceneView
 import io.github.sceneview.ar.arcore.ArSession
 import io.github.sceneview.ar.node.ArNode
 import io.github.sceneview.ar.node.CursorNode
-import io.github.sceneview.ar.scene.PlaneRenderer
 import io.github.sceneview.node.Node
 import io.github.sceneview.utils.doOnApplyWindowInsets
-import kotlin.reflect.typeOf
 
 
 /** Ar화면의 MainView를 담당하는 Fragment
@@ -119,14 +100,10 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     //테스트용
     lateinit var clipboardManager: ClipboardManager
 
-    // 수정요함
-    private val USER_ID_KEY = "userId"
-
-
 
     // 식별
     lateinit var sharedPreferences: SharedPreferences
-    var userId: Long = -1
+    val userId = PREFS.getLong(USER_ID_KEY, -1)
     var isLoggedIn: Boolean = false
     var once:Boolean = true
 
@@ -165,13 +142,8 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     }
 
     private fun setUpSharedData(){
-        sharedPreferences = requireActivity().getSharedPreferences(getString(R.string.preference_file_key),Context.MODE_PRIVATE)
-        sharedPreferences.getLong(USER_ID_KEY,-1)
-        val editor = sharedPreferences.edit()
-        //userId = sharedPreferences.getLong("userId",0)
-
         // Todo 하드코딩 여기있다!!!
-        userId = 1
+        //userId = 1
         if(userId != -1L){
             isLoggedIn = true
         }
@@ -422,8 +394,8 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                 // Todo 여기 아이템아이디 고유화 하드코딩
 
                 if(anchor.cloudAnchorId != null){
-                    val postTreeDTO= PostTreeDTO(anchor.cloudAnchorId,mLastLocation!!.latitude,mLastLocation!!.longitude,"BIMOON",userId,3)
-                    arViewModel.postHostedTree(postTreeDTO)
+                    val postTreeDTO= PostTreeRequestDTO(anchor.cloudAnchorId,mLastLocation!!.latitude,mLastLocation!!.longitude,"BIMOON",9)
+                    arViewModel.postHostedTree(userId,postTreeDTO)
                     // 리로드 하기 전에 먼저 심어진거는 삭제
                     modelNode!!.destroy()
                     clearView()
@@ -472,14 +444,20 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     @Synchronized
     private fun onResolvedAnchor(anchor:Anchor?, treeId: Long, level: Int){
         // 레벨 반영비율 + 상수로 크기 결정, 따로 value로 관리해도 좋을 것 같음
-        val fLevel = 0.5f*level.toFloat()
+        var fLevel = 0.5f*level.toFloat()
+        var modelPath = "models/sample.glb"
+        if (level ==2){
+            //Todo 나중에 이거 해시맵으로
+            modelPath = "models/arcorn_sample.glb"
+            fLevel*=0.005f
+        }
         if(anchor!=null){
             modelNode = ArNode(
                 //로드하는 모델의 종류는 서버에서 받아와야 함
-                modelGlbFileLocation = "models/sample.glb",
+                modelGlbFileLocation = modelPath,
                 context = requireContext(),
                 coroutineScope = lifecycleScope,
-                scales = Vector3(0.5f+fLevel,0.5f+fLevel,0.5f+fLevel),
+                scales = Vector3(0.3f+fLevel,0.3f+fLevel,0.3f+fLevel),
                 onModelLoaded = {
                     //.text = getString(R.string.hosted_tree)
                     //actionButton.icon = resources.getDrawable(R.drawable.ic_target)
@@ -492,7 +470,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
                 val tree = arViewModel.treeListLiveData.value?.find { it.treeId == treeId }
                 Log.d("interact",tree.toString())
-                arViewModel.getTreeInformation(treeId,treeId,userId)
+                arViewModel.getTreeInformation(treeId)
             }
             modelNode!!.anchor = anchor
             sceneView.addChild(modelNode!!)
@@ -549,7 +527,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             }
         }
     }
-    @SuppressLint ("missing permission")
+    @SuppressLint ("MissingPermission")
     protected fun startLocationUpdates() {
         //FusedLocationProviderClient의 인스턴스를 생성.
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
@@ -663,7 +641,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             }
         }
 
-        arViewModel.treeInformationLiveData.observe(viewLifecycleOwner){
+        arViewModel.treeInformationResponseLiveData.observe(viewLifecycleOwner){
             treeInformation ->
             treeInformation?.let{
                 createInteractDialog(it)
@@ -722,12 +700,12 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         }
     }
 
-    private fun createInteractDialog(treeInfo:GetTreeInformationDTO){
+    private fun createInteractDialog(treeInfoResponse:GetTreeInformationResponseDTO){
         // 커스텀 다이얼로그를 통한 나무 정보 획득, info 부분에는 나무 설명의 수정과 등록이 가능하도록
-        val isTreeOwner = treeInfo.user.userId == userId
-        Log.d("interact",treeInfo.toString())
+        val isTreeOwner = treeInfoResponse.user.userId == userId
+        Log.d("interact",treeInfoResponse.toString())
 
-        var oldInfo = PutTreeInfoDTO(treeInfo.bookmark,treeInfo.treeDescription,treeInfo.treeName)
+        var oldInfo = PutTreeInfoRequestDTO(treeInfoResponse.bookmark,treeInfoResponse.treeDescription,treeInfoResponse.treeName)
         if(oldInfo.treeDescription==null){
             oldInfo.treeDescription = "There is no description"
         }
@@ -735,40 +713,40 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             oldInfo.treeName = "No name"
         }
 
-        val arDialogFragment = ArDialogFragment(requireContext(),treeInfo,isTreeOwner)
+        val arDialogFragment = ArDialogFragment(requireContext(),treeInfoResponse,isTreeOwner)
         arDialogFragment.createDialog()
         arDialogFragment.setListener(object: ArDialogFragment.ArDialogListener{
             override fun onNameSaveListener(treeName: String) {
                 Toast.makeText(requireContext(), "Tree name saved", Toast.LENGTH_SHORT).show()
                 //Todo 북마크 끌어오기
-                val treeInfoDTO = PutTreeInfoDTO(treeInfo.bookmark,oldInfo.treeDescription,treeName)
-                arViewModel.putTreeInfo(treeInfo.user.userId,treeInfo.treeId,treeInfoDTO)
+                val treeInfoDTO = PutTreeInfoRequestDTO(treeInfoResponse.bookmark,oldInfo.treeDescription,treeName)
+                arViewModel.putTreeInfo(treeInfoResponse.user.userId,treeInfoResponse.treeId,treeInfoDTO)
             }
             override fun onDescriptionSaveListener(description: String) {
-                //TODO("여기 디스크립션 풋") 디스크립션 반환값 받아서 서버에 등록하기
                 Toast.makeText(requireContext(), "Description saved", Toast.LENGTH_SHORT).show()
-                val treeInfoDTO = PutTreeInfoDTO(treeInfo.bookmark,description,oldInfo.treeName)
-                arViewModel.putTreeInfo(treeInfo.user.userId,treeInfo.treeId,treeInfoDTO)
+                val treeInfoDTO = PutTreeInfoRequestDTO(treeInfoResponse.bookmark,description,oldInfo.treeName)
+                arViewModel.putTreeInfo(treeInfoResponse.user.userId,treeInfoResponse.treeId,treeInfoDTO)
             }
 
             override fun onWaterListener(treeId: Long) {
                 //TODO("여기 물주기 "), 클라우드 앵커 아이디 재발급받아서 서버에 등록하기
-                Toast.makeText(requireContext(), "물주기 반환값 : $treeId", Toast.LENGTH_SHORT).show()
-                //refreshCloudAnchorId(treeId)
+                //Toast.makeText(requireContext(), "물주기 반환값 : $treeId", Toast.LENGTH_SHORT).show()
+                refreshCloudAnchorId(treeId)
             }
         })
 
     }
 
     private fun refreshCloudAnchorId(treeId: Long){
+        // 이부분 지금 갱신 아예 빼놨음
         var oldAnchor = resolvedTreeMap[treeId]
         if(oldAnchor!=null) {
-            var newCloudAnchor = createCloudAnchorWithAnchor(oldAnchor)
-            var waterTreeDTO = WaterTreeDTO(treeId, newCloudAnchor.cloudAnchorId)
+            //var newCloudAnchor = createCloudAnchorWithAnchor(oldAnchor)
+            var waterTreeDTO = WaterTreeRequestDTO(oldAnchor.cloudAnchorId)
             Log.d("water",oldAnchor.cloudAnchorId)
             Log.d("water",waterTreeDTO.toString())
-            if (newCloudAnchor.cloudAnchorId != null) {
-                arViewModel.waterTree(treeId, waterTreeDTO)
+            if (oldAnchor.cloudAnchorId != null) {
+                arViewModel.waterTree(userId, treeId, waterTreeDTO)
             }
         }
     }

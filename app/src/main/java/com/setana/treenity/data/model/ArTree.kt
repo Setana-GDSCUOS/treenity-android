@@ -16,6 +16,6 @@ data class ArTree(
     val username: String
 ) : Serializable {
     companion object {
-        val EMPTY = GetAroundTreeResponseDTO(0, 0.0, 0.0, "","",0, 0.0, 0, "")
+        val EMPTY = ArTree(0, 0.0, 0.0, "","",0, 0.0, 0, "")
     }
 }

@@ -211,7 +211,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                 ).addOnSuccessListener { location ->
                     lastKnownLocation = location
                     lastKnownLocation?.let {
-                        mapViewModel.listAroundTrees(it.latitude, it.longitude)
+                        // Todo userId 연결 부분 추가 필요
+                        mapViewModel.listAroundTrees(it.latitude, it.longitude, 1)
                     }
                 }.addOnFailureListener {
                     Toast.makeText(this, "현재 위치를 불러오는 중 문제가 발생하였습니다.", Toast.LENGTH_SHORT).show()
@@ -221,7 +222,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                     .addOnSuccessListener { location: Location? ->
                         lastKnownLocation = location
                         lastKnownLocation?.let {
-                            mapViewModel.listAroundTrees(it.latitude, it.longitude)
+                            // Todo userId 연결 부분 추가 필요
+                            mapViewModel.listAroundTrees(it.latitude, it.longitude, 1)
                         }
                     }
             }

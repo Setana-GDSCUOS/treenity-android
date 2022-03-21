@@ -29,14 +29,14 @@ class MapViewModel @Inject constructor(
         _showErrorToast.postValue(Event(content))
     }
 
-    fun listAroundTrees(lat: Double, lng: Double) = viewModelScope.launch(Dispatchers.Main) {
+    fun listAroundTrees(lat: Double, lng: Double, userId:Long) = viewModelScope.launch(Dispatchers.Main) {
         val handler = CoroutineExceptionHandler { _, throwable ->
             setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
             throwable.message?.let { Log.d("MapViewModel.kt", it) }
         }
 
         withContext(Dispatchers.IO + handler) {
-            val response = treeRepository.getAroundTrees(lat, lng)
+            val response = treeRepository.getAroundTrees(lat, lng, userId)
             if (response.isSuccessful) {
                 _treeListLiveData.postValue(response.body())
             } else {

@@ -1,8 +1,10 @@
-package com.setana.treenity.data.api.dto
+package com.setana.treenity.data.model
 
+import com.setana.treenity.data.api.dto.GetAroundTreeResponseDTO
 import java.io.Serializable
+import java.util.*
 
-data class GetAroundTreeResponseDTO(
+data class ArTree(
     val treeId: Long,
     val latitude: Double,
     val longitude: Double,

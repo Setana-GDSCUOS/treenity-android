@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background = "@drawable/ar_dialog_shape"
+    android:backgroundTint="@color/white"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="5dp"
+    >
+    <ImageButton
+        android:layout_gravity="right"
+        android:id="@+id/exit"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/description_exit"
+        android:padding="20dp"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <!--TextView
+        android:textColor="@color/black"
+        android:id="@+id/tree_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textStyle="bold"
+        android:textSize="20sp"
+        /-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        >
+        <!--TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tree_name"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            /-->
+        <EditText
+            android:enabled="false"
+            android:inputType="text"
+            android:id="@+id/tree_name"
+            android:layout_width="150dp"
+            android:layout_height="48dp"
+            android:hint="TreeName"
+            android:textColor="@color/black"
+            android:textColorHint="#AAAAAA"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            />
+
+        <ImageButton
+            android:id="@+id/submit_name"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/description_check"
+            android:padding="20dp"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+    </LinearLayout>
+
+    <TextView
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="\n"/>
+    <ImageView
+        android:id="@+id/tree_image"
+        android:layout_width="wrap_content"
+        android:layout_height="250dp"
+        android:scaleType="fitXY"
+        tools:srcCompat="@tools:sample/avatars"
+        />
+    <TextView
+        android:textColor="@color/black"
+        android:id="@+id/owner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:layout_marginTop="20dp"
+        />
+    <TextView
+        android:textColor="@color/black"
+        android:id="@+id/created"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        />
+    <TextView
+        android:textColor="@color/black"
+        android:id="@+id/effort"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text=""
+        />
+
+    <!--TextView
+        android:textColor="@color/black"
+        android:id="@+id/description_title"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/description_title"
+        /-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        >
+
+        <EditText
+            android:enabled="false"
+            android:inputType="textMultiLine"
+            android:id="@+id/description"
+            android:layout_width="200dp"
+            android:layout_height="96dp"
+            android:hint="description"
+            android:textColor="#777777"
+            android:textColorHint="#AAAAAA"
+            tools:ignore="SpeakableTextPresentCheck"
+            android:scrollbars="vertical"
+            />
+
+        <ImageButton
+            android:id="@+id/submit_description"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/description_check"
+            android:padding="20dp"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/button_layout"
+        android:layout_margin="20dp"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:backgroundTint="@color/plant_green"
+        android:background = "@drawable/ar_dialog_shape"
+        >
+
+        <ImageView
+            android:id="@+id/water"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/watering_can"
+            android:contentDescription="@string/watering_button_description"
+            android:layout_gravity="center_vertical"
+            android:maxWidth="20dp"
+            android:maxHeight="20dp" />
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="water"
+            android:textStyle="bold"
+            android:gravity="center_vertical"
+            android:layout_gravity="center"
+            android:textColor="@color/white"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

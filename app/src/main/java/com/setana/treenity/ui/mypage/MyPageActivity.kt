@@ -43,6 +43,7 @@ class MyPageActivity : AppCompatActivity() {
     private lateinit var binding: MypageMypageActivityMainBinding
 
     private lateinit var myTreeAdapter: MyTreeAdapter
+    private var listSize = 0
 
     private val myPageViewModel: MyPageViewModel by viewModels()
     val userId = PREFS.getLong(USER_ID_KEY, -1)
@@ -89,7 +90,7 @@ class MyPageActivity : AppCompatActivity() {
         // 이벤트 등록 : 마지막 아이템을 누르면 나무 목록 리스트 페이지 전환
         myTreeAdapter.setOnItemClickListener(object : MyTreeAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                if (position == 5) { // 마지막 아이템
+                if (position == listSize-1) { // 마지막 아이템 누를 시
                     val nextIntent = Intent(this@MyPageActivity, TreeListActivity::class.java)
                     startActivity(nextIntent)
                 }
@@ -147,8 +148,6 @@ class MyPageActivity : AppCompatActivity() {
     }
 
 
-
-
     private fun setUpViewModel() {
 
 
@@ -171,11 +170,17 @@ class MyPageActivity : AppCompatActivity() {
                 response.add(lastItem)
 
                 myTreeAdapter.trees = response
+
+                listSize = response.size
             }
         })
 
 
         myPageViewModel.myWalkLogsLiveData.observe(this, {
+
+            if(userId != -1L) {
+                myPageViewModel.getMyWalkLogs(userId) // 데이터 갱신
+            }
 
             //get data from api and put them in barEntries/pieEntries(리스트 크기만큼 for loop 를 돌며 추가)
             var index = 0

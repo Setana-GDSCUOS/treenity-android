@@ -31,12 +31,6 @@ class TreeListActivity : AppCompatActivity() {
         initRecyclerView()
         setUpViewModel()
 
-        // 유저가 보유한 나무 목록을 보여주는 페이지의 좌측 상단 뒤로가기 아이콘을 누르면 마이페이지 창으로 전환됨
-        binding.gotoMyPage.setOnClickListener {
-            val intent = Intent(this, MyPageActivity::class.java)
-            startActivity(intent)
-        }
-
     }
 
     // adapter 부착
@@ -53,7 +47,9 @@ class TreeListActivity : AppCompatActivity() {
             response?.let {
                 if(it.isSuccessful) {
 
-                    treeListViewModel.getTreeList(userId)
+                    if(userId != -1L) {
+                        treeListViewModel.getTreeList(userId)
+                    }
 
                     treeListAdapter.setDataList(it.body())
                     treeListAdapter.notifyDataSetChanged()

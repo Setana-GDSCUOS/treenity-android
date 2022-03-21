@@ -7,19 +7,6 @@
     android:background="#F4F4F4"
     >
 
-    <ImageButton
-        android:id="@+id/gotoMyPage"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="35dp"
-
-        android:scaleType="centerCrop"
-        app:srcCompat="@drawable/mypage_store_previous_icon"
-        android:background="@android:color/transparent"
-        />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
@@ -35,7 +22,7 @@
         android:layout_marginTop="720dp"
 
         android:fontFamily="@font/comfortaa_bold"
-        android:textAlignment="center"
+        android:gravity="center"
         android:text="Walking 30 to 60 minutes most days of the week drastically lowers your risk of heart disease" />
 
     <TextView

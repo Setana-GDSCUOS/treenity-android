@@ -110,16 +110,18 @@ class MyPageViewModel @Inject constructor(
 
                 if (response.isSuccessful) {
 
-                    // Walk Log 중 최근 것 7개만 가져옴(일주일 고려)
-                    for(i in response.body()?.size?.downTo(1)!!) {
-                        item = response.body()!![response.body()!!.size - i]
-                        walkLogList.add(item)
+//                    // Walk Log 중 최근 것 7개만 가져옴(일주일 고려)
+//                    for(i in response.body()?.size?.downTo(1)!!) {
+//                        item = response.body()!![response.body()!!.size - i]
+//                        walkLogList.add(item)
+//
+//                        // test
+//                        Log.d("tag", "getWalkLog : $item")
+//                    }
+//
+//                    _myWalkLogsLiveData.postValue(walkLogList)
 
-                        // test
-                        Log.d("tag", "getWalkLog : $item")
-                    }
-
-                    _myWalkLogsLiveData.postValue(walkLogList)
+                    _myWalkLogsLiveData.postValue(response.body())
 
                 } else {
                     Log.d("tag","Error : ${response.message()} ")

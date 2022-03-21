@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ActionBar
 import android.app.Dialog
+import android.app.Notification
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -17,6 +18,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import coil.load
 import coil.transform.CircleCropTransformation
@@ -40,6 +42,7 @@ import com.setana.treenity.databinding.ActivityLoadingBinding
 import com.setana.treenity.service.StepDetectorService
 import com.setana.treenity.ui.ar.ArActivity
 import com.setana.treenity.ui.map.MapActivity
+import com.setana.treenity.ui.mypage.SettingsActivity
 import com.setana.treenity.util.EventObserver
 import com.setana.treenity.util.PermissionUtils
 import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
@@ -74,6 +77,7 @@ class LoadingActivity : AppCompatActivity() {
         setupUI()
         setupViewModel()
         verifyUser()
+
     }
 
     /**
@@ -157,7 +161,7 @@ class LoadingActivity : AppCompatActivity() {
                     if (checkAndRequestPermissions()) {
                         startStepDetectorService()
                         // TODO onRequestPermissionsResult 코드 중복 제거
-                        val intent = Intent(this, MapActivity::class.java)
+                        val intent = Intent(this, SettingsActivity::class.java)
                         startActivity(intent)
                     }
                 } else {
@@ -337,7 +341,7 @@ class LoadingActivity : AppCompatActivity() {
         ) {
             Toast.makeText(this, "All Permission Granted", Toast.LENGTH_SHORT).show()
             startStepDetectorService()
-            val intent = Intent(this, MapActivity::class.java)
+            val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
         } else {
             permissionDenied = true

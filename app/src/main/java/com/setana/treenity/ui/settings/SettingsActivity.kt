@@ -31,14 +31,17 @@ import com.setana.treenity.di.NetworkModule
 import com.setana.treenity.service.PushAlarmWorker
 import com.setana.treenity.service.StepDetectorService
 import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
+import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.Call
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
 
+@AndroidEntryPoint
 class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener{
 
     private val settingsViewModel: SettingsViewModel by viewModels()
     val userId = PREFS.getLong(USER_ID_KEY, -1)
+    private lateinit var newName : String
 
     // sensor permission
     private val activityPermission = 100
@@ -83,27 +86,23 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     @SuppressLint("InflateParams")
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
 
+
         // 닉네임 변경되었을 때
-        if(key == "signature") {
-            val newName = sharedPreferences?.getString(key,"no name") // user 가 작성한 String 값 가져와서
+        if(key == "user_name_key") {
+            newName = sharedPreferences?.getString(key,"no name").toString()
+            settingsViewModel.updateUserName(userId.toString(), newName)
 
             // post
             settingsViewModel.userLiveData.observe(this, { response ->
 
-                response.let { it ->
-                    if (it.isSuccessful) {
-
-                        val user = newName?.let { name -> User(0L, name, 0, 0, 0, 0) }
-                        if (user != null) {
-                            settingsViewModel.updateUserName(userId.toString(), user)
+                response.let {
+                    if (it != null && userId != -1L) {
+                            Toast.makeText(this, "New Name has been successfully saved", Toast.LENGTH_SHORT).show()
+                        } else {
+                            throw IllegalArgumentException("Your Id is invalid or you haven't changed your name")
                         }
-
-                        Toast.makeText(this, "New Name has been successfully saved", Toast.LENGTH_SHORT).show()
-
-                    } else {
-                        Log.d("myPageViewModel", response.message())
                     }
-                }
+
             })
 
             // test

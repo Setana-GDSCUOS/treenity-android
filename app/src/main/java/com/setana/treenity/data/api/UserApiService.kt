@@ -38,9 +38,9 @@ interface UserApiService {
 
     @Headers("Content-Type: application/json")
     @PUT("users/{uid}")
-    fun changeUserName(
+    suspend fun changeUserName(
         @Path(value = "uid", encoded = true) userId: String,
-        @Body user: User
-    ) : Response<User>
+        @Body username: String
+    ) : Response<Void>
 
 }

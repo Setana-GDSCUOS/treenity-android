@@ -136,21 +136,17 @@ class MyPageActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateName() {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val name = sharedPreferences.getString("signature", "no name")
-        if (name != "no name")
-            binding.username.text = name
-    }
 
     override fun onStart() {
         super.onStart()
 
-        myPageViewModel.getUserInfo(userId)
-        myPageViewModel.getMyTrees(userId)
-        // myPageViewModel.getMyWalkLogs(userId) -> Attempt to invoke virtual method 'int java.lang.String.length()' on a null object reference
-
+        if(userId != -1L) {
+            myPageViewModel.getUserInfo(userId)
+            myPageViewModel.getMyTrees(userId)
+        }
     }
+
+
 
 
     private fun setUpViewModel() {

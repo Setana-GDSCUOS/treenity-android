@@ -18,7 +18,7 @@ class UserApiHelperImpl @Inject constructor(
 
     override suspend fun getUserData(userId: String): Response<User> = userApiService.getUserData(userId)
     override suspend fun getUserWalkLogs(userId: String): Response<List<WalkLog>> = userApiService.getUserWalkLogs(userId)
-    override suspend fun changeUserName(userId: String, user: User): Response<User> = userApiService.changeUserName(userId, user)
+    override suspend fun changeUserName(userId: String, username: String): Response<Void> = userApiService.changeUserName(userId, username)
 
 
 }

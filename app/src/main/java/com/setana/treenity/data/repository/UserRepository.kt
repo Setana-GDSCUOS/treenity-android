@@ -16,5 +16,5 @@ interface UserRepository {
 
     suspend fun getUserData(userId:String): Response<User>
     suspend fun getUserWalkLogs(userId:String): Response<List<WalkLog>>
-    suspend fun changeUserName(userId:String, user:User): Response<User>
+    suspend fun changeUserName(userId:String, username: String): Response<Void>
 }

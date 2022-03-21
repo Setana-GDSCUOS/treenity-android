@@ -5,9 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.setana.treenity.data.api.dto.mypage.tree.MyTreeItem
 import com.setana.treenity.data.api.dto.mypage.user.User
-import com.setana.treenity.data.repository.TreeRepository
 import com.setana.treenity.data.repository.UserRepository
 import com.setana.treenity.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,8 +21,8 @@ class SettingsViewModel @Inject constructor(
     private val userRepository: UserRepository
 ): ViewModel() {
 
-    private val _userLiveData: MutableLiveData<Response<User>> = MutableLiveData()
-    val userLiveData: LiveData<Response<User>> = _userLiveData
+    private val _userLiveData: MutableLiveData<Response<Void>> = MutableLiveData()
+    val userLiveData: LiveData<Response<Void>> = _userLiveData
 
     private val _showErrorToast = MutableLiveData<Event<String>>()
     val showErrorToast: LiveData<Event<String>> = _showErrorToast
@@ -34,7 +32,7 @@ class SettingsViewModel @Inject constructor(
     }
 
 
-    fun updateUserName(userId: String, user: User) =
+    fun updateUserName(userId: String, username: String) =
         viewModelScope.launch(Dispatchers.Main) {
 
             val handler = CoroutineExceptionHandler { _, throwable ->
@@ -44,7 +42,7 @@ class SettingsViewModel @Inject constructor(
 
             withContext(Dispatchers.IO + handler) {
                 val response =
-                    userRepository.changeUserName(userId, user)
+                    userRepository.changeUserName(userId, username)
                 _userLiveData.postValue(response)
             }
         }

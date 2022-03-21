@@ -34,6 +34,6 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun getUserWalkLogs(userId: String): Response<List<WalkLog>> =
         remoteSource.getUserWalkLogs(userId)
 
-    override suspend fun changeUserName(userId: String, user: User): Response<User> =
-        remoteSource.changeUserName(userId, user)
+    override suspend fun changeUserName(userId: String, username: String): Response<Void> =
+        remoteSource.changeUserName(userId, username)
 }

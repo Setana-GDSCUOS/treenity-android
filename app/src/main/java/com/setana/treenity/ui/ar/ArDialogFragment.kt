@@ -1,17 +1,121 @@
 package com.setana.treenity.ui.ar
 
-import android.app.AlertDialog
-import android.app.Dialog
-import android.content.DialogInterface
-import android.os.Bundle
-import android.text.InputFilter
-import android.text.InputFilter.LengthFilter
-import android.text.InputType
-import android.widget.EditText
-import android.widget.LinearLayout
-import androidx.fragment.app.DialogFragment
 
-// Todo 원래 테스트용 다이얼로그였는데 개조해서 물주기용 다이얼로그로 쓸 예정
+import android.app.Dialog
+import android.content.ContentProvider
+import android.content.Context
+import android.os.Bundle
+import android.view.*
+import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.view.isGone
+import androidx.fragment.app.DialogFragment
+import coil.load
+import com.setana.treenity.R
+import com.setana.treenity.data.api.dto.GetTreeInformationDTO
+import com.setana.treenity.data.api.dto.WaterTreeDTO
+import com.setana.treenity.databinding.ArInfoDialogBinding
+
+
+
+class ArDialogFragment(context: Context,treeInfo: GetTreeInformationDTO,isTreeOwner:Boolean) {
+    interface ArDialogListener {
+        fun onWaterListener(treeId:Long)
+        fun onDescriptionSaveListener(description:String)
+        fun onNameSaveListener(treeName:String)
+    }
+    private val context = context
+    private val dialog = Dialog(context)
+    private val isTreeOwner = isTreeOwner
+    private val treeInfo = treeInfo
+    private val arInfoDialogBinding: ArInfoDialogBinding =
+        ArInfoDialogBinding.inflate(LayoutInflater.from(context))
+    private lateinit var dialogListener: ArDialogListener
+
+    fun setListener(listener: ArDialogListener) {
+        dialogListener = listener
+    }
+
+
+    fun createDialog() {
+        //아 근데 크기 왜 안돼
+
+        dialog.window!!.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.window!!.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        dialog!!.setContentView(arInfoDialogBinding.root)
+        dialog.setCancelable(true)
+        dialog.setCanceledOnTouchOutside(true)
+
+        arInfoDialogBinding.exit.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        if(isTreeOwner){
+            arInfoDialogBinding.description.isEnabled = true
+            arInfoDialogBinding.treeName.isEnabled = true
+            arInfoDialogBinding.submitDescription.setOnClickListener {
+                var newDescription = arInfoDialogBinding.description.text.toString()
+                if(newDescription == null){
+                    Toast.makeText(context, "Please enter your tree description", Toast.LENGTH_SHORT).show()
+                }
+                else{
+                    dialogListener.onDescriptionSaveListener(newDescription)
+                }
+
+            }
+            arInfoDialogBinding.submitName.setOnClickListener {
+                var newName = arInfoDialogBinding.treeName.text.toString()
+                if (newName == null){
+                    Toast.makeText(context, "Please enter your tree name", Toast.LENGTH_SHORT).show()
+                }
+                else{
+                    dialogListener.onNameSaveListener(newName)
+                }
+            }
+        }
+
+
+        else{
+            arInfoDialogBinding.submitDescription.isGone = true
+            arInfoDialogBinding.submitName.isGone = true
+            arInfoDialogBinding.description.background = null
+            arInfoDialogBinding.description.isEnabled = false
+            arInfoDialogBinding.description.setTextColor(context.getColor(R.color.black))
+            arInfoDialogBinding.treeName.background = null
+            arInfoDialogBinding.treeName.isEnabled = false
+            arInfoDialogBinding.treeName.setTextColor(context.getColor(R.color.black))
+        }
+        val plantDate = treeInfo.createdDate.slice(IntRange(0,9))
+        // 이상한데 들어가있는데 의도된건가
+        arInfoDialogBinding.treeImage.load(treeInfo.item.imagePath)
+        arInfoDialogBinding.created.text = "Planted : ${plantDate}"
+        arInfoDialogBinding.water.isEnabled = false
+
+        arInfoDialogBinding.buttonLayout.setOnClickListener {
+            if (isTreeOwner) {
+                // Todo 뭔가 반환해서 Fragment 차원에서 viewModel 시키게 만들어야 할 것 같아
+                dialogListener.onWaterListener(treeInfo.treeId)
+            } else {
+                Toast.makeText(context, "It's not your tree", Toast.LENGTH_SHORT).show()
+            }
+        }
+        if(treeInfo.treeDescription != null){
+            arInfoDialogBinding.description.setText(treeInfo.treeDescription)
+        }
+
+        arInfoDialogBinding.effort.text = "Footprints : ${treeInfo.bucket * 3000}"
+        arInfoDialogBinding.owner.text = "Owner : ${treeInfo.user.username}"
+        arInfoDialogBinding.treeName.setText("${treeInfo.treeName}")
+
+        dialog!!.show()
+    }
+}
+
+
+
+// 원래 테스트용 다이얼로그였는데 개조해서 물주기용 다이얼로그로
+/*
 class ResolveDialogFragment : DialogFragment() {
     interface OkListener {
 
@@ -74,3 +178,4 @@ class ResolveDialogFragment : DialogFragment() {
         }
     }
 }
+*/

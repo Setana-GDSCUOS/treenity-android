@@ -1,7 +1,6 @@
 package com.setana.treenity.data.api
 
-import com.setana.treenity.data.api.dto.PostTreeDTO
-import com.setana.treenity.data.api.dto.PostTreeResponseDTO
+import com.setana.treenity.data.api.dto.*
 import retrofit2.Call
 import retrofit2.Response
 import javax.inject.Inject
@@ -9,10 +8,10 @@ import javax.inject.Inject
 class TreeApiHelperImpl @Inject constructor(
     private val treeApiService: TreeApiService
 ): TreeApiHelper {
-    override suspend fun getAroundTrees(lat: Double, lng: Double) = treeApiService.getAroundTrees(lat, lng)
-    override suspend fun getAroundArTrees(lat: Double, lng: Double) = treeApiService.getAroundArTrees(lat, lng)
+    override suspend fun getAroundTrees(lat: Double, lng: Double, userId:Long) = treeApiService.getAroundTrees(lat, lng, userId)
+    override suspend fun getAroundArTrees(lat: Double, lng: Double, userId:Long) = treeApiService.getAroundArTrees(lat, lng, userId)
     override suspend fun postTree(postTreeDTO: PostTreeDTO): Response<Void> = treeApiService.postTree(postTreeDTO)
-    override suspend fun waterTree(treeId: Long) {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getTreeInformation(id:Long ,treeId: Long, userId:Long): Response<GetTreeInformationDTO> = treeApiService.getTreeInformation(id,treeId, userId)
+    override suspend fun waterTree(id:Long ,waterTreeDTO: WaterTreeDTO): Response<Void> = treeApiService.waterTree(id,waterTreeDTO)
+    override suspend fun putTreeInfo(userId: Long, treeId: Long, putTreeInfoDTO: PutTreeInfoDTO) = treeApiService.putTreeInfo(userId,treeId,putTreeInfoDTO)
 }

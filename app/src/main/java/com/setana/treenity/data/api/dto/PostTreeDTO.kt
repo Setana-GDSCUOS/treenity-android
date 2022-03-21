@@ -10,15 +10,16 @@ data class PostTreeDTO (
     val latitude: Double,
     @SerializedName("longitude")
     val longitude: Double,
-    @SerializedName("name")
-    val name : String,
-    //val userId: Long,
+    @SerializedName("treeName")
+    val treeName : String,
+    @SerializedName("userId")
+    val userId: Long,
     @SerializedName("userItemId")
     val userItemId: Long
     //val userName: String
 ) : Serializable {
     companion object {
-        val EMPTY = PostTreeDTO("",0.0,0.0,"",0)
+        val EMPTY = PostTreeDTO("",0.0,0.0,"",0,0)
         //val EMPTY = PostTreeDTO(0, 0.0, 0.0, "", 0.0, 0, "", "")
     }
 }

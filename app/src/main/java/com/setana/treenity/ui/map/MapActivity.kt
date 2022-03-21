@@ -176,7 +176,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                 .addOnSuccessListener { location: Location? ->
                     lastKnownLocation = location
                     lastKnownLocation?.let {
-                        mapViewModel.listAroundTrees(it.latitude, it.longitude)
+                        mapViewModel.listAroundTrees(it.latitude, it.longitude, 1)
                     }
                 }
         }

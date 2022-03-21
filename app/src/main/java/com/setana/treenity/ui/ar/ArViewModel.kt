@@ -5,8 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.setana.treenity.data.api.dto.GetAroundArTreeResponseDTO
-import com.setana.treenity.data.api.dto.PostTreeDTO
+import com.setana.treenity.data.api.dto.*
 import com.setana.treenity.data.repository.TreeRepository
 import com.setana.treenity.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +22,9 @@ class ArViewModel @Inject constructor(
     private val _treeListLiveData: MutableLiveData<List<GetAroundArTreeResponseDTO>> = MutableLiveData()
     val treeListLiveData: LiveData<List<GetAroundArTreeResponseDTO>> = _treeListLiveData
 
+    private val _treeInformationLiveData: MutableLiveData<GetTreeInformationDTO> = MutableLiveData()
+    val treeInformationLiveData: LiveData<GetTreeInformationDTO> = _treeInformationLiveData
+
     //private val _treeIdLiveData: MutableLiveData<Long> = MutableLiveData()
     //val treeIdLiveData: LiveData<Long> = _treeIdLiveData
 
@@ -33,15 +35,16 @@ class ArViewModel @Inject constructor(
         _showErrorToast.postValue(Event(content))
     }
 
-    fun listAroundTrees(lat: Double, lng: Double) = viewModelScope.launch(Dispatchers.Main) {
+    fun listAroundTrees(lat: Double, lng: Double, userId: Long) = viewModelScope.launch(Dispatchers.Main) {
         val handler = CoroutineExceptionHandler { _, throwable ->
             setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
             throwable.message?.let { Log.d("ArViewModel.kt", it) }
         }
 
         withContext(Dispatchers.IO + handler) {
-            val response = treeRepository.getAroundArTrees(lat, lng)
+            val response = treeRepository.getAroundArTrees(lat, lng, userId)
             if (response.isSuccessful) {
+                setToastMessage("loading trees around, please look around")
                 _treeListLiveData.postValue(response.body())
             } else {
                 setToastMessage(response.message())
@@ -78,6 +81,50 @@ class ArViewModel @Inject constructor(
         }
     }
 
+    fun getTreeInformation(id:Long, treeId: Long, userId: Long) = viewModelScope.launch ( Dispatchers.Main ){
+        // 서버쪽 구성때문에 두 개로 나눠졌는데 둘 다 같은 treeId입니다
+        val handler = CoroutineExceptionHandler { _, throwable ->
+            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            throwable.message?.let { Log.d("ArViewModel.kt", it) }
+        }
+        withContext(Dispatchers.IO + handler) {
+            val response = treeRepository.getTreeInformation(id, treeId, userId)
+            if (response.isSuccessful) {
+                _treeInformationLiveData.postValue(response.body())
+            } else {
+                setToastMessage(response.message())
+            }
+        }
+    }
 
-    // 물주기는 어떤 식으로 작성해야
+    fun waterTree(treeId:Long, waterTreeDTO: WaterTreeDTO)  = viewModelScope.launch ( Dispatchers.Main ){
+        val handler = CoroutineExceptionHandler { _, throwable ->
+            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            throwable.message?.let {Log.d("ArViewModel.kt", it) }
+        }
+        withContext(Dispatchers.IO + handler) {
+            val response = treeRepository.waterTree(treeId,waterTreeDTO)
+            if (response.isSuccessful) {
+                // Todo Not implemented yet
+                // 물 잘 주면 뭐 해야되냐? 그냥 성공했다고 알려주고 성공했으면 모델 리로드해야지뭐
+            } else {
+                setToastMessage(response.message())
+            }
+        }
+    }
+
+    fun putTreeInfo(userId:Long, treeId:Long,putTreeInfoDTO: PutTreeInfoDTO)= viewModelScope.launch ( Dispatchers.Main ){
+        val handler = CoroutineExceptionHandler { _, throwable ->
+            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            throwable.message?.let {Log.d("ArViewModel.kt", it) }
+        }
+        withContext(Dispatchers.IO + handler) {
+            val response = treeRepository.putTreeInfo(userId,treeId,putTreeInfoDTO)
+            if (response.isSuccessful) {
+                // Todo Not implemented yet
+            } else {
+                setToastMessage(response.message())
+            }
+        }
+    }
 }

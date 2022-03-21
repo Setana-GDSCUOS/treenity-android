@@ -22,8 +22,13 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.setana.treenity.R
+import com.setana.treenity.TreenityApplication.Companion.PREFS
+import com.setana.treenity.data.api.dto.mypage.user.User
+import com.setana.treenity.di.NetworkModule
 import com.setana.treenity.service.PushAlarmWorker
 import com.setana.treenity.service.StepDetectorService
+import com.setana.treenity.ui.loading.LoadingActivity
+import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import retrofit2.Call
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
@@ -71,32 +76,36 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     @SuppressLint("InflateParams")
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
 
-        // 닉네임 변경되었을 때 -> TODO: 마이페이지 pr merge 된 이후에 주석 처리 풀 것
-//        if(key == "signature") {
-//            val newName = sharedPreferences?.getString(key,"no name") // user 가 작성한 String 값 가져와서
-//
-//            // post
-//            val apiInterface = NetWorkModule.provideRetrofitInstance()
-//            val user = newName?.let { User(it, 0, 0, 0) } // 작성된 새로운 이름으로 객체 생성
-//            val call = user?.let { apiInterface.changeName(it) } // body 로 전달
-//
-//            // test
-//            Log.d("tag", "onCreate: your new name is $newName")
-//
-//            call?.enqueue(object : retrofit2.Callback<User> {
-//                override fun onResponse(call: Call<User>, response: Response<User>) {
-//                    Log.d("tag", "onResponse: " + response.code())
-//                }
-//
-//                override fun onFailure(call: Call<User>, t: Throwable) {
-//                    Log.d("tag", "onFailure: " + t.message)
-//                }
-//            })
-//
-//            val message = Toast.makeText(this, "New Name has been successfully saved", Toast.LENGTH_SHORT)
-//            message.setGravity(Gravity.BOTTOM, 0, 0) // TODO 메시지가 이상하게 중간에 뜸
-//            message.show()
-//        }
+        // 닉네임 변경되었을 때
+        if(key == "signature") {
+            val newName = sharedPreferences?.getString(key,"no name") // user 가 작성한 String 값 가져와서
+
+            // post
+            val apiInterface = NetworkModule.provideRetrofitInstance()
+            val user = newName?.let { User(0L, it, 0, 0, 0) } // 작성된 새로운 이름으로 객체 생성
+            val call = user?.let { apiInterface.changeName(PREFS.getLong(USER_ID_KEY, -1).toString(),it) } // body 로 전달
+
+            // test
+            Log.d("tag", "onCreate: your new name is $newName")
+
+            call?.enqueue(object : retrofit2.Callback<User> {
+                override fun onResponse(call: Call<User>, response: Response<User>) {
+                    Log.d("tag", "onResponse: " + response.code())
+                }
+
+                override fun onFailure(call: Call<User>, t: Throwable) {
+                    Log.d("tag", "onFailure: " + t.message)
+
+                    if(PREFS.getLong(USER_ID_KEY, -1) == -1L) {
+                        // TODO: 로딩 액티비티로 이동
+                    } else {
+                        Toast.makeText(this@SettingsActivity, "Error has been occurred", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            })
+
+            Toast.makeText(this, "New Name has been successfully saved", Toast.LENGTH_SHORT).show()
+        }
 
         // push 알람 설정되었을 때
         if(key == "switch") {

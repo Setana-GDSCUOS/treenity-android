@@ -42,6 +42,7 @@ import com.setana.treenity.databinding.ActivityLoadingBinding
 import com.setana.treenity.service.StepDetectorService
 import com.setana.treenity.ui.ar.ArActivity
 import com.setana.treenity.ui.map.MapActivity
+import com.setana.treenity.ui.mypage.MyPageActivity
 import com.setana.treenity.ui.mypage.SettingsActivity
 import com.setana.treenity.util.EventObserver
 import com.setana.treenity.util.PermissionUtils
@@ -161,7 +162,7 @@ class LoadingActivity : AppCompatActivity() {
                     if (checkAndRequestPermissions()) {
                         startStepDetectorService()
                         // TODO onRequestPermissionsResult 코드 중복 제거
-                        val intent = Intent(this, SettingsActivity::class.java)
+                        val intent = Intent(this, MyPageActivity::class.java)
                         startActivity(intent)
                     }
                 } else {
@@ -341,7 +342,7 @@ class LoadingActivity : AppCompatActivity() {
         ) {
             Toast.makeText(this, "All Permission Granted", Toast.LENGTH_SHORT).show()
             startStepDetectorService()
-            val intent = Intent(this, SettingsActivity::class.java)
+            val intent = Intent(this, MyPageActivity::class.java)
             startActivity(intent)
         } else {
             permissionDenied = true

@@ -28,6 +28,10 @@
 
         <activity android:name=".ui.mypage.SettingsActivity" />
 
+        <activity android:name=".ui.mypage.MyPageActivity" />
+
+        <activity android:name=".ui.mypage.TreeListActivity" />
+
         <activity
             android:name=".ui.loading.LoadingActivity"
             android:exported="true"

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F4F4F4"
+    >
+
+    <ImageButton
+        android:id="@+id/gotoMyPage"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="35dp"
+
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/mypage_store_previous_icon"
+        android:background="@android:color/transparent"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="550dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="120dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="720dp"
+
+        android:fontFamily="@font/comfortaa_bold"
+        android:textAlignment="center"
+        android:text="Walking 30 to 60 minutes most days of the week drastically lowers your risk of heart disease" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="My Tree List"
+        android:fontFamily="@font/comfortaa_bold"
+        android:textColor="@color/black"
+        android:layout_gravity="center_horizontal"
+
+        android:layout_marginTop="25dp"
+
+        android:textSize="20sp"
+        />
+
+</FrameLayout>

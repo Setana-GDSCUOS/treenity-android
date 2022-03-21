@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ActionBar
 import android.app.Dialog
-import android.app.Notification
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -18,7 +17,6 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import coil.load
 import coil.transform.CircleCropTransformation
@@ -41,9 +39,7 @@ import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
 import com.setana.treenity.databinding.ActivityLoadingBinding
 import com.setana.treenity.service.StepDetectorService
 import com.setana.treenity.ui.ar.ArActivity
-import com.setana.treenity.ui.map.MapActivity
 import com.setana.treenity.ui.mypage.MyPageActivity
-import com.setana.treenity.ui.mypage.SettingsActivity
 import com.setana.treenity.util.EventObserver
 import com.setana.treenity.util.PermissionUtils
 import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
@@ -76,7 +72,7 @@ class LoadingActivity : AppCompatActivity() {
 
         initializeAuth()
         setupUI()
-        setupViewModel()
+        setUpViewModel()
         verifyUser()
 
     }
@@ -111,7 +107,7 @@ class LoadingActivity : AppCompatActivity() {
         lottieAnimationView.playAnimation()
     }
 
-    private fun setupViewModel() {
+    private fun setUpViewModel() {
         loadingViewModel.userInfoLiveData.observe(this, { response ->
             response?.let {
                 if (it.isSuccessful) {

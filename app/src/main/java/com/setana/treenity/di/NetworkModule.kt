@@ -22,6 +22,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 import javax.inject.Singleton
 
 @Module
@@ -122,15 +123,12 @@ object NetworkModule {
     fun provideUserRepository(userRepository: UserRepositoryImpl): UserRepository =
         userRepository
 
-    @Provides
-    fun provideBaseUrl() = Constants.BASE_URL
-
-    @Provides
-    @Singleton
-    fun provideRetrofitInstance(): MyPageApiService =
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(MyPageApiService::class.java)
+//    @Provides
+//    @Singleton
+//    fun provideSettingsInstance() : UserApiService =
+//        Retrofit.Builder()
+//            .baseUrl(BuildConfig.SETANA_BACKEND_BASE_URL)
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//            .create(UserApiService::class.java)
 }

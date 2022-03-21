@@ -4,6 +4,7 @@ data class User (
     val userId: Long,
     val username: String,
     val point: Int,
+    val dailyWalks: Int,
     val totalWalks: Int,
     val buckets: Int
 )

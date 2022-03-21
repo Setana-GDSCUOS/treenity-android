@@ -19,7 +19,6 @@ class MyTreeAdapter(items: List<MyTreeItem>) : RecyclerView.Adapter<MyTreeAdapte
         this.items = items
     }
 
-
     inner class MyTreeViewHolder
     constructor(
         val binding: MypageMytreeItemRowBinding, listener: OnItemClickListener

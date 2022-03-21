@@ -1,7 +1,9 @@
-package com.setana.treenity.ui.mypage.adapter
+package com.setana.treenity.ui.mytreelist.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.setana.treenity.data.api.dto.mypage.tree.MyTreeItem
@@ -12,16 +14,16 @@ class TreeListAdapter: RecyclerView.Adapter<TreeListAdapter.MyViewHolder>() {
 
     private lateinit var binding: MypageTreelistRowBinding
 
-    private var treeListItemList: MyTreeResponse? = null
+    private var treeListItemList: List<MyTreeItem>? = null
 
-    fun setDataList(treeListItemList: MyTreeResponse?) {
+    fun setDataList(treeListItemList: List<MyTreeItem>?) {
         this.treeListItemList = treeListItemList
     }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): TreeListAdapter.MyViewHolder {
+    ): MyViewHolder {
 
         val inflater = LayoutInflater.from(parent.context)
         binding = MypageTreelistRowBinding.inflate(inflater) // xml 에 씌여져 있는 view 의 정의를 실제 view 객체로 만듦
@@ -31,19 +33,36 @@ class TreeListAdapter: RecyclerView.Adapter<TreeListAdapter.MyViewHolder>() {
         )
     }
 
-    override fun onBindViewHolder(holder: TreeListAdapter.MyViewHolder, position: Int) {
-        holder.bind(treeListItemList?.get(position)!!)
+    private val diffCallback = object : DiffUtil.ItemCallback<MyTreeItem>() { // 달라지는 부분만 갱신할 수 있도록 recyclerview 최적화하는 코드
+        override fun areItemsTheSame(oldItem: MyTreeItem, newItem: MyTreeItem): Boolean {
+            return oldItem.treeId == newItem.treeId
+        }
+
+        override fun areContentsTheSame(oldItem: MyTreeItem, newItem: MyTreeItem): Boolean {
+            return oldItem == newItem
+        }
     }
 
-    override fun getItemCount(): Int {
-        return if (treeListItemList == null) 0
-        else treeListItemList?.size!!
+    private val differ = AsyncListDiffer(this, diffCallback) // 달라지는 부분만 갱신할 수 있도록 recyclerview 최적화하는 코드
+    var trees: List<MyTreeItem>
+        get() = differ.currentList
+        set(value) {
+            differ.submitList(value)
+        }
+
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val myTreeItem = trees[position]
+
+        holder.apply {
+            bind(myTreeItem)
+        }
     }
+
+    override fun getItemCount() = trees.size
 
     inner class MyViewHolder(itemView: MypageTreelistRowBinding) :
         RecyclerView.ViewHolder(itemView.root) {
 
-        // 일반적으로 onBindViewHolder가 아닌 Recycler Holder 클래스 내부에 별도의 bind 함수를 구현하여 바인딩을 진행합니다! 한번 알아보시면 도움이 될 것 같아요! --> resolved!
         fun bind(tree: MyTreeItem) {
             binding.itemName.text = tree.treeName
             ("Planted Date : " + tree.createdDate).also { binding.plantedDate.text = it.substring(0,25) }

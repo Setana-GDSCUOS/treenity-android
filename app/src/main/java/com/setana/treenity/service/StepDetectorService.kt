@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import androidx.core.app.NotificationCompat
 import android.app.*
+import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import com.setana.treenity.ui.loading.LoadingActivity
@@ -65,8 +66,9 @@ class StepDetectorService : Service(), SensorEventListener {
 
         val pendingIntent = PendingIntent.getActivity(
             applicationContext,
-            0, intent, 0
+            0, intent, FLAG_IMMUTABLE
         )
+
 
         val notification = NotificationCompat.Builder(
             applicationContext,
@@ -106,9 +108,11 @@ class StepDetectorService : Service(), SensorEventListener {
     private var mStepBuffer = 0
     override fun onSensorChanged(sensor: SensorEvent?) {
         sensor?.let {
+
             val currentDetectedSteps =
                 if (stepsBeforeDetection == 0) stepsBeforeDetection else it.values[0].toInt() - stepsBeforeDetection
             mSteps += currentDetectedSteps
+
             mStepBuffer += currentDetectedSteps
             storeStepToGlobalHashMap(mSteps)
             if (mStepBuffer >= 10) {
@@ -116,6 +120,8 @@ class StepDetectorService : Service(), SensorEventListener {
                 mStepBuffer = 0
             }
             stepsBeforeDetection = it.values[0].toInt()
+
+
         }
         // 로그 기록용
         // Log.d("tag", "onSensorChanged: your step feature is ${DAILY_WALK_LOG[getDateString()]}")

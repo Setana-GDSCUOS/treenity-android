@@ -1,4 +1,4 @@
-package com.setana.treenity.ui.mypage
+package com.setana.treenity.ui.settings
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -13,6 +13,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.Gravity
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -23,17 +24,21 @@ import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.setana.treenity.R
 import com.setana.treenity.TreenityApplication.Companion.PREFS
+import com.setana.treenity.data.api.UserApiService
 import com.setana.treenity.data.api.dto.mypage.user.User
+import com.setana.treenity.data.repository.UserRepository
 import com.setana.treenity.di.NetworkModule
 import com.setana.treenity.service.PushAlarmWorker
 import com.setana.treenity.service.StepDetectorService
-import com.setana.treenity.ui.loading.LoadingActivity
 import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import retrofit2.Call
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
 
 class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener{
+
+    private val settingsViewModel: SettingsViewModel by viewModels()
+    val userId = PREFS.getLong(USER_ID_KEY, -1)
 
     // sensor permission
     private val activityPermission = 100
@@ -53,6 +58,7 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.mypage_settings_activity_main)
         if (savedInstanceState == null) {
             supportFragmentManager
@@ -64,6 +70,7 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
 
         PreferenceManager.getDefaultSharedPreferences(this)
             .registerOnSharedPreferenceChangeListener(this)
+
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
@@ -81,30 +88,27 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
             val newName = sharedPreferences?.getString(key,"no name") // user 가 작성한 String 값 가져와서
 
             // post
-            val apiInterface = NetworkModule.provideRetrofitInstance()
-            val user = newName?.let { User(0L, it, 0, 0, 0) } // 작성된 새로운 이름으로 객체 생성
-            val call = user?.let { apiInterface.changeName(PREFS.getLong(USER_ID_KEY, -1).toString(),it) } // body 로 전달
+            settingsViewModel.userLiveData.observe(this, { response ->
 
-            // test
-            Log.d("tag", "onCreate: your new name is $newName")
+                response.let { it ->
+                    if (it.isSuccessful) {
 
-            call?.enqueue(object : retrofit2.Callback<User> {
-                override fun onResponse(call: Call<User>, response: Response<User>) {
-                    Log.d("tag", "onResponse: " + response.code())
-                }
+                        val user = newName?.let { name -> User(0L, name, 0, 0, 0, 0) }
+                        if (user != null) {
+                            settingsViewModel.updateUserName(userId.toString(), user)
+                        }
 
-                override fun onFailure(call: Call<User>, t: Throwable) {
-                    Log.d("tag", "onFailure: " + t.message)
+                        Toast.makeText(this, "New Name has been successfully saved", Toast.LENGTH_SHORT).show()
 
-                    if(PREFS.getLong(USER_ID_KEY, -1) == -1L) {
-                        // TODO: 로딩 액티비티로 이동
                     } else {
-                        Toast.makeText(this@SettingsActivity, "Error has been occurred", Toast.LENGTH_SHORT).show()
+                        Log.d("myPageViewModel", response.message())
                     }
                 }
             })
 
-            Toast.makeText(this, "New Name has been successfully saved", Toast.LENGTH_SHORT).show()
+            // test
+            Log.d("tag", "onCreate: your new name is $newName")
+
         }
 
         // push 알람 설정되었을 때
@@ -192,6 +196,4 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         PreferenceManager.getDefaultSharedPreferences(this)
             .unregisterOnSharedPreferenceChangeListener(this)
     }
-
-
 }

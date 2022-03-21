@@ -1,22 +1,25 @@
-package com.setana.treenity.ui.mypage
+package com.setana.treenity.ui.mytreelist
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
+import android.util.Log
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.databinding.MypageTreelistActivityMainBinding
-import com.setana.treenity.ui.mypage.adapter.TreeListAdapter
-import com.setana.treenity.ui.mypage.viewmodel.TreeListViewModel
+import com.setana.treenity.ui.mypage.MyPageActivity
+import com.setana.treenity.ui.mytreelist.adapter.TreeListAdapter
+import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
 
-///////////////// 상세페이지 /////////////////
+
 @AndroidEntryPoint
 class TreeListActivity : AppCompatActivity() {
-    lateinit var recyclerAdapter: TreeListAdapter
+    lateinit var treeListAdapter: TreeListAdapter
     private lateinit var binding : MypageTreelistActivityMainBinding
+    private val treeListViewModel: TreeListViewModel by viewModels()
+    val userId = PREFS.getLong(USER_ID_KEY, -1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +29,7 @@ class TreeListActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initRecyclerView()
-        initViewModel()
+        setUpViewModel()
 
         // 유저가 보유한 나무 목록을 보여주는 페이지의 좌측 상단 뒤로가기 아이콘을 누르면 마이페이지 창으로 전환됨
         binding.gotoMyPage.setOnClickListener {
@@ -39,22 +42,28 @@ class TreeListActivity : AppCompatActivity() {
     // adapter 부착
     private fun initRecyclerView() {
         binding.recyclerview.layoutManager = LinearLayoutManager(this)
-        recyclerAdapter = TreeListAdapter()
-        binding.recyclerview.adapter = recyclerAdapter
+        treeListAdapter = TreeListAdapter()
+        binding.recyclerview.adapter = treeListAdapter
     }
 
-    private fun initViewModel() {
-        val viewModel: TreeListViewModel = ViewModelProvider(this).get(TreeListViewModel::class.java)
-        viewModel.getLiveDataObserver().observe(this, Observer {
-            if(it != null) {
-                recyclerAdapter.setDataList(it)
-                recyclerAdapter.notifyDataSetChanged()
-            } else {
-                Toast.makeText(this, "Error in getting list", Toast.LENGTH_SHORT).show()
+    private fun setUpViewModel() {
+
+        treeListViewModel.myTreeListLiveData.observe(this, { response ->
+
+            response?.let {
+                if(it.isSuccessful) {
+
+                    treeListViewModel.getTreeList(userId)
+
+                    treeListAdapter.setDataList(it.body())
+                    treeListAdapter.notifyDataSetChanged()
+
+                } else {
+                    Log.d("SetupViewModel", response.message())
+                }
             }
         })
 
-        // data fetch 를 위해 필수적인 코드!!
-        viewModel.loadListOfData()
     }
+
 }

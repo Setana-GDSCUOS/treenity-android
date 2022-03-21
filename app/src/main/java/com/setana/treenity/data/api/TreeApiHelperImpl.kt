@@ -1,6 +1,8 @@
 package com.setana.treenity.data.api
 
 import com.setana.treenity.data.api.dto.*
+import com.setana.treenity.data.api.dto.mypage.tree.MyTreeItem
+import com.setana.treenity.data.api.dto.mypage.tree.MyTreeResponse
 import retrofit2.Call
 import retrofit2.Response
 import javax.inject.Inject
@@ -14,4 +16,7 @@ class TreeApiHelperImpl @Inject constructor(
     override suspend fun getTreeInformation(id:Long ,treeId: Long, userId:Long): Response<GetTreeInformationDTO> = treeApiService.getTreeInformation(id,treeId, userId)
     override suspend fun waterTree(id:Long ,waterTreeDTO: WaterTreeDTO): Response<Void> = treeApiService.waterTree(id,waterTreeDTO)
     override suspend fun putTreeInfo(userId: Long, treeId: Long, putTreeInfoDTO: PutTreeInfoDTO) = treeApiService.putTreeInfo(userId,treeId,putTreeInfoDTO)
+
+    override suspend fun getUserTrees(userId: Long): Response<ArrayList<MyTreeItem>> = treeApiService.getUserTrees(userId)
+    override suspend fun getTreeData(userId: Long): Response<List<MyTreeItem>> = treeApiService.getTreeData(userId)
 }

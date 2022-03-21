@@ -1,8 +1,12 @@
 package com.setana.treenity.data.repository
 
+import com.setana.treenity.TreenityApplication.Companion.DAILY_WALK_LOG
 import com.setana.treenity.data.api.UserApiHelper
 import com.setana.treenity.data.api.dto.RegisterCurrentFirebaseUserRequestDTO
 import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
+import com.setana.treenity.data.api.dto.mypage.user.User
+import com.setana.treenity.data.api.dto.mypage.walklog.WalkLog
+import retrofit2.Call
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -16,4 +20,20 @@ class UserRepositoryImpl @Inject constructor(
         userId: String,
         updateUserWalkLogsRequestDTO: UpdateUserWalkLogsRequestDTO
     ): Response<Void> = remoteSource.updateUserWalkLogs(userId, updateUserWalkLogsRequestDTO)
+
+    override suspend fun getWalkLogs(): HashMap<String, String> {
+
+        return DAILY_WALK_LOG
+    }
+
+
+
+    override suspend fun getUserData(userId: String): Response<User> =
+        remoteSource.getUserData(userId)
+
+    override suspend fun getUserWalkLogs(userId: String): Response<List<WalkLog>> =
+        remoteSource.getUserWalkLogs(userId)
+
+    override suspend fun changeUserName(userId: String, user: User): Response<User> =
+        remoteSource.changeUserName(userId, user)
 }

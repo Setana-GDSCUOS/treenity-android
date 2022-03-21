@@ -9,7 +9,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.components.XAxis
@@ -18,19 +17,19 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.data.api.dto.mypage.tree.Item
 import com.setana.treenity.data.api.dto.mypage.tree.MyTreeItem
-import com.setana.treenity.data.repository.mypage.WalkLogRepository
 import com.setana.treenity.databinding.MypageMypageActivityMainBinding
 import com.setana.treenity.databinding.MypageMytreeAlertBinding
-import com.setana.treenity.di.NetworkModule
 import com.setana.treenity.service.StepDetectorService
+import com.setana.treenity.ui.mytreelist.TreeListActivity
 import com.setana.treenity.ui.mypage.adapter.MyTreeAdapter
-import com.setana.treenity.ui.mypage.viewmodel.MyTreeViewModel
-import com.setana.treenity.ui.mypage.viewmodel.UserViewModel
-import com.setana.treenity.ui.mypage.viewmodel.ViewModelFactory
-import com.setana.treenity.ui.mypage.viewmodel.WalkLogViewModel
+import com.setana.treenity.ui.settings.SettingsActivity
+import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
+import kotlin.collections.ArrayList
 
 ///////////////// 마이페이지 /////////////////
 @AndroidEntryPoint
@@ -43,19 +42,17 @@ class MyPageActivity : AppCompatActivity() {
     // MyPage main
     private lateinit var binding: MypageMypageActivityMainBinding
 
-    // User
-    private val userViewModel: UserViewModel by viewModels()
-
-    // My Tree
-    private val myTreeViewModel: MyTreeViewModel by viewModels()
     private lateinit var myTreeAdapter: MyTreeAdapter
+
+    private val myPageViewModel: MyPageViewModel by viewModels()
+    val userId = PREFS.getLong(USER_ID_KEY, -1)
 
     // Walk Log
     var barEntries = ArrayList<BarEntry>()
     private lateinit var barDataSet: BarDataSet
     private lateinit var barData: BarData
 
-    private lateinit var walkLogViewModel: WalkLogViewModel
+//    private lateinit var walkLogViewModel: WalkLogViewModel
     var walkLogIds = ArrayList<Float>()
     var walks = ArrayList<Float>()
     var dates = ArrayList<String>()
@@ -65,6 +62,7 @@ class MyPageActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         // 걷는 것 인식하기 위한 권한 요청
         ActivityCompat.requestPermissions(this, permission, MY_PERMISSION_ACCESS_ALL)
@@ -83,19 +81,7 @@ class MyPageActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
-        // User 데이터 로드
-        getMyUserData()
-
-        // WalkLog
-        val walkLogRepository = WalkLogRepository(NetworkModule.provideRetrofitInstance())
-        walkLogViewModel = ViewModelProvider(
-            this,
-            ViewModelFactory(walkLogRepository)
-        ).get(WalkLogViewModel::class.java)
-        setBarChart()
-
-        // My Tree 데이터 로드 & 더보기 아이템 추가
-        getMyTreeData()
+        setUpViewModel()
 
         // MyTree 에 들어갈 recyclerview 에 어댑터 attach
         setViews()
@@ -103,7 +89,7 @@ class MyPageActivity : AppCompatActivity() {
         // 이벤트 등록 : 마지막 아이템을 누르면 나무 목록 리스트 페이지 전환
         myTreeAdapter.setOnItemClickListener(object : MyTreeAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                if (position == 3) { // 마지막 아이템
+                if (position == 5) { // 마지막 아이템
                     val nextIntent = Intent(this@MyPageActivity, TreeListActivity::class.java)
                     startActivity(nextIntent)
                 }
@@ -150,15 +136,6 @@ class MyPageActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        getMyUserData() // point + bucket + totalWalk 갱신 -> 잘 안됨
-
-        // 이름 갱신 -> 환경 설정에서 유저가 적은 이름
-        updateName()
-    }
-
     private fun updateName() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val name = sharedPreferences.getString("signature", "no name")
@@ -166,29 +143,51 @@ class MyPageActivity : AppCompatActivity() {
             binding.username.text = name
     }
 
-//    private fun setPointAndBucket() { // TODO: LiveData 로 갱신이 잘 안됨.. 잘 모르겠다ㅜ
-//        userViewModel.userResp.observe(this, { user->
-//
-//            binding.apply {
-//                (user.point.toString() + "P").also { point.text = it }
-//                ("X " + user.buckets.toString()).also { bucket.text = it }
-//            }
-//        })
-//    }
+    override fun onStart() {
+        super.onStart()
+
+        myPageViewModel.getUserInfo(userId)
+        myPageViewModel.getMyTrees(userId)
+        // myPageViewModel.getMyWalkLogs(userId) -> Attempt to invoke virtual method 'int java.lang.String.length()' on a null object reference
+
+    }
 
 
-    private fun setBarChart() {
+    private fun setUpViewModel() {
 
-        // retrofit2 를 통해 data fetch
-        walkLogViewModel.getWalkLog()
 
-        walkLogViewModel.walkLogs.observe(this, {
+        myPageViewModel.userLiveData.observe(this, { user ->
+
+                binding.apply {
+                    username.text = user.username
+                    point.text = user.point.toString()
+                    bucket.text = user.buckets.toString()
+                    totalWalk.text = user.totalWalks.toString()
+                }
+
+        })
+
+
+        myPageViewModel.myTreesLiveData.observe(this, {response ->
+            response?.let {
+
+                val lastItem = MyTreeItem(0, "Goto TreeList", Item("https://ifh.cc/g/eA7BXD.jpg"), 0, 0, "")
+                response.add(lastItem)
+
+                myTreeAdapter.trees = response
+            }
+        })
+
+
+        myPageViewModel.myWalkLogsLiveData.observe(this, {
 
             //get data from api and put them in barEntries/pieEntries(리스트 크기만큼 for loop 를 돌며 추가)
-            val index = it.size - 1
+            var index = 0
+            if(it.isNotEmpty())
+                index = it.size - 1
 
             // walkLogId 와 walk 와 date 를 모두 따로따로 ArrayList 로 저장
-            for (i in 0..index) {// x축
+            for (i in 0..index) { // x축
                 walkLogIds.add(it[i].walkLogId.toFloat())
             }
 
@@ -252,25 +251,6 @@ class MyPageActivity : AppCompatActivity() {
 
                 invalidate() // refresh
             }
-        })
-    }
-
-    private fun getMyUserData() {
-        userViewModel.userResp.observe(this, { user ->
-
-            binding.apply {
-                username.text = user.username
-                point.text = user.point.toString()
-                bucket.text = user.buckets.toString()
-                totalWalk.text = user.totalWalks.toString()
-            }
-        })
-    }
-
-    private fun getMyTreeData() {
-        myTreeViewModel.responseMyTree.observe(this, { listMyTrees ->
-
-            myTreeAdapter.trees = listMyTrees
         })
     }
 

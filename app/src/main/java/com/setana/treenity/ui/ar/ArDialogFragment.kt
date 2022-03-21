@@ -2,23 +2,18 @@ package com.setana.treenity.ui.ar
 
 
 import android.app.Dialog
-import android.content.ContentProvider
 import android.content.Context
-import android.os.Bundle
 import android.view.*
 import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.isGone
-import androidx.fragment.app.DialogFragment
 import coil.load
 import com.setana.treenity.R
-import com.setana.treenity.data.api.dto.GetTreeInformationDTO
-import com.setana.treenity.data.api.dto.WaterTreeDTO
+import com.setana.treenity.data.api.dto.GetTreeInformationResponseDTO
 import com.setana.treenity.databinding.ArInfoDialogBinding
 
 
 
-class ArDialogFragment(context: Context,treeInfo: GetTreeInformationDTO,isTreeOwner:Boolean) {
+class ArDialogFragment(context: Context, treeInfoResponse: GetTreeInformationResponseDTO, isTreeOwner:Boolean) {
     interface ArDialogListener {
         fun onWaterListener(treeId:Long)
         fun onDescriptionSaveListener(description:String)
@@ -27,7 +22,7 @@ class ArDialogFragment(context: Context,treeInfo: GetTreeInformationDTO,isTreeOw
     private val context = context
     private val dialog = Dialog(context)
     private val isTreeOwner = isTreeOwner
-    private val treeInfo = treeInfo
+    private val treeInfo = treeInfoResponse
     private val arInfoDialogBinding: ArInfoDialogBinding =
         ArInfoDialogBinding.inflate(LayoutInflater.from(context))
     private lateinit var dialogListener: ArDialogListener

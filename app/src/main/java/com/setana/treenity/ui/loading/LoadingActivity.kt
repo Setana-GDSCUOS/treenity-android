@@ -84,6 +84,13 @@ class LoadingActivity : AppCompatActivity() {
     private fun startArActivity() {
         val intent = Intent(this, ArActivity::class.java)
         startActivity(intent)
+        finish()
+    }
+
+    private fun startMapActivity() {
+        val intent = Intent(this, MapActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun startStepDetectorService() {
@@ -158,8 +165,8 @@ class LoadingActivity : AppCompatActivity() {
                     if (checkAndRequestPermissions()) {
                         startStepDetectorService()
                         // TODO onRequestPermissionsResult 코드 중복 제거
-                        val intent = Intent(this, MapActivity::class.java)
-                        startActivity(intent)
+                        startArActivity()
+//                        startMapActivity()
                     }
                 } else {
                     Log.d(TAG, "걸음 수 전송 실패")
@@ -340,8 +347,8 @@ class LoadingActivity : AppCompatActivity() {
         ) {
             Toast.makeText(this, "All Permission Granted", Toast.LENGTH_SHORT).show()
             startStepDetectorService()
-            val intent = Intent(this, MapActivity::class.java)
-            startActivity(intent)
+            startArActivity()
+            //startMapActivity
         } else {
             permissionDenied = true
         }

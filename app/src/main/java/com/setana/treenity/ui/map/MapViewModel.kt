@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.setana.treenity.data.api.dto.GetAroundTreeResponseDTO
-import com.setana.treenity.data.api.dto.PutTreeInfoDTO
+import com.setana.treenity.data.api.dto.PutTreeInfoRequestDTO
 import com.setana.treenity.data.repository.TreeRepository
 import com.setana.treenity.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -57,7 +57,7 @@ class MapViewModel @Inject constructor(
         }
 
         withContext(Dispatchers.IO + handler) {
-            val putTreeInfoDTO = PutTreeInfoDTO(bookmark,  null, null)
+            val putTreeInfoDTO = PutTreeInfoRequestDTO(bookmark,  null, null)
             val response = treeRepository.putTreeInfo(userId, treeId, putTreeInfoDTO)
             _treeBookmarkResponseLiveData.postValue(response)
         }

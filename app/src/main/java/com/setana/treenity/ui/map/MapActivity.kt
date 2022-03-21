@@ -211,6 +211,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                 ).addOnSuccessListener { location ->
                     lastKnownLocation = location
                     lastKnownLocation?.let {
+                        // Todo userId 연결 부분 추가 필요
                         mapViewModel.listAroundTrees(it.latitude, it.longitude, 1)
                     }
                 }.addOnFailureListener {
@@ -221,7 +222,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                     .addOnSuccessListener { location: Location? ->
                         lastKnownLocation = location
                         lastKnownLocation?.let {
-                            mapViewModel.listAroundTrees(it.latitude, it.longitude)
+                            // Todo userId 연결 부분 추가 필요
+                            mapViewModel.listAroundTrees(it.latitude, it.longitude, 1)
                         }
                     }
             }

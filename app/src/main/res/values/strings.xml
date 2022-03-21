@@ -9,4 +9,9 @@
     <string name="map_id">e4bbb8637888b8b5</string>
     <string name="place_object">Not Implemented yet</string>
     <string name="move_object">Not Implemented yet</string>
+    <string name="preference_file_key">com.setana.treenity.PREFERENCE_FILE_KEY</string>
+    <string name="tree_description_box"> It\'s description for this tree. You can Edit by touching here If this tree is yours </string>
+    <string name="watering_button_description">watering can image copyrighted by Freepik - Flaticon</string>
+    <string name="description_title">Tree Description</string>
+    <string name="tree_name">TreeName : </string>
 </resources>

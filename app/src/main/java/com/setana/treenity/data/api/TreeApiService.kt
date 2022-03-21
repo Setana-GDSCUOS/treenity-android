@@ -1,7 +1,6 @@
 package com.setana.treenity.data.api
 
 import com.setana.treenity.data.api.dto.*
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -13,31 +12,25 @@ interface TreeApiService {
         @Query("userId") userId:Long
     ): Response<List<GetAroundTreeResponseDTO>>
 
-
-    @GET("trees")   // API 상세 경로, format : json
-    suspend fun getAroundArTrees(
-        @Query("latitude") lat: Double,
-        @Query("longitude") lng: Double,
-        @Query("userId") userId:Long
-    ): Response<List<GetAroundArTreeResponseDTO>>
-
     @Headers("Content-Type: application/json")
-    @POST("trees") // API 상세 경로, format : json
-    suspend fun postTree(@Body postTreeDTO: PostTreeDTO): Response<Void>
+    @POST("users/{id}/trees") // API 상세 경로, format : json
+    suspend fun postTree(
+        @Path("id") id:Long,
+        @Body postTreeRequestDTO: PostTreeRequestDTO
+    ): Response<Void>
 
-    // userId를 제시하고 나무 정보를 받아오는 것
+    // 이제 treeId 로 자신 나무만
     @GET("trees/{id}")
     suspend fun getTreeInformation(
         @Path("id") id:Long,
-        @Query("id") treeId: Long,
-        @Query("userId") userId:Long
-    ): Response<GetTreeInformationDTO>
+    ): Response<GetTreeInformationResponseDTO>
 
     @Headers("Content-Type: application/json")
-    @PUT("trees/{id}/interact")
+    @POST("users/{userId}/trees/{treeId}/interact")
     suspend fun waterTree(
-        @Path("id") id: Long,
-        @Body treeRefresh: WaterTreeDTO
+        @Path("userId") userId: Long,
+        @Path("treeId") treeId: Long,
+        @Body treeRequestRefresh: WaterTreeRequestDTO
     ): Response<Void>
 
     @Headers("Content-Type: application/json")
@@ -45,6 +38,6 @@ interface TreeApiService {
     suspend fun putTreeInfo(
         @Path("userId") userId: Long,
         @Path("treeId") treeId: Long,
-        @Body putTreeInfoDTO: PutTreeInfoDTO
+        @Body putTreeInfoRequestDTO: PutTreeInfoRequestDTO
     ): Response<Void>
 }

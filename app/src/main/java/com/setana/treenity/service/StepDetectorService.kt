@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import androidx.core.app.NotificationCompat
 import android.app.*
+import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import com.setana.treenity.ui.loading.LoadingActivity
@@ -65,7 +66,7 @@ class StepDetectorService : Service(), SensorEventListener {
 
         val pendingIntent = PendingIntent.getActivity(
             applicationContext,
-            0, intent, 0
+            0, intent, FLAG_IMMUTABLE
         )
 
         val notification = NotificationCompat.Builder(

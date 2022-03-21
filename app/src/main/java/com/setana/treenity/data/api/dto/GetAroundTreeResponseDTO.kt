@@ -11,9 +11,10 @@ data class GetAroundTreeResponseDTO(
     val level: Int,
     val distance: Double,
     val userId: Long,
-    val username: String
+    val username: String,
+    val cloudAnchorId: String
 ) : Serializable {
     companion object {
-        val EMPTY = GetAroundTreeResponseDTO(0, 0.0, 0.0, "","",0, 0.0, 0, "")
+        val EMPTY = GetAroundTreeResponseDTO(0, 0.0, 0.0, "","",0, 0.0, 0, "","")
     }
 }

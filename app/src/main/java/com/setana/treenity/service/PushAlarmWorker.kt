@@ -37,7 +37,7 @@ class PushAlarmWorker(context: Context, workerParameters: WorkerParameters) : Wo
 
         val pendingIntent = PendingIntent.getActivity(
             applicationContext,
-            0, intent, 0
+            0, intent, PendingIntent.FLAG_IMMUTABLE
         )
 
 

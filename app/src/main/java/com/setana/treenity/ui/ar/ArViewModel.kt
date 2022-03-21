@@ -19,11 +19,11 @@ import javax.inject.Inject
 class ArViewModel @Inject constructor(
     private val treeRepository: TreeRepository
 ): ViewModel() {
-    private val _treeListLiveData: MutableLiveData<List<GetAroundArTreeResponseDTO>> = MutableLiveData()
-    val treeListLiveData: LiveData<List<GetAroundArTreeResponseDTO>> = _treeListLiveData
+    private val _treeListLiveData: MutableLiveData<List<GetAroundTreeResponseDTO>> = MutableLiveData()
+    val treeListLiveData: LiveData<List<GetAroundTreeResponseDTO>> = _treeListLiveData
 
-    private val _treeInformationLiveData: MutableLiveData<GetTreeInformationDTO> = MutableLiveData()
-    val treeInformationLiveData: LiveData<GetTreeInformationDTO> = _treeInformationLiveData
+    private val _treeInformationResponseLiveData: MutableLiveData<GetTreeInformationResponseDTO> = MutableLiveData()
+    val treeInformationResponseLiveData: LiveData<GetTreeInformationResponseDTO> = _treeInformationResponseLiveData
 
     //private val _treeIdLiveData: MutableLiveData<Long> = MutableLiveData()
     //val treeIdLiveData: LiveData<Long> = _treeIdLiveData
@@ -42,7 +42,7 @@ class ArViewModel @Inject constructor(
         }
 
         withContext(Dispatchers.IO + handler) {
-            val response = treeRepository.getAroundArTrees(lat, lng, userId)
+            val response = treeRepository.getAroundTrees(lat, lng, userId)
             if (response.isSuccessful) {
                 setToastMessage("loading trees around, please look around")
                 _treeListLiveData.postValue(response.body())
@@ -52,13 +52,13 @@ class ArViewModel @Inject constructor(
         }
     }
 
-    fun postHostedTree(dto: PostTreeDTO) = viewModelScope.launch(Dispatchers.Main){
+    fun postHostedTree(userId:Long, requestDto: PostTreeRequestDTO) = viewModelScope.launch(Dispatchers.Main){
         val handler = CoroutineExceptionHandler { _, throwable ->
             setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
             throwable.message?.let { Log.d("ArViewModel.kt", it) }
         }
         withContext(Dispatchers.IO + handler) {
-            val response = treeRepository.postTree(dto)
+            val response = treeRepository.postTree(userId,requestDto)
             /*if (response.code() == 200) {
                 //_treeIdLiveData.postValue(response.body)
             } else if(response.code()==500){
@@ -81,45 +81,50 @@ class ArViewModel @Inject constructor(
         }
     }
 
-    fun getTreeInformation(id:Long, treeId: Long, userId: Long) = viewModelScope.launch ( Dispatchers.Main ){
+    fun getTreeInformation(treeId: Long) = viewModelScope.launch ( Dispatchers.Main ){
         // 서버쪽 구성때문에 두 개로 나눠졌는데 둘 다 같은 treeId입니다
         val handler = CoroutineExceptionHandler { _, throwable ->
             setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
             throwable.message?.let { Log.d("ArViewModel.kt", it) }
         }
         withContext(Dispatchers.IO + handler) {
-            val response = treeRepository.getTreeInformation(id, treeId, userId)
+            val response = treeRepository.getTreeInformation(treeId)
             if (response.isSuccessful) {
-                _treeInformationLiveData.postValue(response.body())
+                _treeInformationResponseLiveData.postValue(response.body())
             } else {
                 setToastMessage(response.message())
             }
         }
     }
 
-    fun waterTree(treeId:Long, waterTreeDTO: WaterTreeDTO)  = viewModelScope.launch ( Dispatchers.Main ){
+    fun waterTree(userId: Long, treeId:Long, waterTreeRequestDTO: WaterTreeRequestDTO)  = viewModelScope.launch ( Dispatchers.Main ) {
         val handler = CoroutineExceptionHandler { _, throwable ->
             setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
-            throwable.message?.let {Log.d("ArViewModel.kt", it) }
+            throwable.message?.let { Log.d("ArViewModel.kt", it) }
         }
         withContext(Dispatchers.IO + handler) {
-            val response = treeRepository.waterTree(treeId,waterTreeDTO)
-            if (response.isSuccessful) {
-                // Todo Not implemented yet
-                // 물 잘 주면 뭐 해야되냐? 그냥 성공했다고 알려주고 성공했으면 모델 리로드해야지뭐
-            } else {
-                setToastMessage(response.message())
+            val response = treeRepository.waterTree(userId, treeId, waterTreeRequestDTO)
+            when (response.code()) {
+                200 -> {
+                    setToastMessage("You have watered your tree!")
+                }
+                406 -> {
+                    setToastMessage("You have not enough buckets")
+                }
+                else -> {
+
+                }
             }
         }
     }
 
-    fun putTreeInfo(userId:Long, treeId:Long,putTreeInfoDTO: PutTreeInfoDTO)= viewModelScope.launch ( Dispatchers.Main ){
+    fun putTreeInfo(userId:Long, treeId:Long, putTreeInfoRequestDTO: PutTreeInfoRequestDTO)= viewModelScope.launch ( Dispatchers.Main ){
         val handler = CoroutineExceptionHandler { _, throwable ->
             setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
             throwable.message?.let {Log.d("ArViewModel.kt", it) }
         }
         withContext(Dispatchers.IO + handler) {
-            val response = treeRepository.putTreeInfo(userId,treeId,putTreeInfoDTO)
+            val response = treeRepository.putTreeInfo(userId,treeId,putTreeInfoRequestDTO)
             if (response.isSuccessful) {
                 // Todo Not implemented yet
             } else {

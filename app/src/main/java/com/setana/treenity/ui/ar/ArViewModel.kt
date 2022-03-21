@@ -19,8 +19,8 @@ import javax.inject.Inject
 class ArViewModel @Inject constructor(
     private val treeRepository: TreeRepository
 ): ViewModel() {
-    private val _treeListLiveData: MutableLiveData<List<GetAroundArTreeResponseDTO>> = MutableLiveData()
-    val treeListLiveData: LiveData<List<GetAroundArTreeResponseDTO>> = _treeListLiveData
+    private val _treeListLiveData: MutableLiveData<List<GetAroundTreeResponseDTO>> = MutableLiveData()
+    val treeListLiveData: LiveData<List<GetAroundTreeResponseDTO>> = _treeListLiveData
 
     private val _treeInformationLiveData: MutableLiveData<GetTreeInformationDTO> = MutableLiveData()
     val treeInformationLiveData: LiveData<GetTreeInformationDTO> = _treeInformationLiveData
@@ -42,7 +42,7 @@ class ArViewModel @Inject constructor(
         }
 
         withContext(Dispatchers.IO + handler) {
-            val response = treeRepository.getAroundArTrees(lat, lng, userId)
+            val response = treeRepository.getAroundTrees(lat, lng, userId)
             if (response.isSuccessful) {
                 setToastMessage("loading trees around, please look around")
                 _treeListLiveData.postValue(response.body())

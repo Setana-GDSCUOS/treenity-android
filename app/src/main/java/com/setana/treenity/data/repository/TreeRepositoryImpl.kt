@@ -2,7 +2,6 @@ package com.setana.treenity.data.repository
 
 import com.setana.treenity.data.api.TreeApiHelper
 import com.setana.treenity.data.api.dto.*
-import retrofit2.Call
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -11,8 +10,6 @@ class TreeRepositoryImpl @Inject constructor(
 ) : TreeRepository {
     override suspend fun getAroundTrees(lat: Double, lng: Double, userId:Long): Response<List<GetAroundTreeResponseDTO>> =
         remoteSource.getAroundTrees(lat, lng, userId)
-    override suspend fun getAroundArTrees(lat: Double, lng: Double, userId:Long): Response<List<GetAroundArTreeResponseDTO>> =
-        remoteSource.getAroundArTrees(lat, lng, userId)
     override suspend fun postTree(postTreeDTO: PostTreeDTO): Response<Void> =
         remoteSource.postTree(postTreeDTO)
     override suspend fun getTreeInformation(id:Long,treeId: Long, userId:Long): Response<GetTreeInformationDTO> =

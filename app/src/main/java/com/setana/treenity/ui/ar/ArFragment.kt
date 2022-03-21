@@ -549,7 +549,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             }
         }
     }
-    @SuppressLint ("missing permission")
+    @SuppressLint("MissingPermission")
     protected fun startLocationUpdates() {
         //FusedLocationProviderClient의 인스턴스를 생성.
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())

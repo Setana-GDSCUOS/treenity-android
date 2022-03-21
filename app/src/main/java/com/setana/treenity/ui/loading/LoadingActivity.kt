@@ -43,6 +43,7 @@ import com.setana.treenity.ui.map.MapActivity
 import com.setana.treenity.util.EventObserver
 import com.setana.treenity.util.PermissionUtils
 import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
+import com.setana.treenity.util.PreferenceManager.Companion.USER_EMAIL_KEY
 import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
@@ -242,7 +243,8 @@ class LoadingActivity : AppCompatActivity() {
         auth = Firebase.auth
 
         // 앱 데이터 삭제 후, 혹은 외부에서 로그아웃 이후 다른 계정으로 로그인 시 이전 uid로 요청하는 현상을 방지하기 위해 초기화
-        PREFS.setLong(USER_ID_KEY, -1)
+        PREFS.setLong(USER_ID_KEY, -1)  // for service
+        // PREFS.setString(USER_EMAIL_KEY, "")
     }
 
     private fun verifyUser() {
@@ -250,6 +252,7 @@ class LoadingActivity : AppCompatActivity() {
         if (currentUser == null) {
             googleSignIn()
         } else {
+            PREFS.setString(USER_EMAIL_KEY, currentUser.email ?: "")
             loadingViewModel.loginByFirebaseToken()
         }
     }

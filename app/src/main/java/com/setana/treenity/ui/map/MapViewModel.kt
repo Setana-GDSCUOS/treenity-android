@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.setana.treenity.data.api.dto.GetAroundTreeResponseDTO
+import com.setana.treenity.data.api.dto.PutTreeInfoDTO
 import com.setana.treenity.data.repository.TreeRepository
 import com.setana.treenity.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,6 +14,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,6 +23,9 @@ class MapViewModel @Inject constructor(
 ): ViewModel() {
     private val _treeListLiveData: MutableLiveData<List<GetAroundTreeResponseDTO>> = MutableLiveData()
     val treeListLiveData: LiveData<List<GetAroundTreeResponseDTO>> = _treeListLiveData
+
+    private val _treeBookmarkResponseLiveData: MutableLiveData<Response<Void>> = MutableLiveData()
+    val treeBookmarkResponseLiveData: LiveData<Response<Void>> = _treeBookmarkResponseLiveData
 
     private val _showErrorToast = MutableLiveData<Event<String>>()
     val showErrorToast: LiveData<Event<String>> = _showErrorToast
@@ -42,6 +47,19 @@ class MapViewModel @Inject constructor(
             } else {
                 setToastMessage(response.message())
             }
+        }
+    }
+
+    fun updateTreeBookmarkState(userId: Long, treeId: Long, bookmark: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+        val handler = CoroutineExceptionHandler { _, throwable ->
+            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            throwable.message?.let { Log.d("MapViewModel.kt", it) }
+        }
+
+        withContext(Dispatchers.IO + handler) {
+            val putTreeInfoDTO = PutTreeInfoDTO(bookmark,  null, null)
+            val response = treeRepository.putTreeInfo(userId, treeId, putTreeInfoDTO)
+            _treeBookmarkResponseLiveData.postValue(response)
         }
     }
 }

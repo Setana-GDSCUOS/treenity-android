@@ -26,9 +26,8 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
     @Provides
-    @Singleton
     fun provideInterceptor(): Interceptor = Interceptor {
-        // TODO 항상 jwt 토큰이 필요한 것은 아님
+        // TODO jwt token 또한 의존성 주입으로 받을 수 있도록 구현
         val request = it.request()
         val result = runCatching {
             val user =

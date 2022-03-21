@@ -3,6 +3,7 @@ package com.setana.treenity.ui.map
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -23,26 +24,23 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.CircleOptions
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.setana.treenity.R
 import com.setana.treenity.data.api.dto.GetAroundTreeResponseDTO
 import com.setana.treenity.databinding.ActivityMapBinding
+import com.setana.treenity.ui.loading.LoadingActivity
+import com.setana.treenity.util.AuthUtils
 import com.setana.treenity.util.EventObserver
 import com.setana.treenity.util.PermissionUtils.PermissionDeniedDialog.Companion.newInstance
 import com.setana.treenity.util.PermissionUtils.isPermissionGranted
 import com.setana.treenity.util.PermissionUtils.requestPermission
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
 class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
-    GoogleMap.OnMapClickListener, GoogleMap.OnMyLocationButtonClickListener,
-    GoogleMap.OnMyLocationClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
+    GoogleMap.OnMapClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
     private lateinit var activityMapBinding: ActivityMapBinding
     private lateinit var googleMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -50,9 +48,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     private lateinit var loadingAnimationFrameLayout: FrameLayout
     private var lastKnownLocation: Location? = null
     private var permissionDenied = false
+    private var localUserId: Long = -1
     private var isFABOpen = false
     private val mapViewModel: MapViewModel by viewModels()
     private val cancellationTokenSource = CancellationTokenSource()
+    private val markerHashMap = hashMapOf<Long, Marker>()
+    private val bookmarkHashMap = hashMapOf<Long, Boolean>()
 
     companion object {
         private const val TAG = "MapActivity"
@@ -66,9 +67,31 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         setupViewModel()
     }
 
+    override fun onStart() {
+        super.onStart()
+        checkUser()
+    }
+
     override fun onStop() {
         super.onStop()
         cancellationTokenSource.cancel()
+    }
+
+    /**
+     * 현재 User 정보에 대한 간단한 검증을 진행하는 메소드
+     * - 액티비티 상단에 userId 로 사용할 private var localUserId: Long = -1 정의
+     * - 사용 시 else 문의 주석 해제
+     * - 반드시 onStart() 내에서 제일 먼저 호출
+     */
+    private fun checkUser() {
+        if (AuthUtils.userId <= 0) {
+            Toast.makeText(this, "Invalid user credentials!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, LoadingActivity::class.java)
+            startService(intent)
+            finish()
+        } else {
+            localUserId = AuthUtils.userId
+        }
     }
 
     private fun setupUI() {
@@ -116,27 +139,31 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     @SuppressLint("MissingPermission")
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
-        map.apply {
+        googleMap.apply {
             setOnMarkerClickListener(this@MapActivity)
             setOnMapClickListener(this@MapActivity)
-            setOnMyLocationButtonClickListener(this@MapActivity)
-            setOnMyLocationClickListener(this@MapActivity)
+            uiSettings.isMyLocationButtonEnabled = false
         }
+        setupViewModel()
         initializeMapItems()
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
-        Toast.makeText(this, "마커 클릭됨", Toast.LENGTH_SHORT).show()
-        Log.d("############", "마커 클릭됨")
         val tree = mapViewModel.treeListLiveData.value?.find { it.treeId == marker.tag }
-        expandBottomSheet()
-        tree?.let { setBottomSheetData(it) }
+        if (tree != null) {
+            bindBottomSheetData(tree, marker)
+            expandBottomSheet()
+        } else {
+            Toast.makeText(
+                this,
+                "Invalid marker item, Please refresh the data.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
         return true
     }
 
     override fun onMapClick(p0: LatLng) {
-        Toast.makeText(this, "지도 클릭됨", Toast.LENGTH_SHORT).show()
-        Log.d("############", "지도 클릭됨")
         collapseBottomSheet()
     }
 
@@ -154,15 +181,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                 Manifest.permission.ACCESS_FINE_LOCATION, true
             )
         }
-    }
-
-    override fun onMyLocationButtonClick(): Boolean {
-        // Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show()
-        return false
-    }
-
-    override fun onMyLocationClick(location: Location) {
-        // Toast.makeText(this, "Current location:\n$location", Toast.LENGTH_LONG).show()
     }
 
     override fun onRequestPermissionsResult(
@@ -203,7 +221,21 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED
         ) {
+            collapseBottomSheet()
             showLoadingAnimation()
+            // 앱 초기 구동 시 lastLocation 의도치 않은 곳으로 잡힐 가능성 존재하므로 항상 currentLocation
+            fusedLocationClient.getCurrentLocation(
+                PRIORITY_HIGH_ACCURACY,
+                cancellationTokenSource.token
+            ).addOnSuccessListener { location ->
+                lastKnownLocation = location
+                lastKnownLocation?.let {
+                    mapViewModel.listAroundTrees(it.latitude, it.longitude, localUserId)
+                }
+            }.addOnFailureListener {
+                Toast.makeText(this, "현재 위치를 불러오는 중 문제가 발생하였습니다.", Toast.LENGTH_SHORT).show()
+            }
+            /*
             if (lastKnownLocation == null) {
                 fusedLocationClient.getCurrentLocation(
                     PRIORITY_HIGH_ACCURACY,
@@ -211,8 +243,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                 ).addOnSuccessListener { location ->
                     lastKnownLocation = location
                     lastKnownLocation?.let {
-                        // Todo userId 연결 부분 추가 필요
-                        mapViewModel.listAroundTrees(it.latitude, it.longitude, 1)
+                        mapViewModel.listAroundTrees(it.latitude, it.longitude, localUserId)
                     }
                 }.addOnFailureListener {
                     Toast.makeText(this, "현재 위치를 불러오는 중 문제가 발생하였습니다.", Toast.LENGTH_SHORT).show()
@@ -222,33 +253,51 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                     .addOnSuccessListener { location: Location? ->
                         lastKnownLocation = location
                         lastKnownLocation?.let {
-                            // Todo userId 연결 부분 추가 필요
-                            mapViewModel.listAroundTrees(it.latitude, it.longitude, 1)
+                            mapViewModel.listAroundTrees(it.latitude, it.longitude, localUserId)
                         }
                     }
             }
+            */
         }
     }
 
     private fun setupViewModel() {
-        mapViewModel.treeListLiveData.observe(this, { treeList ->
+        mapViewModel.treeListLiveData.observe(this, { data ->
             googleMap.clear()
-            treeList?.let { it ->
-                Log.d(TAG, treeList.toString())
-                for (tree in it) {
+            markerHashMap.clear()
+            data?.let { treeList ->
+                Log.d(TAG, data.toString())
+                for (tree in treeList) {
+                    val treeId = tree.treeId
                     val coordinate = LatLng(tree.latitude, tree.longitude)
-                    val marker = googleMap.addMarker(
-                        MarkerOptions()
-                            .position(coordinate)
-                            .title(tree.treeId.toString())
-                    )
-                    marker?.tag = tree.treeId
+                    val markerOptions =
+                        MarkerOptions().position(coordinate).title(tree.treeName).apply {
+                            if (tree.bookmark) {
+                                icon(
+                                    (BitmapDescriptorFactory.defaultMarker(
+                                        BitmapDescriptorFactory.HUE_ROSE
+                                    ))
+                                )
+                            } else {
+                                icon(
+                                    (BitmapDescriptorFactory.defaultMarker(
+                                        BitmapDescriptorFactory.HUE_GREEN
+                                    ))
+                                )
+                            }
+                        }
+                    val marker = googleMap.addMarker(markerOptions)
+                    marker?.let { markerItem ->
+                        markerItem.tag = treeId
+                        markerHashMap[treeId] = markerItem
+                    }
+                    bookmarkHashMap[treeId] = tree.bookmark
                 }
-                lastKnownLocation?.let {
+                lastKnownLocation?.let { myLocation ->
                     val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
                         LatLng(
-                            it.latitude,
-                            it.longitude
+                            myLocation.latitude,
+                            myLocation.longitude
                         ), 16F
                     )
                     googleMap.animateCamera(cameraUpdate)
@@ -256,8 +305,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                         CircleOptions()
                             .center(
                                 LatLng(
-                                    it.latitude,
-                                    it.longitude
+                                    myLocation.latitude,
+                                    myLocation.longitude
                                 )
                             )
                             .radius(500.0)
@@ -267,6 +316,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                 }
             }
             hideLoadingAnimation()
+        })
+
+        mapViewModel.treeBookmarkResponseLiveData.observe(this, { response ->
+            if (!response.isSuccessful) {
+                Toast.makeText(this, "Failed to add current tree to favorites.", Toast.LENGTH_SHORT)
+                    .show()
+                updateAroundTreeList()
+            }
         })
 
         mapViewModel.showErrorToast.observe(this, EventObserver {
@@ -282,6 +339,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     @SuppressLint("MissingPermission")
     private fun setupFloatingActionButton() {
         activityMapBinding.fabMapMain.setOnClickListener {
+            it.animate().rotationBy(180f)
             if (!isFABOpen) {
                 showFABMenu()
             } else {
@@ -289,25 +347,41 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
             }
         }
 
-        // Tree List
+        // Tree List FAB
         activityMapBinding.fabMapSub1.setOnClickListener {
-            val builder = AlertDialog.Builder(this)
-            val adapter = ArrayAdapter<String>(builder.context, android.R.layout.simple_list_item_1)
-            for (tree in mapViewModel.treeListLiveData.value!!) {
-                adapter.add(tree.treeId.toString())
-            }
-
-            builder.apply {
-                setTitle("Tree List")
-                setAdapter(adapter) { _, which ->
-                    val tree = mapViewModel.treeListLiveData.value!![which]
-                    val coordinate = LatLng(tree.latitude, tree.longitude)
-                    val cameraUpdate = CameraUpdateFactory.newLatLngZoom(coordinate, 16F)
-                    googleMap.animateCamera(cameraUpdate)
-                    setBottomSheetData(tree)
-                    expandBottomSheet()
+            val treeList = mapViewModel.treeListLiveData.value
+            if (treeList.isNullOrEmpty()) {
+                Toast.makeText(this, "There are no trees around you now.", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
+                val builder = AlertDialog.Builder(this)
+                val adapter =
+                    ArrayAdapter<String>(builder.context, android.R.layout.simple_list_item_1)
+                for (tree in treeList) {
+                    adapter.add("${tree.treeName}  (Distance : ${tree.distance.toInt()}m)")
                 }
-                show()
+
+                builder.apply {
+                    setTitle("Tree List")
+                    setAdapter(adapter) { _, which ->
+                        val tree = treeList[which]
+                        val marker = markerHashMap[tree.treeId]
+                        if (marker == null) {
+                            Toast.makeText(
+                                this@MapActivity,
+                                "Invalid tree object, please refresh the data.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            val coordinate = LatLng(tree.latitude, tree.longitude)
+                            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(coordinate, 16F)
+                            googleMap.animateCamera(cameraUpdate)
+                            bindBottomSheetData(tree, marker)
+                            expandBottomSheet()
+                        }
+                    }
+                    show()
+                }
             }
         }
 
@@ -326,6 +400,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
             .translationY(-resources.getDimension(R.dimen.standard_110))
         activityMapBinding.fabMapSub2.animate()
             .translationY(-resources.getDimension(R.dimen.standard_60))
+        activityMapBinding.tvLabelSub1.apply {
+            alpha = 0.0f
+            visibility = View.VISIBLE
+            animate().alpha(1.0f)
+        }
+        activityMapBinding.tvLabelSub2.apply {
+            alpha = 0.0f
+            visibility = View.VISIBLE
+            animate().alpha(1.0f)
+        }
     }
 
     /**
@@ -337,18 +421,41 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         activityMapBinding.fabMapMain.bringToFront()
         activityMapBinding.fabMapSub1.animate().translationY(0F)
         activityMapBinding.fabMapSub2.animate().translationY(0F)
+        activityMapBinding.tvLabelSub1.animate().alpha(0.0f)
+        activityMapBinding.tvLabelSub2.animate().alpha(0.0f)
     }
 
     private fun setupBottomSheet() {
         bottomSheetBehavior = BottomSheetBehavior.from(activityMapBinding.bottomSheet.root)
     }
 
-    private fun setBottomSheetData(tree: GetAroundTreeResponseDTO) {
+    @SuppressLint("SetTextI18n")
+    private fun bindBottomSheetData(tree: GetAroundTreeResponseDTO, marker: Marker) {
         activityMapBinding.bottomSheet.apply {
-            bsTvTreeName.text = tree.treeId.toString()
+            bsTvTreeName.text = tree.treeName
             bsTvCreatedDate.text = tree.createdDate
-            bsTvUsername.text = tree.username
-            bsTvDistance.text = tree.distance.toString() + "m"
+            bsTvOwner.text = tree.user.username
+            bsTvLevel.text = "Lv.${tree.level}"
+            bsTvDistance.text = tree.distance.toInt().toString().plus("m")
+            btnBookmark.isActivated = bookmarkHashMap[tree.treeId] == true
+            btnBookmark.setOnClickListener {
+                btnBookmark.isActivated = !btnBookmark.isActivated
+                bookmarkHashMap[tree.treeId] = bookmarkHashMap[tree.treeId] != true
+                // TODO API 변경 가능성
+                mapViewModel.updateTreeBookmarkState(localUserId, tree.treeId, !btnBookmark.isActivated)
+                marker.apply {
+                    if (!btnBookmark.isActivated) setIcon(
+                        (BitmapDescriptorFactory.defaultMarker(
+                            BitmapDescriptorFactory.HUE_GREEN
+                        ))
+                    )
+                    else setIcon(
+                        (BitmapDescriptorFactory.defaultMarker(
+                            BitmapDescriptorFactory.HUE_ROSE
+                        ))
+                    )
+                }
+            }
         }
     }
 

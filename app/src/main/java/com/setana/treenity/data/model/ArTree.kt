@@ -1,8 +1,6 @@
 package com.setana.treenity.data.model
 
-import com.setana.treenity.data.api.dto.GetAroundTreeResponseDTO
 import java.io.Serializable
-import java.util.*
 
 data class ArTree(
     val treeId: Long,
@@ -14,8 +12,4 @@ data class ArTree(
     val distance: Double,
     val userId: Long,
     val username: String
-) : Serializable {
-    companion object {
-        val EMPTY = GetAroundTreeResponseDTO(0, 0.0, 0.0, "","",0, 0.0, 0, "")
-    }
-}
+) : Serializable

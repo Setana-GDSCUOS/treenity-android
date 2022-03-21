@@ -78,20 +78,6 @@ class LoadingActivity : AppCompatActivity() {
         setupViewModel()
         verifyUser()
 
-        val hashMapString = PREFS.getString(DAILY_WALK_LOG_KEY, "")
-        val type = object : TypeToken<HashMap<String, String>>() {}.type
-        val hashMap = Gson().fromJson<HashMap<String, String>>(hashMapString, type)
-            ?: hashMapOf(
-                SimpleDateFormat(
-                    "yyyy-MM-dd",
-                    Locale.US
-                ).format(Date()) to "0"
-            )
-        // Log.d("tag", "onSensorChanged: your step feature is $hashMap")
-        Toast.makeText(this, "your step feature is $hashMap", Toast.LENGTH_SHORT).show()
-
-        val intent = Intent(this, StepDetectorService::class.java) // Build the intent for the service
-        applicationContext.startForegroundService(intent)
     }
 
     /**
@@ -105,7 +91,7 @@ class LoadingActivity : AppCompatActivity() {
 
     private fun startStepDetectorService() {
         val intent = Intent(this, StepDetectorService::class.java)
-        this.startService(intent)
+        startService(intent)
     }
 
     /**

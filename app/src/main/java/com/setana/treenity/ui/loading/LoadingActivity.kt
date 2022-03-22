@@ -168,12 +168,11 @@ class LoadingActivity : AppCompatActivity() {
                     if (checkAndRequestPermissions()) {
                         startStepDetectorService()
                         // TODO onRequestPermissionsResult 코드 중복 제거
-
-                         val intent = Intent(this, MyPageActivity::class.java)
-                         startActivity(intent)
+//                         val intent = Intent(this, MyPageActivity::class.java)
+//                         startActivity(intent)
 
                         //startArActivity()
-//                        startMapActivity()
+                        startMapActivity()
                     }
                 } else {
                     Log.d(TAG, "걸음 수 전송 실패")
@@ -355,8 +354,8 @@ class LoadingActivity : AppCompatActivity() {
             Toast.makeText(this, "All Permission Granted", Toast.LENGTH_SHORT).show()
             startStepDetectorService()
 
-             val intent = Intent(this, MyPageActivity::class.java)
-             startActivity(intent)
+//             val intent = Intent(this, MyPageActivity::class.java)
+//             startActivity(intent)
 
             // startArActivity()
             //startMapActivity

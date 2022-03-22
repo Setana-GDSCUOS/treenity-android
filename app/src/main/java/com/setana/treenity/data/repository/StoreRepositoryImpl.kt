@@ -12,6 +12,6 @@ class StoreRepositoryImpl @Inject constructor(
 
     override suspend fun getStoreItems(): Response<List<StoreItem>> =
         remoteSource.getStoreItems()
-    override suspend fun buyTree(userId: Long, itemId: Long): Response<Void> =
-        remoteSource.buyTree(userId, itemId)
+    override suspend fun buyTree(userId: String, storeItem: StoreItem): Response<Void> =
+        remoteSource.buyTree(userId, storeItem)
 }

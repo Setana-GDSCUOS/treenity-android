@@ -9,6 +9,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Bundle
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleService
@@ -16,6 +17,7 @@ import com.google.gson.Gson
 import com.setana.treenity.TreenityApplication.Companion.DAILY_WALK_LOG
 import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.data.repository.TreeRepository
+import com.setana.treenity.databinding.MypageMypageActivityMainBinding
 import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
@@ -61,6 +63,7 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
      */
     override fun onCreate() {
         super.onCreate()
+
         val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) // 기존의 걸음 수도 가져오기에 초기값을 나중에 빼줘야 함
         if (stepCountSensor != null) {
@@ -70,7 +73,7 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
             3.SENSOR_DELAY_UI       60,000ms UI 수정에 적합한 속도
             4.SENSOR_DELAY_NORMAL   200,000ms 화면 방향 변화를 모니터링하기에 적합한 속도
              */
-            sensorManager.registerListener(this, stepCountSensor, SensorManager.SENSOR_DELAY_NORMAL)
+            sensorManager.registerListener(this, stepCountSensor, SensorManager.SENSOR_DELAY_UI)
         } else {
             Toast.makeText(this, "Sensor Not Detected", Toast.LENGTH_SHORT).show()
         }
@@ -148,6 +151,7 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
                 mStepBuffer = 0
             }
             stepsBeforeDetection = it.values[0].toInt()
+
 
 
         }

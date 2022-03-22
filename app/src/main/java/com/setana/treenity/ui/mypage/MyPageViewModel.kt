@@ -3,6 +3,7 @@ package com.setana.treenity.ui.mypage
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
+import com.setana.treenity.TreenityApplication.Companion.DAILY_WALK_LOG
 import com.setana.treenity.data.api.dto.mypage.tree.MyTreeItem
 import com.setana.treenity.data.api.dto.mypage.user.User
 import com.setana.treenity.data.api.dto.mypage.walklog.WalkLog
@@ -11,7 +12,10 @@ import com.setana.treenity.data.repository.UserRepository
 import com.setana.treenity.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
@@ -30,10 +34,21 @@ class MyPageViewModel @Inject constructor(
     private val _showErrorToast = MutableLiveData<Event<String>>()
     val showErrorToast: LiveData<Event<String>> = _showErrorToast
 
+    var steps = MutableLiveData<Int>()
+
+    init {
+        steps.value = DAILY_WALK_LOG[SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())]?.toInt()
+    }
+
+    fun increase(){
+        steps.value =
+            DAILY_WALK_LOG[SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())]?.toInt()
+                ?.plus(1)
+    }
+
     private fun setToastMessage(content: String) {
         _showErrorToast.postValue(Event(content))
     }
-
 
     var walkLogList = ArrayList<WalkLog>()
     var job: Job? = null
@@ -42,7 +57,7 @@ class MyPageViewModel @Inject constructor(
         Log.d("tag","Exception handled: ${throwable.localizedMessage}")
     }
 
-    // 이거 나눠야해!!!(LoadingViewModel 참고) -> 그 다음 액티비티에서 설정 ㄱㄱ
+
     fun getUserInfo(userId:Long) = viewModelScope.launch(Dispatchers.Main) {
 
         val handler = CoroutineExceptionHandler { _, throwable ->
@@ -83,33 +98,33 @@ class MyPageViewModel @Inject constructor(
         }
     }
 
-//    fun getMyWalkLogs(userId:Long) = viewModelScope.launch(Dispatchers.Main) {
-//
-//        val handler = CoroutineExceptionHandler { _, throwable ->
-//            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
-//            throwable.message?.let { Log.d("MyPageViewModel.kt", it) }
-//        }
-//
-//        val response = userRepository.getUserWalkLogs(userId.toString())
-//
-//        withContext(Dispatchers.IO + handler) {
-//
-//            if (response.isSuccessful) {
-//                setToastMessage("success bringing WalkLog data!!")
-//                _myWalkLogsLiveData.postValue(response.body())
-//            } else {
-//                Log.d("tag", "getMyWalkLogs: has an error receiving data")
-//            }
-//        }
-//    }
+    fun getMyWalkLogs(userId:Long) = viewModelScope.launch(Dispatchers.Main) {
 
-    fun getMyWalkLogs(userId:Long) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val response = userRepository.getUserWalkLogs(userId.toString())
-            withContext(Dispatchers.Main) {
+        val handler = CoroutineExceptionHandler { _, throwable ->
+            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            throwable.message?.let { Log.d("MyPageViewModel.kt", it) }
+        }
 
-                if (response.isSuccessful) {
+        val response = userRepository.getUserWalkLogs(userId.toString())
 
+        withContext(Dispatchers.IO + handler) {
+
+            if (response.isSuccessful) {
+                setToastMessage("success bringing WalkLog data!!")
+                _myWalkLogsLiveData.postValue(response.body())
+            } else {
+                Log.d("tag", "getMyWalkLogs: has an error receiving data")
+            }
+        }
+    }
+
+//    fun getMyWalkLogs(userId:Long) {
+//        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+//            val response = userRepository.getUserWalkLogs(userId.toString())
+//            withContext(Dispatchers.Main) {
+//
+//                if (response.isSuccessful) {
+//
 //                    // Walk Log 중 최근 것 7개만 가져옴(일주일 고려)
 //                    for(i in response.body()?.size?.downTo(1)!!) {
 //                        item = response.body()!![response.body()!!.size - i]
@@ -120,13 +135,13 @@ class MyPageViewModel @Inject constructor(
 //                    }
 //
 //                    _myWalkLogsLiveData.postValue(walkLogList)
-
-                    _myWalkLogsLiveData.postValue(response.body())
-
-                } else {
-                    Log.d("tag","Error : ${response.message()} ")
-                }
-            }
-        }
-    }
+//
+////                    _myWalkLogsLiveData.postValue(response.body())
+//
+//                } else {
+//                    Log.d("tag","Error : ${response.message()} ")
+//                }
+//            }
+//        }
+//    }
 }

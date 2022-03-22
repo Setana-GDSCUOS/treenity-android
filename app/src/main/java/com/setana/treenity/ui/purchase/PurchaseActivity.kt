@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import coil.load
 import com.setana.treenity.R
 import com.setana.treenity.TreenityApplication.Companion.PREFS
+import com.setana.treenity.data.api.dto.store.StoreItem
 import com.setana.treenity.databinding.StoreActivityMainBinding
 import com.setana.treenity.databinding.StoreConfirmationMainBinding
 import com.setana.treenity.ui.store.StoreActivity
@@ -51,22 +52,33 @@ class PurchaseActivity : AppCompatActivity() {
             // BUY 버튼 눌렀을 때 이벤트 -> TODO: POST 요청
             builder.setPositiveButton("BUY") { dialog, which ->
 
-//
+                val secondIntent = intent
+                // default 값으로 0을 준 이유는 itemId 는 1부터 시작하기에 0임을 밝히면 아이템이 없거나 에러가 있는 상황임을 알 수 있기 때문
+                itemId = secondIntent.getIntExtra("ChosenItemId", 0).toLong()
+                val item = StoreItem(0, "", "", itemId, "", "")
+
+                purchaseViewModel.buyItem(userId.toString(), item)
                 // POST
                 purchaseViewModel.buyItemResponseLiveData.observe(this, {response ->
-                    response?.let {
-
-                        if(it.code() == 409) //  409면 구매개수제한, 406이면 잔액 부족
-                            Toast.makeText(this@PurchaseActivity, "You can buy bucket upto 3 per day", Toast.LENGTH_SHORT).show()
+                    response.let {
+                        if (it.code() == 409) //  409면 구매개수제한, 406이면 잔액 부족
+                            Toast.makeText(
+                                this@PurchaseActivity,
+                                "You can buy bucket upto 3 per day",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         else if (it.code() == 406) {
-                            Toast.makeText(this@PurchaseActivity, "Not enough points. Shall we go for a walk?", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@PurchaseActivity,
+                                "Not enough points. Shall we go for a walk?",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         } else {
-                            if(it.isSuccessful) { // POST
-                                if (userId != -1L && itemId != 0L) {
-                                    purchaseViewModel.buyItem(userId, itemId)
-                                }
-                            }
-                            Toast.makeText(this@PurchaseActivity, "Successfully purchased", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@PurchaseActivity,
+                                "Successfully purchased",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 })
@@ -103,9 +115,9 @@ class PurchaseActivity : AppCompatActivity() {
 
             val water = items[0]
 
-            var secondIntent = intent
+            val secondIntent = intent
             // default 값으로 0을 준 이유는 itemId 는 1부터 시작하기에 0임을 밝히면 아이템이 없거나 에러가 있는 상황임을 알 수 있기 때문
-            val chosenItemId = secondIntent.getIntExtra("ChosenItemId", 0) 
+            val chosenItemId = secondIntent.getIntExtra("ChosenItemId", 0)
 
             if(chosenItemId != 1) { // 고른게 물이 아니라면
                 binding.apply {

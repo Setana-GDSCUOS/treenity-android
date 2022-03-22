@@ -10,5 +10,5 @@ class StoreApiHelperImpl @Inject constructor(
 ): StoreApiHelper {
 
     override suspend fun getStoreItems(): Response<List<StoreItem>> = storeApiService.getStoreItems()
-    override suspend fun buyTree(userId: Long, itemId: Long): Response<Void> = storeApiService.buyTree(userId, itemId)
+    override suspend fun buyTree(userId: String, storeItem: StoreItem): Response<Void> = storeApiService.buyTree(userId, storeItem)
 }

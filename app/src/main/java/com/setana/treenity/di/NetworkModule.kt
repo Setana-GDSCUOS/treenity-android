@@ -8,8 +8,6 @@ import com.google.firebase.auth.GetTokenResult
 import com.setana.treenity.BuildConfig
 import com.setana.treenity.data.api.*
 import com.setana.treenity.data.repository.*
-import com.setana.treenity.util.Constants
-import com.setana.treenity.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,7 +17,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 import javax.inject.Singleton
 
 @Module

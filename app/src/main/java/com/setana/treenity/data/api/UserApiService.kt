@@ -3,10 +3,8 @@ package com.setana.treenity.data.api
 import com.setana.treenity.data.api.dto.LoginByFirebaseTokenResponseDTO
 import com.setana.treenity.data.api.dto.RegisterCurrentFirebaseUserRequestDTO
 import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
-import com.setana.treenity.data.api.dto.mypage.tree.MyTreeResponse
 import com.setana.treenity.data.api.dto.mypage.user.User
 import com.setana.treenity.data.api.dto.mypage.walklog.WalkLog
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -19,7 +17,7 @@ interface UserApiService {
         @Body registerCurrentFirebaseUserRequestDTO: RegisterCurrentFirebaseUserRequestDTO
     ): Response<Void>
 
-    @POST("/users/{uid}/walk-logs")
+    @POST("users/{uid}/walk-logs")
     suspend fun updateUserWalkLogs(
         @Path(value = "uid", encoded = true) userId: String,
         @Body updateUserWalkLogsRequestDTO: UpdateUserWalkLogsRequestDTO

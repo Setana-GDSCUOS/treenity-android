@@ -7,5 +7,5 @@ import retrofit2.Response
 interface StoreApiHelper {
 
     suspend fun getStoreItems(): Response<List<StoreItem>>
-    suspend fun buyTree(userId: Long, itemId: Long): Response<Void>
+    suspend fun buyTree(userId: String, storeItem: StoreItem): Response<Void>
 }

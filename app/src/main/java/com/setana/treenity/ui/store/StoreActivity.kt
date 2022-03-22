@@ -52,6 +52,7 @@ class StoreActivity : AppCompatActivity() {
                 // 선택한 아이템의 itemId 를 넘겨준다 (itemId 는 1부터 시작하고, 1번인 물을 제외하면 모두 씨앗이다
                 nextIntent.putExtra("ChosenItemId", position + 2)
                 startActivity(nextIntent)
+                finish()
             }
         })
 
@@ -61,6 +62,7 @@ class StoreActivity : AppCompatActivity() {
             val intent = Intent(this@StoreActivity, PurchaseActivity::class.java)
             intent.putExtra("ChosenItemId", 1)
             startActivity(intent)
+            finish()
         }
 
     }
@@ -81,7 +83,7 @@ class StoreActivity : AppCompatActivity() {
         storeViewModel.storeItemLiveData.observe(this, {items ->
 
             val seedList =  ArrayList<StoreItem>()
-            for(index in 1 until items.size) // 처음에 subList로 만들어봤는데 그렇게 하니 메모리 누수 생김
+            for(index in 1 until items.size) // subList 로도 만들어봤는데 그렇게 하니 메모리 누수 생김
                 seedList.add(items[index])
 
              val water = items[0]

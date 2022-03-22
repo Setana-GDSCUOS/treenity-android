@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.setana.treenity.data.api.dto.mypage.tree.MyTreeItem
-import com.setana.treenity.data.api.dto.mypage.tree.MyTreeResponse
 import com.setana.treenity.databinding.MypageTreelistRowBinding
 
 class TreeListAdapter: RecyclerView.Adapter<TreeListAdapter.MyViewHolder>() {

@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.commit
+import com.google.ar.sceneform.ux.HandMotionAnimation
 import com.setana.treenity.R
 import com.setana.treenity.databinding.ActivityArBinding
 import dagger.hilt.android.AndroidEntryPoint

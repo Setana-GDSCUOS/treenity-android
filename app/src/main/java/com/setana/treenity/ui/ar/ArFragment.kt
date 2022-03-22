@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
@@ -24,7 +25,6 @@ import androidx.core.view.isGone
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
@@ -35,21 +35,30 @@ import com.google.ar.core.Anchor
 import com.google.ar.core.Anchor.CloudAnchorState
 import com.google.ar.core.Config
 import com.google.ar.sceneform.Camera
+import com.google.ar.sceneform.Sceneform
 import com.google.ar.sceneform.math.Vector3
+import com.google.ar.sceneform.rendering.Texture
 import com.google.ar.sceneform.rendering.ViewRenderable
+import com.google.ar.sceneform.ux.HandMotionAnimation
 import com.setana.treenity.R
 import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.data.api.dto.*
 import com.setana.treenity.databinding.ArFragmentBinding
+import com.setana.treenity.ui.map.MapActivity
+import com.setana.treenity.ui.store.StoreActivity
 import com.setana.treenity.util.EventObserver
 import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sceneview.ar.ArSceneView
 import io.github.sceneview.ar.arcore.ArSession
+import io.github.sceneview.ar.arcore.depthEnabled
+import io.github.sceneview.ar.arcore.planeFindingEnabled
 import io.github.sceneview.ar.node.ArNode
 import io.github.sceneview.ar.node.CursorNode
+import io.github.sceneview.ar.scene.PlaneRenderer
 import io.github.sceneview.node.Node
 import io.github.sceneview.utils.doOnApplyWindowInsets
+import java.util.function.Consumer
 
 
 /** Ar화면의 MainView를 담당하는 Fragment
@@ -60,10 +69,6 @@ import io.github.sceneview.utils.doOnApplyWindowInsets
 
 @AndroidEntryPoint
 class ArFragment : Fragment(R.layout.ar_fragment) {
-
-
-
-
     lateinit var actionButton: ExtendedFloatingActionButton
     lateinit var arFragmentBinding: ArFragmentBinding
 
@@ -71,6 +76,8 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     lateinit var fabMain: FloatingActionButton
     lateinit var fabProfile: FloatingActionButton
     lateinit var fabSeed: FloatingActionButton
+    lateinit var fabRefresh: FloatingActionButton
+    lateinit var fabMap: FloatingActionButton
 
     // Ar session
     lateinit var cursorNode: CursorNode
@@ -81,6 +88,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     var modelNode: ArNode? = null
     var textNode: ArNode? = null
     var isSessionConfigured = false
+    var isPlaneRenderEnabled = false
 
     // 나무 심기 모드 액티베이트
     private var isSeeding = false
@@ -129,8 +137,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         arFragmentBinding = ArFragmentBinding.bind(view)
 
 
-
-        setUpSharedData()
+        checkUserId()
         setUpScene()
         //  FAB 추가
         setUpFab()
@@ -141,7 +148,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
     }
 
-    private fun setUpSharedData(){
+    private fun checkUserId(){
         // Todo 하드코딩 여기있다!!!
         //userId = 1
         if(userId != -1L){
@@ -155,18 +162,19 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
     private fun setUpScene(){
         sceneView = arFragmentBinding.sceneView
-        // 뷰의 터치된 장소에 노드를 생성 hitResult 가 터치된 장소.
+        // 뷰의 터치된 장소에 노드를 생성 hitResult 가 터치된 장소. -> 커서노드로 품질 좋은 위치를 선정하도록 유도
         // 씨앗심기 모드에서만 노드 생성 가능
         sceneView.onTouchAr = { hitResult, _ ->
             if(isSeeding) {
-                createSeed(hitResult.createAnchor())
+                cursorNode.createAnchor()?.let { createSeed(it) }
             }
         }
         // 씨앗심기 모드로 편입됨.
 
+
+
         loadingView = arFragmentBinding.loadingView
         // 액션버튼은 화면의 직관성을 떨어뜨린다 판단하여 제외. 테스트용으로만 사용중
-
         actionButton =arFragmentBinding.actionButton.apply {
             val bottomMargin = (layoutParams as ViewGroup.MarginLayoutParams).bottomMargin
             doOnApplyWindowInsets { systemBarsInsets ->
@@ -199,29 +207,28 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
             // CloudAnchorManager의 onUpdate는 Frame이 업데이트되어 Session이 갱신될 때 작동하도록 설계되어 있음.
             cloudAnchorManager.onUpdate()
-            //val planeRenderer = sceneView.planeRenderer
-            //planeRenderer.isEnabled = true
-            //planeRenderer.isVisible = true
-            //sceneView.planeRenderer.material?.setFloat(PlaneRenderer.MATERIAL_SPOTLIGHT_RADIUS,100f)
 
             // Frame이 생성되었을 경우 session도 생성된 상태에 있기 때문에 최초 1회 configure를 진행해 줌
             if(!isSessionConfigured){
                 isLoading=true
                 configureSession()
                 isSessionConfigured=true
-                Log.d("session",session.config.toString())
                 isLoading = false
+                // 세션 설정 이후 플레인 추적 설정
             }
 
+            if(!isPlaneRenderEnabled) {
+                sceneView.planeRenderer.material?.let {
+                    it.setFloat(PlaneRenderer.MATERIAL_SPOTLIGHT_RADIUS, Float.MAX_VALUE)
+                }
+            }
         }
-
-        // sceneView.onArSessionCreated(session) = {}
-
 
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        cloudAnchorManager.clearListeners()
         stopLocationUpdates()
     }
 
@@ -232,9 +239,10 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
      * */
     private fun createSeed(anchor: Anchor) {
         //configureSession()
+        // Todo 씨앗 종류에 따라서 샘플 종류도 1단계로 나무로 바꿔주기
         isLoading = true
         modelNode = ArNode(
-            modelGlbFileLocation = "models/sphere.glb",
+            modelGlbFileLocation = "models/sample.glb",
             context = requireContext(),
             coroutineScope = lifecycleScope,
             onModelLoaded = {
@@ -264,15 +272,6 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             }
         )
         modelNode!!.anchor=anchor
-        /*
-        modelNode!!.onTap = { _, _ ->
-            Log.v("onTap" ,"버튼 앵커 클릭")
-            // 버튼이 Tap 되면 기 설치된 버튼 노드를 보이지 않게 설정하면서
-            // 해당 anchor(위치)에 새로운 tree 앵커 생성
-            modelNode!!.isVisible = false
-            plantTreeAnchor(anchor)
-        }
-         */
         sceneView.addChild(modelNode!!)
 
         // 이곳에 심으시겠습니까?
@@ -281,9 +280,9 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         builder.setMessage("Press continue to plant your tree here")
         builder.setPositiveButton("Continue"){
             _, _ ->
-            modelNode!!.destroy()
             plantTreeAnchor(anchor)
             isSeeding = false
+            modelNode!!.destroy()
         }
         builder.setNegativeButton("Cancel"){
             _, _ ->
@@ -301,9 +300,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
     /** Cloud Anchor Mode 로 등록 가능한 Tree Anchor 를 생성하는 함수 */
     private fun plantTreeAnchor(anchor: Anchor) {
-        // 세션이 Cloud Anchor를 사용할 수 있게 Configure 해줌
-        //configureSession()
-
+        /*
         modelNode = ArNode(
             //로드하는 모델의 종류는 사용자의 씨앗에 따라 서버에서 받아와야 함
             modelGlbFileLocation = "models/sample.glb",
@@ -343,33 +340,39 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
             //actionButton.text = getString(R.string.hosting_tree)
         }
+
+        // feature/79-ForcedReload 이제 나무 로드 안 하고 리로드되면 보여줘요
+         */
+
         // 등록된 cloudAnchor 의 위치로 재설정
         // 상기 등록 구문에서 hostCloudAnchor 를 통해 anchor 의 위치가 재설정 된 바 있음
-        val cloudAnchor = createCloudAnchorWithAnchor(anchor)
+        createCloudAnchorWithAnchor(anchor)
+        //val cloudAnchor = createCloudAnchorWithAnchor(anchor)
+        //modelNode!!.anchor = cloudAnchor
+        //sceneView.addChild(modelNode!!)
+        /* 시발 안해 안한다고
+        val featureMapQuality = session!!.estimateFeatureMapQualityForHosting(getCameraPose())
+        if(featureMapQuality == Session.FeatureMapQuality.GOOD || featureMapQuality == Session.FeatureMapQuality.SUFFICIENT) {
 
-        modelNode!!.anchor = cloudAnchor
-        sceneView.addChild(modelNode!!)
+        }else{
+            Toast.makeText(requireContext(), "That place is not appropriate to plant seed\n Please choose more characteristic place. ", Toast.LENGTH_LONG).show()
+        }
+
+         */
+
+
 
     }
 
+
     private fun createCloudAnchorWithAnchor(anchor:Anchor?): Anchor {
-        var cloudAnchor: Anchor?
-        if(anchor?.cloudAnchorState==CloudAnchorState.SUCCESS || anchor?.cloudAnchorState==CloudAnchorState.TASK_IN_PROGRESS){
-            // 이미 등록이 진행중이거나 완료되어 클라우드 재 등록을 할 피요가 없는 경우
-            onHostedAnchor(anchor)
-            return anchor
-        }
-        else{
-            // 여기에서 Session.FeatureMapQuality 확인해서 미리 실패 확률을 줄이도록 할 것
-            // 등록에 실패했을 시 또는 등록된 경우가 아닐 시 재등록 허용
-            cloudAnchor = cloudAnchorManager.hostCloudAnchor(session,anchor,1,
-                object : CloudAnchorManager.CloudAnchorResultListener {
-                    override fun onCloudTaskComplete(anchor: Anchor?) {
-                        onHostedAnchor(anchor)
-                    }
-                })
-            return cloudAnchor!!
-        }
+        var cloudAnchor: Anchor? = cloudAnchorManager.hostCloudAnchor(session,anchor,1,
+            object : CloudAnchorManager.CloudAnchorResultListener {
+                override fun onCloudTaskComplete(anchor: Anchor?) {
+                    onHostedAnchor(anchor)
+                }
+            })
+        return cloudAnchor!!
     }
 
 
@@ -382,23 +385,15 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     private fun onHostedAnchor(anchor:Anchor?){
         if (anchor != null) {
             val anchorState = anchor.cloudAnchorState
-            //actionButton.text = getString(R.string.resolve_tree)
-            /*
-                이제 클립보드로 앵커 아이디 전송할 필요성 없음
-                clipboardManager = activity?.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                val clipData:ClipData = ClipData.newPlainText("label",anchor.cloudAnchorId)
-                clipboardManager.setPrimaryClip(clipData)
-                Toast.makeText(requireContext(), "클립보드로 앵커의 아이디가 전송되었습니다.", Toast.LENGTH_SHORT).show()
-                */
             if(anchorState== CloudAnchorState.SUCCESS){
                 // Todo 여기 아이템아이디 고유화 하드코딩
 
                 if(anchor.cloudAnchorId != null){
-                    val postTreeDTO= PostTreeRequestDTO(anchor.cloudAnchorId,mLastLocation!!.latitude,mLastLocation!!.longitude,"BIMOON",9)
+                    val postTreeDTO= PostTreeRequestDTO(anchor.cloudAnchorId,mLastLocation!!.latitude,mLastLocation!!.longitude,"BIMOON",7)
                     arViewModel.postHostedTree(userId,postTreeDTO)
-                    // 리로드 하기 전에 먼저 심어진거는 삭제
-                    modelNode!!.destroy()
-                    clearView()
+                    // 리로드 하기 전에 먼저 심어진거는 삭제 -> 이제 아예 안 심어요
+                    // modelNode!!.destroy()
+                    clearView(true) // 이거 Forced Reload
                     arViewModel.listAroundTrees(mLastLocation!!.latitude,mLastLocation!!.longitude,userId)
                 }
             }else if(anchorState == CloudAnchorState.ERROR_HOSTING_DATASET_PROCESSING_FAILED || anchorState == CloudAnchorState.ERROR_INTERNAL){
@@ -416,6 +411,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     /** 등록된 cloudAnchor 를 ID 를 통해 받아옴, session configure 은 Resolve 버튼의 리스너에서 처리 */
     @Synchronized
     fun resolveAnchor(cloudAnchorId:String, treeId: Long, level: Int): Anchor? {
+        Log.d("anchorIDget","resolveAnchor, cloudAnchor Id Received : ${cloudAnchorId}")
         isLoading = true
         var cloudAnchor:Anchor? =
         cloudAnchorManager.resolveCloudAnchor(
@@ -423,9 +419,8 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             cloudAnchorId,
             object : CloudAnchorManager.CloudAnchorResultListener{
                 override fun onCloudTaskComplete(anchor: Anchor?) {
+                    Log.d("anchorIDget","onCloudTaskComplete, cloudAnchor Id Received : ${anchor!!.cloudAnchorState.toString()}")
                     if(anchor!!.cloudAnchorState==CloudAnchorState.SUCCESS){
-                        //Toast.makeText(requireContext(), "나무가 로드되었습니다. 설치한 공간을 비춰보세요.", Toast.LENGTH_SHORT).show()
-                        //onResolvedAnchor 해서 나무 노드 생성하는거 만들기
                         onResolvedAnchor(anchor, treeId, level)
                     }
                     else{
@@ -474,7 +469,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             }
             modelNode!!.anchor = anchor
             sceneView.addChild(modelNode!!)
-
+            resolvedTreeMap[treeId] = anchor
         }
     }
 
@@ -487,9 +482,14 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     private fun configureSession(){
         session = sceneView.session!!
         var config = Config(session)
+        config.planeFindingMode = Config.PlaneFindingMode.HORIZONTAL
+        config.planeFindingEnabled = true
+        config.depthMode = Config.DepthMode.DISABLED
+        config.depthEnabled = false
         config.cloudAnchorMode = Config.CloudAnchorMode.ENABLED
         config.lightEstimationMode = Config.LightEstimationMode.ENVIRONMENTAL_HDR
         session.configure(config)
+        sceneView.planeRenderer.onArSessionConfigChanged(session,config)
     }
 
 
@@ -564,7 +564,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         var distance = location.distanceTo(mLastLocation)
         // 위치 정확도 관련해서도 추가하면 좋을 듯
         // Todo 하드코딩 나무로드조건
-        if (distance > 10) {
+        if (distance > 30) {
             // 일정 거리 이상 이동시 주변의 나무 불러옴
             arViewModel.listAroundTrees(location.latitude,location.longitude, userId)
         }
@@ -579,25 +579,30 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
     private fun setUpFab(){
         fabMain = arFragmentBinding.fabMain
-        fabProfile = arFragmentBinding.fabProfile
+        fabProfile = arFragmentBinding.fabMyPage
         fabSeed = arFragmentBinding.fabSeed
-        fabMain.setImageResource(R.drawable.ic_ar_floating_main_open)
+        fabRefresh = arFragmentBinding.fabRefresh
+        fabMap = arFragmentBinding.fabMap
+        fabMain.setImageResource(R.drawable.ic_ar_floating_open)
 
         fabMain.setOnClickListener{
             toggleFab()
         }
         fabProfile.setOnClickListener{
             // Todo 마이페이지 액티비티로의 연결
-            /**
-             * 테스트코드 주의
-             * */
-            arViewModel.listAroundTrees(mLastLocation!!.latitude, mLastLocation!!.longitude, userId)
-            //Toast.makeText(requireContext(), "Move to MyPage.", Toast.LENGTH_SHORT).show()
+            startMyPageActivity()
         }
         fabSeed.setOnClickListener{
             // Todo 씨앗 템창으로 연결 악 씨앗 템창 언제만들어!!!
-            Toast.makeText(requireContext(), "Tap plane to plant.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Tap to plant on Cursor.", Toast.LENGTH_SHORT).show()
             isSeeding = true
+        }
+        fabRefresh.setOnClickListener{
+            clearView(true)
+            arViewModel.listAroundTrees(mLastLocation!!.latitude, mLastLocation!!.longitude, userId)
+        }
+        fabMap.setOnClickListener{
+            startMapActivity()
         }
     }
 
@@ -607,17 +612,37 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     private fun toggleFab(){
         // 플로팅 액션 버튼 닫기
         if(isFabOpen){
-            ObjectAnimator.ofFloat(fabSeed, "translationY", 0f).apply{ start()}
-            ObjectAnimator.ofFloat(fabProfile, "translationY", 0f).apply{ start()}
-            fabMain.setImageResource(R.drawable.ic_ar_floating_main_open)
+            closeFab()
         }
         // 플로팅 액션 버튼 열기
         else{
-            ObjectAnimator.ofFloat(fabSeed, "translationY", -200f).apply{ start()}
-            ObjectAnimator.ofFloat(fabProfile, "translationY", -400f).apply{ start()}
-            fabMain.setImageResource(R.drawable.ic_ar_floating_main_close)
+            openFab()
         }
         isFabOpen = !isFabOpen
+    }
+
+    private fun closeFab(){
+        ObjectAnimator.ofFloat(fabMain,"scaleX",+1f).apply{ start()}
+        ObjectAnimator.ofFloat(fabMain,"scaleY",+1f).apply{ start()}
+        ObjectAnimator.ofFloat(fabMap, "translationY", -0f).apply{ start()}
+        ObjectAnimator.ofFloat(fabRefresh, "translationX", -0f).apply{ start()}
+        ObjectAnimator.ofFloat(fabSeed, "translationX", -0f).apply{ start()}
+        ObjectAnimator.ofFloat(fabSeed, "translationY", -0f).apply{ start()}
+        ObjectAnimator.ofFloat(fabProfile, "translationX", -0f).apply{ start()}
+        ObjectAnimator.ofFloat(fabProfile, "translationY", -0f).apply{ start()}
+        fabMain.setImageResource(R.drawable.ic_ar_floating_open)
+    }
+
+    private fun openFab() {
+        ObjectAnimator.ofFloat(fabMain,"scaleX",+1.5f).apply{ start()}
+        ObjectAnimator.ofFloat(fabMain,"scaleY",+1.5f).apply{ start()}
+        ObjectAnimator.ofFloat(fabMap, "translationY", -300f).apply{ start()}
+        ObjectAnimator.ofFloat(fabRefresh, "translationX", -300f).apply{ start()}
+        ObjectAnimator.ofFloat(fabSeed, "translationX", -260f).apply{ start()}
+        ObjectAnimator.ofFloat(fabSeed, "translationY", -150f).apply{ start()}
+        ObjectAnimator.ofFloat(fabProfile, "translationX", -150f).apply{ start()}
+        ObjectAnimator.ofFloat(fabProfile, "translationY", -260f).apply{ start()}
+        fabMain.setImageResource(R.drawable.ic_ar_floating_close)
     }
 
     /**
@@ -633,7 +658,6 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                     val treeId = arTree.treeId
                     val level = arTree.level
                     Log.d("arTree",arTree.toString())
-                    // Todo 여기 서버단 관련 하드코딩 있음
                     if(cloudAnchorID != null) {
                         resolveNotResolvedAnchor(cloudAnchorID,treeId,level)
                     }
@@ -653,9 +677,9 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         })
     }
 
-    private fun clearView(){
+    private fun clearView(forced : Boolean){
         // Todo 여기 최대 렌더링 수
-        if(sceneView.children.size>10){
+        if(sceneView.children.size>10 || forced){
             // 최대 렌더링 수보다 Sceneview 에 자식노드가 많으면 카메라랑 커서 빼고 잘라버림
             for(child in sceneView.children){
                 if(child !is Camera && child is Node){
@@ -684,7 +708,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
      * 전역변수인 resolvedTreeSet을 확인하여 등록되지 않은 나무의 경우만 심어 줌
      * */
     private fun resolveNotResolvedAnchor(cloudAnchorId: String,treeId: Long, level: Int){
-        clearView()
+        clearView(false)
         /*
         if (treeId !in resolvedTreeIdSet){
             resolveAnchor(cloudAnchorId,treeId,level)
@@ -692,11 +716,8 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         }
          */
         if (treeId !in resolvedTreeMap.keys){
-            var cloudAnchor = resolveAnchor(cloudAnchorId,treeId,level)
-            if (cloudAnchor?.cloudAnchorId != null) {
-                // 이거 null 처리는 API에서 해주는거라
-                resolvedTreeMap[treeId] = cloudAnchor
-            }
+            resolveAnchor(cloudAnchorId,treeId,level)
+            // 등록은 api 해시맵에 등록은 모델 로드까지 완료되면
         }
     }
 
@@ -740,15 +761,27 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     private fun refreshCloudAnchorId(treeId: Long){
         // 이부분 지금 갱신 아예 빼놨음
         var oldAnchor = resolvedTreeMap[treeId]
+
         if(oldAnchor!=null) {
             //var newCloudAnchor = createCloudAnchorWithAnchor(oldAnchor)
-            var waterTreeDTO = WaterTreeRequestDTO(oldAnchor.cloudAnchorId)
+            var waterTreeRequestDTO = WaterTreeRequestDTO(oldAnchor.cloudAnchorId)
+            //var waterTreeRequestDTO = WaterTreeRequestDTO("ua-3f5d6e2ae26b4f8a2eadb0fd330c0e41")
             Log.d("water",oldAnchor.cloudAnchorId)
-            Log.d("water",waterTreeDTO.toString())
+            Log.d("water",waterTreeRequestDTO.toString())
             if (oldAnchor.cloudAnchorId != null) {
-                arViewModel.waterTree(userId, treeId, waterTreeDTO)
+                arViewModel.waterTree(userId, treeId, waterTreeRequestDTO)
             }
         }
+    }
+
+    private fun startMapActivity() {
+        val intent = Intent(requireContext(), MapActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun startMyPageActivity() {
+        //val intent = Intent(requireContext(), MyPageActivity::class.java)
+        //startActivity(intent)
     }
 
     /**

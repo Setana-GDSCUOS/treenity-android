@@ -165,7 +165,7 @@ class LoadingActivity : AppCompatActivity() {
                     if (checkAndRequestPermissions()) {
                         startStepDetectorService()
                         // TODO onRequestPermissionsResult 코드 중복 제거
-                        //startArActivity()
+                        startArActivity()
 //                        startMapActivity()
                     }
                 } else {

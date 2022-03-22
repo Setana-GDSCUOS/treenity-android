@@ -40,7 +40,7 @@ import javax.inject.Inject
  */
 
 @AndroidEntryPoint
-class TreenityForegroundService : LifecycleService(), SensorEventListener {
+class StepDetectorService : LifecycleService(), SensorEventListener {
     @Inject
     lateinit var treeRepository: TreeRepository
     @Inject

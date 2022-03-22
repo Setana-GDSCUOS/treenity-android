@@ -42,7 +42,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".service.TreenityForegroundService"/>
+        <service android:name=".service.StepDetectorService"/>
 
         <!--meta-data tag must be in application tag-->
         <meta-data

@@ -37,10 +37,9 @@ import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.data.api.dto.RegisterCurrentFirebaseUserRequestDTO
 import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
 import com.setana.treenity.databinding.ActivityLoadingBinding
-import com.setana.treenity.service.TreenityForegroundService
+import com.setana.treenity.service.StepDetectorService
 import com.setana.treenity.ui.ar.ArActivity
 
-import com.setana.treenity.ui.mypage.MyPageActivity
 import com.setana.treenity.ui.map.MapActivity
 
 import com.setana.treenity.util.EventObserver
@@ -97,7 +96,7 @@ class LoadingActivity : AppCompatActivity() {
     }
 
     private fun startStepDetectorService() {
-        val intent = Intent(this, TreenityForegroundService::class.java)
+        val intent = Intent(this, StepDetectorService::class.java)
         startService(intent)
     }
 

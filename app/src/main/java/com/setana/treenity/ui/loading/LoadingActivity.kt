@@ -165,7 +165,7 @@ class LoadingActivity : AppCompatActivity() {
                     if (checkAndRequestPermissions()) {
                         startStepDetectorService()
                         // TODO onRequestPermissionsResult 코드 중복 제거
-                        startArActivity()
+                        //startArActivity()
 //                        startMapActivity()
                     }
                 } else {
@@ -347,7 +347,7 @@ class LoadingActivity : AppCompatActivity() {
         ) {
             Toast.makeText(this, "All Permission Granted", Toast.LENGTH_SHORT).show()
             startStepDetectorService()
-            startArActivity()
+            // startArActivity()
             //startMapActivity
         } else {
             permissionDenied = true

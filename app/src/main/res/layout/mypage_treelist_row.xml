@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="190dp"
+        android:layout_margin="5dp"
+        android:background="#F4F4F4"
+        >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginVertical="5dp"
+        android:background="@drawable/mypage_recycler_box"
+        android:elevation="5dp" />
+
+        <ImageView
+            android:id="@+id/imagePath"
+            android:layout_width="90dp"
+            android:layout_height="125dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="27dp"
+            android:contentDescription="@string/imageview_descriptor"
+            android:elevation="5dp"/>
+
+        <LinearLayout
+            android:layout_width="220dp"
+            android:layout_height="150dp"
+            android:orientation="vertical"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="120dp"
+            android:elevation="5dp"
+            >
+
+            <TextView
+                android:id="@+id/itemName"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:fontFamily="@font/comfortaa_bold"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/level"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/exp"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/plantedDate"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                />
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+
+            android:layout_marginStart="325dp"
+            android:layout_marginTop="80dp"
+
+            android:background="@drawable/mypage_treelist_item_recycler"
+            android:contentDescription="@string/item_classification_button"
+
+            android:elevation="5dp"
+            />
+
+    </FrameLayout>

@@ -5,7 +5,7 @@
         app:iconSpaceReserved="false">
 
         <EditTextPreference
-            app:key="signature"
+            app:key="user_name_key"
             app:title="Your Signature"
             app:useSimpleSummaryProvider="true"
             app:icon="@drawable/mypage_settings_name_icon"/>

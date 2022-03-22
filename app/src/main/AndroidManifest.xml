@@ -26,7 +26,11 @@
 
         <activity android:name=".ui.ar.ArActivity" />
 
-        <activity android:name=".ui.mypage.SettingsActivity" />
+        <activity android:name=".ui.settings.SettingsActivity" />
+
+        <activity android:name=".ui.mypage.MyPageActivity" />
+
+        <activity android:name=".ui.mytreelist.TreeListActivity" />
 
         <activity
             android:name=".ui.loading.LoadingActivity"

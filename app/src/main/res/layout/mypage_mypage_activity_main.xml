@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.mypage.MyPageActivity"
+    android:fillViewport="true"
+    android:layout_below="@+id/toolbar"
+    android:background="#FEFAFA"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="340dp"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:background="@drawable/mypage_custom_big_box" />
+
+                <TextView
+                    android:id="@+id/userprofile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/mypage_custom_imagebutton"
+
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="60dp"
+
+                    tools:srcCompat="@tools:sample/avatars" />
+
+                <TextView
+                    android:id="@+id/username"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginStart="130dp"
+                    android:layout_marginTop="60dp"
+
+                    android:textSize="25sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+
+                    android:text="{이름}"
+                    />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginStart="130dp"
+                    android:layout_marginTop="110dp"
+
+                    android:textSize="15sp"
+                    android:textColor="@color/white"
+
+                    android:text="Thank you for supporting our app"
+
+                    />
+
+
+                <TextView
+                    android:id="@+id/settings"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="320dp"
+                    android:layout_marginTop="55dp"
+
+                    android:background="@drawable/mypage_setting_icon"
+
+                    android:elevation="5dp" />
+
+                <TextView
+                    android:id="@+id/store"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="260dp"
+                    android:layout_marginTop="55dp"
+
+                    android:background="@drawable/mypage_goto_store"
+
+                    android:elevation="5dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+
+                    android:layout_height="wrap_content"
+
+                    android:background="@drawable/mypage_custom_small_box"
+
+
+                    android:text="Point"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:gravity="center|top"
+
+                    android:layout_marginTop="180dp"
+                    android:layout_marginStart="20dp"
+
+                    android:elevation="5dp"
+                    />
+
+                <TextView
+                    android:id="@+id/point"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:text="{P}"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="13sp"
+
+                    android:elevation="5dp"
+
+                    android:layout_marginStart="75dp"
+                    android:layout_marginTop="220dp"
+                    />
+
+
+                <TextView
+                    android:layout_width="28dp"
+                    android:layout_height="27dp"
+
+                    android:layout_marginStart="35dp"
+                    android:layout_marginTop="210dp"
+
+                    android:background="@drawable/mypage_point"
+
+                    android:elevation="5dp"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:background="@drawable/mypage_custom_small_box"
+                    android:elevation="5dp"
+
+                    android:text="Pail"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:gravity="center|top"
+
+                    android:layout_marginTop="180dp"
+                    android:layout_marginStart="145dp"
+                    />
+
+                <TextView
+                    android:id="@+id/bucket"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:text="{%d}"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="13sp"
+
+                    android:elevation="5dp"
+
+                    android:layout_marginStart="190dp"
+                    android:layout_marginTop="220dp"
+                    />
+
+
+                <TextView
+                    android:layout_width="28dp"
+                    android:layout_height="27dp"
+
+                    android:layout_marginStart="155dp"
+                    android:layout_marginTop="210dp"
+
+                    android:background="@drawable/mypage_pail"
+
+                    android:elevation="5dp"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:background="@drawable/mypage_custom_small_box"
+                    android:elevation="5dp"
+
+                    android:text="Step"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:gravity="center|top"
+
+                    android:layout_marginTop="180dp"
+                    android:layout_marginStart="270dp"
+                    />
+
+                <TextView
+                    android:id="@+id/totalWalk"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginStart="310dp"
+                    android:layout_marginTop="220dp"
+                    android:elevation="5dp"
+                    android:text="{%d}"
+
+                    android:textColor="@color/black"
+
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+
+                <TextView
+                    android:layout_width="28dp"
+                    android:layout_height="27dp"
+
+                    android:layout_marginStart="275dp"
+                    android:layout_marginTop="210dp"
+
+                    android:background="@drawable/mypage_step"
+
+                    android:elevation="5dp"
+                    />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="15dp"
+                >
+
+                <TextView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+
+                    android:background="@drawable/mypage_tree_icon"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:text="My Tree"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:textSize="25sp"
+                    android:elevation="5dp"
+
+                    android:layout_marginStart="80dp"
+                    android:layout_marginTop="20dp"
+                    />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:orientation="horizontal">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/item_recycler"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+
+                        android:layout_marginTop="80dp" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="15dp"
+                android:layout_marginTop="50dp"
+                >
+
+                <TextView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+
+                    android:background="@drawable/mypage_walking_icon"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:text="My Walklog"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:textSize="25sp"
+                    android:elevation="5dp"
+
+                    android:layout_marginStart="80dp"
+                    android:layout_marginTop="20dp"
+                    />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="450dp"
+                    android:orientation="vertical"
+
+                    >
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/barChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginTop="60dp"
+                        android:padding="10dp"
+                        />
+
+
+                </LinearLayout>
+            </FrameLayout>
+
+            <FrameLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="200dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:text="75 minutes a week of brisk walking can add almost 2 years to your life"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:textColor="#000000"
+                    android:textSize="14sp"
+                    android:textAlignment="center"
+
+                    android:layout_marginTop="60dp"
+                    android:layout_marginHorizontal="15dp"
+                    />
+
+                <Button
+                    android:id="@+id/goto_ar"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+
+                    android:layout_marginTop="150dp"
+
+                    android:backgroundTint="@color/black"
+
+                    android:text="lET’S SAVE OUR EARTH!" />
+
+            </FrameLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+</FrameLayout>
+
+

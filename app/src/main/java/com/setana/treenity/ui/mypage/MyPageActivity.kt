@@ -26,6 +26,7 @@ import com.setana.treenity.service.StepDetectorService
 import com.setana.treenity.ui.mytreelist.TreeListActivity
 import com.setana.treenity.ui.mypage.adapter.MyTreeAdapter
 import com.setana.treenity.ui.settings.SettingsActivity
+import com.setana.treenity.ui.store.StoreActivity
 import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
@@ -105,8 +106,8 @@ class MyPageActivity : AppCompatActivity() {
 
         // 이벤트 등록 : 설정 아이콘 누르면 상점 페이지로 전환
         binding.store.setOnClickListener {
-//            val nextIntent = Intent(this@MyPageActivity, StoreActivity::class.java)
-//            startActivity(nextIntent)
+            val nextIntent = Intent(this@MyPageActivity, StoreActivity::class.java)
+            startActivity(nextIntent)
         }
     }
 

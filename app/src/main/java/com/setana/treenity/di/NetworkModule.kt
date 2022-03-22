@@ -7,10 +7,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GetTokenResult
 import com.setana.treenity.BuildConfig
 import com.setana.treenity.data.api.*
-import com.setana.treenity.data.repository.TreeRepository
-import com.setana.treenity.data.repository.TreeRepositoryImpl
-import com.setana.treenity.data.repository.UserRepository
-import com.setana.treenity.data.repository.UserRepositoryImpl
+import com.setana.treenity.data.repository.*
 import com.setana.treenity.util.Constants
 import com.setana.treenity.util.Constants.BASE_URL
 import dagger.Module
@@ -57,14 +54,6 @@ object NetworkModule {
         }
     }
 
-//    @Provides
-//    @Singleton
-//    fun provideRetrofitInstance(): ImageApiService =
-//        Retrofit.Builder()
-//            .baseUrl(BuildConfig.BASE_URL_TEST)
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .build()
-//            .create(ImageApiService::class.java)
 
     @Provides
     @Singleton
@@ -122,12 +111,18 @@ object NetworkModule {
     fun provideUserRepository(userRepository: UserRepositoryImpl): UserRepository =
         userRepository
 
-//    @Provides
-//    @Singleton
-//    fun provideSettingsInstance() : UserApiService =
-//        Retrofit.Builder()
-//            .baseUrl(BuildConfig.SETANA_BACKEND_BASE_URL)
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .build()
-//            .create(UserApiService::class.java)
+    @Provides
+    @Singleton
+    fun provideStoreApiService(retrofit: Retrofit): StoreApiService =
+        retrofit.create(StoreApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideStoreApiHelper(storeApiHelper: StoreApiHelperImpl): StoreApiHelper =
+        storeApiHelper
+
+    @Provides
+    @Singleton
+    fun provideStoreRepository(storeRepository: StoreRepositoryImpl): StoreRepository =
+        storeRepository
 }

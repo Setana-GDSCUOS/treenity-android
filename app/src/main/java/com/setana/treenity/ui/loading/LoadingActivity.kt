@@ -169,8 +169,8 @@ class LoadingActivity : AppCompatActivity() {
                         startStepDetectorService()
                         // TODO onRequestPermissionsResult 코드 중복 제거
 
-//                         val intent = Intent(this, MyPageActivity::class.java)
-//                         startActivity(intent)
+                         val intent = Intent(this, MyPageActivity::class.java)
+                         startActivity(intent)
 
                         //startArActivity()
 //                        startMapActivity()
@@ -355,8 +355,8 @@ class LoadingActivity : AppCompatActivity() {
             Toast.makeText(this, "All Permission Granted", Toast.LENGTH_SHORT).show()
             startStepDetectorService()
 
-//             val intent = Intent(this, MyPageActivity::class.java)
-//             startActivity(intent)
+             val intent = Intent(this, MyPageActivity::class.java)
+             startActivity(intent)
 
             // startArActivity()
             //startMapActivity

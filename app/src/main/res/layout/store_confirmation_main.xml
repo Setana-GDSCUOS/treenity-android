@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    >
+
+    <ImageView
+        android:id="@+id/itemImage"
+        android:layout_width="match_parent"
+        android:layout_height="370dp"
+        android:scaleType="centerInside"
+
+        android:background="@drawable/store_custom_big_box" />
+
+    <TextView
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/store_tree_icon"
+
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="390dp"
+
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/seedName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="{SEED NAME}"
+        android:textSize="18sp"
+        android:fontFamily="@font/comfortaa_bold"
+
+        android:layout_marginStart="90dp"
+        android:layout_marginTop="415dp" />
+
+    <TextView
+        android:id="@+id/cost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="{COST}"
+        android:textSize="18sp"
+
+        android:layout_marginStart="300dp"
+        android:layout_marginTop="415dp" />
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:text="{DESCRIPTION}"
+        android:textSize="15sp"
+
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginTop="500dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="Treatment"
+        android:fontFamily="@font/comfortaa_bold"
+
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="650dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:background="@drawable/store_treatment_sun"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="700dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:background="@drawable/store_treatment_water"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="700dp"/>
+
+    <TextView
+        android:id="@+id/bring_confirmation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:background="@drawable/store_custom_small_box"
+        android:layout_gravity="center"
+        android:layout_marginTop="370dp"
+        android:text="BUY"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        />
+
+</FrameLayout>

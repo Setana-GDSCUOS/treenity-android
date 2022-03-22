@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F4F4F4"
+    >
+    
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="Store"
+        android:textStyle="bold"
+        android:textSize="15sp"
+
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        />
+    
+    <TextView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="70dp"
+        android:layout_marginStart="10dp"
+
+        android:background="@drawable/mypage_point"/>
+
+    <TextView
+        android:id="@+id/point"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="80dp"
+        android:layout_marginStart="60dp"
+
+        android:text="{POINT}"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="70dp"
+        android:layout_marginStart="130dp"
+
+        android:background="@drawable/mypage_pail"/>
+
+    <TextView
+        android:id="@+id/bucket"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="80dp"
+        android:layout_marginStart="180dp"
+
+        android:text="{#BUCKET}"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="125dp"
+        android:layout_marginStart="10dp"
+
+        android:text="Seeds"
+        android:fontFamily="@font/comfortaa_bold"
+        android:textSize="25sp"/>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="horizontal"
+        android:layout_marginTop="180dp"
+        android:layout_marginHorizontal="10dp"
+        >
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/store_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="450dp"
+        android:layout_marginStart="10dp"
+
+        android:text="Water"
+        android:fontFamily="@font/comfortaa_bold"
+        android:textSize="25sp"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/water"
+        android:layout_width="150dp"
+        android:layout_height="240dp"
+        android:elevation="10dp"
+        app:cardCornerRadius="10dp"
+        android:layout_marginTop="500dp"
+        android:layout_marginStart="10dp"
+        android:clickable="true"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/bucketImage"
+                android:layout_width="match_parent"
+                android:layout_height="190dp"
+                android:scaleType="fitXY"
+                tools:srcCompat="@tools:sample/avatars" />
+
+            <TextView
+                android:id="@+id/bucketPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="{PRICE}"
+                android:textAlignment="center"
+                android:layout_gravity="center"
+                android:fontFamily="@font/comfortaa_bold"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="600dp"
+        android:layout_marginStart="170dp"
+
+        android:text="You can only buy up to 3 per day"
+
+        android:textSize="15sp"/>
+
+    <Button
+        android:id="@+id/goto_ar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+
+        android:layout_marginTop="780dp"
+
+        android:backgroundTint="@color/black"
+
+        android:text="lET’S SAVE OUR EARTH!" />
+
+</FrameLayout>

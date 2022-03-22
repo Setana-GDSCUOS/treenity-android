@@ -24,6 +24,21 @@
         app:backgroundTint="@color/colorPrimaryVariant"
         app:layout_anchorGravity="center" />
 
+    <TextView
+        android:id="@+id/tv_label_sub1"
+        android:text="View tree datas as a list"
+        android:translationX="-20dp"
+        android:background="#4D000000"
+        android:paddingHorizontal="5dp"
+        android:textSize="15sp"
+        android:visibility="gone"
+        android:textColor="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@id/fab_map_sub1"
+        android:layout_gravity="left|center_vertical"
+        app:layout_anchorGravity="center_vertical"/>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_map_sub2"
         android:layout_width="wrap_content"
@@ -36,22 +51,37 @@
         app:backgroundTint="@color/colorPrimaryVariant"
         app:layout_anchorGravity="center" />
 
+    <TextView
+        android:id="@+id/tv_label_sub2"
+        android:text="Reload based on current location"
+        android:translationX="-20dp"
+        android:paddingHorizontal="5dp"
+        android:textSize="15sp"
+        android:visibility="gone"
+        android:background="#4D000000"
+        android:textColor="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@id/fab_map_sub2"
+        android:layout_gravity="left|center_vertical"
+        app:layout_anchorGravity="center_vertical"/>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_map_main"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="29dp"
         android:layout_marginEnd="30dp"
-        android:src="@drawable/ic_baseline_map_24"
+        android:src="@drawable/ic_baseline_navigation_24"
         app:layout_dodgeInsetEdges="bottom"
         app:layout_anchorGravity="end"
-        app:layout_anchor="@id/speedDial_anchor"
+        app:layout_anchor="@id/bottomsheet_anchor"
         android:backgroundTint="@color/colorPrimaryVariant"
         app:backgroundTint="@color/colorPrimaryVariant"
         android:contentDescription="@string/app_name" />
 
     <View
-        android:id="@+id/speedDial_anchor"
+        android:id="@+id/bottomsheet_anchor"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         app:layout_anchor="@id/bottom_sheet"

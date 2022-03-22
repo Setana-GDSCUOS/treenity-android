@@ -5,7 +5,7 @@ import com.setana.treenity.data.model.SeedItem
 import com.setana.treenity.data.model.User
 import java.io.Serializable
 
-data class GetTreeInformationDTO(
+data class GetTreeInformationResponseDTO(
     @SerializedName("bookmark")
     val bookmark : Boolean,
     @SerializedName("bucket")
@@ -34,6 +34,6 @@ data class GetTreeInformationDTO(
     val treeName: String
 ) :Serializable {
     companion object{
-        val EMPTY = GetTreeInformationDTO(true,0,"","","","", SeedItem.EMPTY,0.0,0,0.0,0,User.EMPTY,"")
+        val EMPTY = GetTreeInformationResponseDTO(true,0,"","","","", SeedItem.EMPTY,0.0,0,0.0,0,User.EMPTY,"")
     }
 }

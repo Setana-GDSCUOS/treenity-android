@@ -39,10 +39,14 @@ import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
 import com.setana.treenity.databinding.ActivityLoadingBinding
 import com.setana.treenity.service.StepDetectorService
 import com.setana.treenity.ui.ar.ArActivity
+
 import com.setana.treenity.ui.mypage.MyPageActivity
+import com.setana.treenity.ui.map.MapActivity
+
 import com.setana.treenity.util.EventObserver
 import com.setana.treenity.util.PermissionUtils
 import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
+import com.setana.treenity.util.PreferenceManager.Companion.USER_EMAIL_KEY
 import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
@@ -74,7 +78,6 @@ class LoadingActivity : AppCompatActivity() {
         setupUI()
         setUpViewModel()
         verifyUser()
-
     }
 
     /**
@@ -84,6 +87,13 @@ class LoadingActivity : AppCompatActivity() {
     private fun startArActivity() {
         val intent = Intent(this, ArActivity::class.java)
         startActivity(intent)
+        finish()
+    }
+
+    private fun startMapActivity() {
+        val intent = Intent(this, MapActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun startStepDetectorService() {
@@ -158,8 +168,12 @@ class LoadingActivity : AppCompatActivity() {
                     if (checkAndRequestPermissions()) {
                         startStepDetectorService()
                         // TODO onRequestPermissionsResult 코드 중복 제거
-                        val intent = Intent(this, MyPageActivity::class.java)
-                        startActivity(intent)
+
+//                         val intent = Intent(this, MyPageActivity::class.java)
+//                         startActivity(intent)
+
+                        //startArActivity()
+//                        startMapActivity()
                     }
                 } else {
                     Log.d(TAG, "걸음 수 전송 실패")
@@ -243,7 +257,8 @@ class LoadingActivity : AppCompatActivity() {
         auth = Firebase.auth
 
         // 앱 데이터 삭제 후, 혹은 외부에서 로그아웃 이후 다른 계정으로 로그인 시 이전 uid로 요청하는 현상을 방지하기 위해 초기화
-        PREFS.setLong(USER_ID_KEY, -1)
+        PREFS.setLong(USER_ID_KEY, -1)  // for service
+        // PREFS.setString(USER_EMAIL_KEY, "")
     }
 
     private fun verifyUser() {
@@ -251,6 +266,7 @@ class LoadingActivity : AppCompatActivity() {
         if (currentUser == null) {
             googleSignIn()
         } else {
+            PREFS.setString(USER_EMAIL_KEY, currentUser.email ?: "")
             loadingViewModel.loginByFirebaseToken()
         }
     }
@@ -338,8 +354,13 @@ class LoadingActivity : AppCompatActivity() {
         ) {
             Toast.makeText(this, "All Permission Granted", Toast.LENGTH_SHORT).show()
             startStepDetectorService()
-            val intent = Intent(this, MyPageActivity::class.java)
-            startActivity(intent)
+
+//             val intent = Intent(this, MyPageActivity::class.java)
+//             startActivity(intent)
+
+            // startArActivity()
+            //startMapActivity
+
         } else {
             permissionDenied = true
         }

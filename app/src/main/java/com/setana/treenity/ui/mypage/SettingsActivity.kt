@@ -10,8 +10,6 @@ import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import android.provider.Settings
-import android.util.Log
-import android.view.Gravity
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -23,9 +21,7 @@ import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.setana.treenity.R
 import com.setana.treenity.service.PushAlarmWorker
-import com.setana.treenity.service.StepDetectorService
-import retrofit2.Call
-import retrofit2.Response
+import com.setana.treenity.service.TreenityForegroundService
 import java.util.concurrent.TimeUnit
 
 class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener{
@@ -168,7 +164,7 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         if (requestCode == activityPermission) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
 
-                val intent = Intent(this, StepDetectorService::class.java)
+                val intent = Intent(this, TreenityForegroundService::class.java)
                 startService(intent)
 
                 Toast.makeText(this, "Activity Permission Activated", Toast.LENGTH_SHORT).show()

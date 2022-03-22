@@ -9,6 +9,7 @@ class TreenityApplication : Application() {
     companion object {
         lateinit var PREFS: PreferenceManager
         val DAILY_WALK_LOG = hashMapOf<String, String>()
+        var alarmSwitch = true
     }
 
     override fun onCreate() {

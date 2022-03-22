@@ -28,7 +28,7 @@ import javax.inject.Inject
  */
 
 @AndroidEntryPoint
-class StepDetectorService : LifecycleService(), SensorEventListener {
+class TreenityForegroundService : LifecycleService(), SensorEventListener {
     @Inject
     lateinit var treeRepository: TreeRepository
     @Inject
@@ -49,6 +49,8 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
      */
     override fun onCreate() {
         super.onCreate()
+
+        ///////////////////// 걸음 인식 서비스 푸쉬 알람 ///////////////////////
         val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) // 기존의 걸음 수도 가져오기에 초기값을 나중에 빼줘야 함
         if (stepCountSensor != null) {
@@ -71,6 +73,9 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
         ) {
             startForegroundServiceWithNotification()
         }
+
+        ///////////////////// 주변 나무 개수 알려주는 서비스 푸쉬 알람 ///////////////////////
+
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -80,7 +85,6 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
 
     private fun startForegroundServiceWithNotification() {
         startForeground(10, fServiceNotification) // swipe 해도 사라지지 않음 -> 설정으로 끌 수 있음
-        // TODO id가 뭘 의미하는 지 잘 모르겠음..
     }
 
     override fun onSensorChanged(sensor: SensorEvent?) {

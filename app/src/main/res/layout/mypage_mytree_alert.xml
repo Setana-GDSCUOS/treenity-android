@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+<!--    <TextView-->
+<!--        android:id="@+id/date"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="100dp"-->
+<!--        android:padding="8dp"-->
+<!--        android:text="DATE"-->
+<!--        android:gravity="center"-->
+<!--        android:textSize="25sp"-->
+<!--        android:textStyle="bold" />-->
+<!--    바 차트 눌렀을 때 날짜와 걸음 수 보여주지 않을 거라면, 필요 없는 파일   -->
+<!--    <TextView-->
+<!--        android:id="@+id/walks"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="66dp"-->
+<!--        android:gravity="top|center"-->
+<!--        android:padding="8dp"-->
+<!--        android:text="WALK"-->
+<!--        android:textSize="25sp"-->
+<!--        android:textStyle="bold"-->
+<!--        />-->
+
+</LinearLayout>

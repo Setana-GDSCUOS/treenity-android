@@ -20,6 +20,18 @@ import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
+
+// import androidx.core.app.NotificationCompat
+// import android.app.*
+// import android.app.PendingIntent.FLAG_IMMUTABLE
+// import android.content.pm.PackageManager
+// import androidx.core.content.ContextCompat
+// import com.setana.treenity.ui.loading.LoadingActivity
+
+
+// class StepDetectorService : Service(), SensorEventListener {
+
+// =======
 import javax.inject.Inject
 
 /**
@@ -78,6 +90,45 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
         return START_NOT_STICKY
     }
 
+//     private fun showNotification() {
+
+//         val intent = Intent(applicationContext, LoadingActivity::class.java).apply {
+//             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//         }
+
+//         val pendingIntent = PendingIntent.getActivity(
+//             applicationContext,
+//             0, intent, FLAG_IMMUTABLE
+//         )
+
+
+//         val notification = NotificationCompat.Builder(
+//             applicationContext,
+//             CHANNEL_ID
+//         )
+//             .setContentTitle("Notification")
+//             .setContentText("Pedometer service is running")
+//             .setSmallIcon(com.setana.treenity.R.drawable.mypage_settings_alarm_icon)
+//             .setPriority(NotificationCompat.PRIORITY_HIGH)
+//             .setContentIntent(pendingIntent)
+//             .setDefaults(Notification.FLAG_NO_CLEAR) // swipe 해도 지워지지 않음
+//             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC) // 잠금화면에도 보여줌
+        
+//         val channelName = "Channel Name"
+//         val channelDescription = "Channel Description"
+//         val channelImportance = NotificationManager.IMPORTANCE_HIGH
+
+//         val channel = NotificationChannel(CHANNEL_ID, channelName, channelImportance).apply {
+//             description = channelDescription
+//         }
+
+//         val notificationManager = applicationContext.getSystemService(
+//             Context.NOTIFICATION_SERVICE
+//         ) as NotificationManager
+
+//         notificationManager.createNotificationChannel(channel)
+
+//         startForeground(10, notification.build()) // swipe 해도 사라지지 않음 -> 설정으로 끌 수 있음
     private fun startForegroundServiceWithNotification() {
         startForeground(10, fServiceNotification) // swipe 해도 사라지지 않음 -> 설정으로 끌 수 있음
         // TODO id가 뭘 의미하는 지 잘 모르겠음..
@@ -85,9 +136,11 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
 
     override fun onSensorChanged(sensor: SensorEvent?) {
         sensor?.let {
+
             val currentDetectedSteps =
                 if (stepsBeforeDetection == 0) stepsBeforeDetection else it.values[0].toInt() - stepsBeforeDetection
             mSteps += currentDetectedSteps
+
             mStepBuffer += currentDetectedSteps
             storeStepToGlobalHashMap(mSteps)
             if (mStepBuffer >= 10) {
@@ -95,6 +148,8 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
                 mStepBuffer = 0
             }
             stepsBeforeDetection = it.values[0].toInt()
+
+
         }
 
         /* [DEBUG LOG]

@@ -39,7 +39,10 @@ import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
 import com.setana.treenity.databinding.ActivityLoadingBinding
 import com.setana.treenity.service.StepDetectorService
 import com.setana.treenity.ui.ar.ArActivity
+
+import com.setana.treenity.ui.mypage.MyPageActivity
 import com.setana.treenity.ui.map.MapActivity
+
 import com.setana.treenity.util.EventObserver
 import com.setana.treenity.util.PermissionUtils
 import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
@@ -73,7 +76,7 @@ class LoadingActivity : AppCompatActivity() {
 
         initializeAuth()
         setupUI()
-        setupViewModel()
+        setUpViewModel()
         verifyUser()
     }
 
@@ -114,7 +117,7 @@ class LoadingActivity : AppCompatActivity() {
         lottieAnimationView.playAnimation()
     }
 
-    private fun setupViewModel() {
+    private fun setUpViewModel() {
         loadingViewModel.userInfoLiveData.observe(this, { response ->
             response?.let {
                 if (it.isSuccessful) {
@@ -165,8 +168,11 @@ class LoadingActivity : AppCompatActivity() {
                     if (checkAndRequestPermissions()) {
                         startStepDetectorService()
                         // TODO onRequestPermissionsResult 코드 중복 제거
-                        startArActivity()
-//                        startMapActivity()
+//                         val intent = Intent(this, MyPageActivity::class.java)
+//                         startActivity(intent)
+
+                        //startArActivity()
+                        startMapActivity()
                     }
                 } else {
                     Log.d(TAG, "걸음 수 전송 실패")
@@ -347,8 +353,13 @@ class LoadingActivity : AppCompatActivity() {
         ) {
             Toast.makeText(this, "All Permission Granted", Toast.LENGTH_SHORT).show()
             startStepDetectorService()
+
+//             val intent = Intent(this, MyPageActivity::class.java)
+//             startActivity(intent)
+
             // startArActivity()
             //startMapActivity
+
         } else {
             permissionDenied = true
         }

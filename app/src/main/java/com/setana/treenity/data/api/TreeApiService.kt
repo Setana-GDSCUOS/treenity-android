@@ -1,6 +1,7 @@
 package com.setana.treenity.data.api
 
 import com.setana.treenity.data.api.dto.*
+import com.setana.treenity.data.api.dto.mypage.tree.MyTreeItem
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -37,4 +38,15 @@ interface TreeApiService {
         @Path("treeId") treeId: Long,
         @Body putTreeInfoRequestDTO: PutTreeInfoRequestDTO
     ): Response<Void>
+
+    @GET("users/{uid}/trees")
+    suspend fun getUserTrees(
+        @Path(value = "uid", encoded = true) userId: Long
+    ): Response<ArrayList<MyTreeItem>>
+
+    // TreeListActivity : 받아오는 정보 더 다양
+    @GET("users/{uid}/trees")
+    fun getTreeData(
+        @Path(value = "uid", encoded = true) userId: Long
+    ) : Response<List<MyTreeItem>>
 }

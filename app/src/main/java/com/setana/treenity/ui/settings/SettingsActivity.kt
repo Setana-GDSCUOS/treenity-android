@@ -1,4 +1,4 @@
-package com.setana.treenity.ui.mypage
+package com.setana.treenity.ui.settings
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -13,6 +13,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.Gravity
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -22,13 +23,25 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.setana.treenity.R
+import com.setana.treenity.TreenityApplication.Companion.PREFS
+import com.setana.treenity.data.api.UserApiService
+import com.setana.treenity.data.api.dto.mypage.user.User
+import com.setana.treenity.data.repository.UserRepository
+import com.setana.treenity.di.NetworkModule
 import com.setana.treenity.service.PushAlarmWorker
 import com.setana.treenity.service.StepDetectorService
+import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
+import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.Call
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
 
+@AndroidEntryPoint
 class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener{
+
+    private val settingsViewModel: SettingsViewModel by viewModels()
+    val userId = PREFS.getLong(USER_ID_KEY, -1)
+    private lateinit var newName : String
 
     // sensor permission
     private val activityPermission = 100
@@ -48,6 +61,7 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.mypage_settings_activity_main)
         if (savedInstanceState == null) {
             supportFragmentManager
@@ -59,6 +73,7 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
 
         PreferenceManager.getDefaultSharedPreferences(this)
             .registerOnSharedPreferenceChangeListener(this)
+
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
@@ -71,32 +86,29 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     @SuppressLint("InflateParams")
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
 
-        // 닉네임 변경되었을 때 -> TODO: 마이페이지 pr merge 된 이후에 주석 처리 풀 것
-//        if(key == "signature") {
-//            val newName = sharedPreferences?.getString(key,"no name") // user 가 작성한 String 값 가져와서
-//
-//            // post
-//            val apiInterface = NetWorkModule.provideRetrofitInstance()
-//            val user = newName?.let { User(it, 0, 0, 0) } // 작성된 새로운 이름으로 객체 생성
-//            val call = user?.let { apiInterface.changeName(it) } // body 로 전달
-//
-//            // test
-//            Log.d("tag", "onCreate: your new name is $newName")
-//
-//            call?.enqueue(object : retrofit2.Callback<User> {
-//                override fun onResponse(call: Call<User>, response: Response<User>) {
-//                    Log.d("tag", "onResponse: " + response.code())
-//                }
-//
-//                override fun onFailure(call: Call<User>, t: Throwable) {
-//                    Log.d("tag", "onFailure: " + t.message)
-//                }
-//            })
-//
-//            val message = Toast.makeText(this, "New Name has been successfully saved", Toast.LENGTH_SHORT)
-//            message.setGravity(Gravity.BOTTOM, 0, 0) // TODO 메시지가 이상하게 중간에 뜸
-//            message.show()
-//        }
+
+        // 닉네임 변경되었을 때
+        if(key == "user_name_key") {
+            newName = sharedPreferences?.getString(key,"no name").toString()
+            settingsViewModel.updateUserName(userId.toString(), newName)
+
+            // post
+            settingsViewModel.userLiveData.observe(this, { response ->
+
+                response.let {
+                    if (it != null && userId != -1L) {
+                            Toast.makeText(this, "New Name has been successfully saved", Toast.LENGTH_SHORT).show()
+                        } else {
+                            throw IllegalArgumentException("Your Id is invalid or you haven't changed your name")
+                        }
+                    }
+
+            })
+
+            // test
+            Log.d("tag", "onCreate: your new name is $newName")
+
+        }
 
         // push 알람 설정되었을 때
         if(key == "switch") {
@@ -183,6 +195,4 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         PreferenceManager.getDefaultSharedPreferences(this)
             .unregisterOnSharedPreferenceChangeListener(this)
     }
-
-
 }

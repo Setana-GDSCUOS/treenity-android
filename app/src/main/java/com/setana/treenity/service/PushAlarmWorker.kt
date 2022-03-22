@@ -1,9 +1,9 @@
 package com.setana.treenity.service
 
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -37,7 +37,9 @@ class PushAlarmWorker(context: Context, workerParameters: WorkerParameters) : Wo
 
         val pendingIntent = PendingIntent.getActivity(
             applicationContext,
-            0, intent, PendingIntent.FLAG_IMMUTABLE
+            0, 
+            intent, 
+            PendingIntent.FLAG_IMMUTABLE
         )
 
 

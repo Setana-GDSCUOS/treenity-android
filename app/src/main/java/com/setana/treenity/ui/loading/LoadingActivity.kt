@@ -261,8 +261,6 @@ class LoadingActivity : AppCompatActivity() {
             currentUser.reload().addOnCompleteListener {
                 PREFS.setString(USER_EMAIL_KEY, currentUser.email ?: "")
                 loadingViewModel.loginByFirebaseToken()
-            }.addOnFailureListener {
-                Toast.makeText(this, "Invalid firebase user.", Toast.LENGTH_SHORT).show()
             }
         }
     }

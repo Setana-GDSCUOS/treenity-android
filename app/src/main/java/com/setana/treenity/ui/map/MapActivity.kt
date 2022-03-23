@@ -443,7 +443,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                 btnBookmark.isActivated = !btnBookmark.isActivated
                 bookmarkHashMap[tree.treeId] = bookmarkHashMap[tree.treeId] != true
                 // TODO API 변경 가능성
-                mapViewModel.updateTreeBookmarkState(localUserId, tree.treeId, !btnBookmark.isActivated)
+                mapViewModel.updateTreeBookmarkState(
+                    localUserId,
+                    tree.treeId,
+                    bookmarkHashMap[tree.treeId] == true
+                )
                 marker.apply {
                     if (!btnBookmark.isActivated) setIcon(
                         (BitmapDescriptorFactory.defaultMarker(

@@ -62,5 +62,5 @@ class TreeRepositoryImpl @Inject constructor(
         remoteSource.postTreeBookmark(userId, treeId)
 
     override suspend fun deleteTreeBookmark(userId: Long, treeId: Long): Response<Void> =
-        remoteSource.postTreeBookmark(userId, treeId)
+        remoteSource.deleteTreeBookmark(userId, treeId)
 }

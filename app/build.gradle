@@ -24,6 +24,10 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    dataBinding {
+        enabled = true
+    }
+
     viewBinding {
         enabled = true
     }
@@ -38,9 +42,6 @@ android {
             applicationIdSuffix ".debug"
             debuggable true
             buildConfigField("String", "AR_API_KEY", properties.getProperty("AR_API_KEY"))
-            buildConfigField("String", "CLIENT_ID_TEST", properties.getProperty("CLIENT_ID_TEST"))
-            buildConfigField("String", "END_POINT_TEST", properties.getProperty("END_POINT_TEST"))
-            buildConfigField("String", "BASE_URL_TEST", properties.getProperty("BASE_URL_TEST"))
             buildConfigField("String", "GOOGLE_MAPS_API_KEY", properties.getProperty("GOOGLE_MAPS_API_KEY"))
             buildConfigField("String", "OAUTH_WEB_CLIENT_KEY", properties.getProperty("OAUTH_WEB_CLIENT_KEY"))
             buildConfigField("String", "OAUTH_ANDROID_CLIENT_KEY", properties.getProperty("OAUTH_ANDROID_CLIENT_KEY"))

@@ -30,6 +30,8 @@
 
         <activity android:name=".ui.mypage.MyPageActivity" />
 
+        <activity android:name=".ui.purchase.PurchaseActivity" />
+
         <activity android:name=".ui.mytreelist.TreeListActivity" />
 
         <activity

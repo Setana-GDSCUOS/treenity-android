@@ -1,4 +1,4 @@
-package com.setana.treenity.ui.ar
+package com.setana.treenity.util
 
 import com.google.ar.core.Anchor
 import com.google.ar.core.Anchor.CloudAnchorState

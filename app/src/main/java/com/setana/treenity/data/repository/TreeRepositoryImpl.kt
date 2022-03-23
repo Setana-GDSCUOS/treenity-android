@@ -33,6 +33,7 @@ class TreeRepositoryImpl @Inject constructor(
         remoteSource.getUserTrees(userId)
 
     override suspend fun getTreeData(userId: String): Response<List<MyTreeItem>> =
+        remoteSource.getTreeData(userId)
 
     override suspend fun postTree(
         userId: Long,

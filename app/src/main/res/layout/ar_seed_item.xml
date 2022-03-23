@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="150dp"
+    android:layout_height="240dp"
+    android:elevation="10dp"
+    android:id="@+id/card"
+    android:layout_margin="5dp"
+    app:cardCornerRadius="10dp"
+    android:clickable="true"
+    >
+
+    <LinearLayout
+        android:background="@color/white"
+        android:backgroundTint="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <ImageView
+            android:id="@+id/itemImage"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:scaleType="fitXY"
+            tools:srcCompat="@tools:sample/avatars"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            />
+
+        <TextView
+            android:textColor="@color/black"
+            android:id="@+id/itemName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="itemName"
+            android:textAlignment="center"
+            android:layout_gravity="center"
+            android:fontFamily="@font/comfortaa_bold"
+            android:textSize="18sp"
+            app:layout_constraintTop_toBottomOf="@id/itemImage"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            />
+
+        <TextView
+            android:textColor="@color/black"
+            android:id="@+id/itemCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="itemCount"
+            android:textAlignment="center"
+            android:layout_gravity="center"
+            android:fontFamily="@font/comfortaa_bold"
+            android:textSize="18sp"
+            app:layout_constraintTop_toBottomOf="@id/itemName"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

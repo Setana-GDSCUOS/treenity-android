@@ -2,6 +2,7 @@ package com.setana.treenity.data.repository
 
 import com.setana.treenity.TreenityApplication.Companion.DAILY_WALK_LOG
 import com.setana.treenity.data.api.UserApiHelper
+import com.setana.treenity.data.api.dto.GetUserItemResponseDTO
 import com.setana.treenity.data.api.dto.RegisterCurrentFirebaseUserRequestDTO
 import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
 import com.setana.treenity.data.api.dto.mypage.user.User
@@ -36,4 +37,7 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun changeUserName(userId: String, username: String): Response<Void> =
         remoteSource.changeUserName(userId, username)
+
+    override suspend fun getUserItems(userId:Long): Response<List<GetUserItemResponseDTO>> =
+        remoteSource.getUserItems(userId)
 }

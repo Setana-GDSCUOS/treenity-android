@@ -1,5 +1,6 @@
 package com.setana.treenity.data.api
 
+import com.setana.treenity.data.api.dto.GetUserItemResponseDTO
 import com.setana.treenity.data.api.dto.RegisterCurrentFirebaseUserRequestDTO
 import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
 import com.setana.treenity.data.api.dto.mypage.user.User
@@ -20,5 +21,6 @@ class UserApiHelperImpl @Inject constructor(
     override suspend fun getUserWalkLogs(userId: String): Response<List<WalkLog>> = userApiService.getUserWalkLogs(userId)
     override suspend fun changeUserName(userId: String, username: String): Response<Void> = userApiService.changeUserName(userId, username)
 
+    override suspend fun getUserItems(userId: Long): Response<List<GetUserItemResponseDTO>> = userApiService.getUserItems(userId)
 
 }

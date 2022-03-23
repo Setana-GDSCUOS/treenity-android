@@ -16,8 +16,8 @@ import com.setana.treenity.databinding.ArInfoDialogBinding
 class ArDialogFragment(context: Context, treeInfoResponse: GetTreeInformationResponseDTO, isTreeOwner:Boolean) {
     interface ArDialogListener {
         fun onWaterListener(treeId:Long)
-        fun onDescriptionSaveListener(description:String)
-        fun onNameSaveListener(treeName:String)
+        fun onDescriptionSaveListener(treeName:String, description:String)
+        fun onNameSaveListener(treeName:String, description:String)
     }
     private val context = context
     private val dialog = Dialog(context)
@@ -55,7 +55,7 @@ class ArDialogFragment(context: Context, treeInfoResponse: GetTreeInformationRes
                     Toast.makeText(context, "Please enter your tree description", Toast.LENGTH_SHORT).show()
                 }
                 else{
-                    dialogListener.onDescriptionSaveListener(newDescription)
+                    dialogListener.onDescriptionSaveListener(arInfoDialogBinding.treeName.text.toString(),newDescription)
                 }
 
             }
@@ -65,7 +65,7 @@ class ArDialogFragment(context: Context, treeInfoResponse: GetTreeInformationRes
                     Toast.makeText(context, "Please enter your tree name", Toast.LENGTH_SHORT).show()
                 }
                 else{
-                    dialogListener.onNameSaveListener(newName)
+                    dialogListener.onNameSaveListener(newName,arInfoDialogBinding.description.text.toString())
                 }
             }
         }

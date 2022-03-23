@@ -1,13 +1,8 @@
 package com.setana.treenity.ui.mypage
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.hardware.Sensor
-import android.hardware.SensorManager
-import android.hardware.TriggerEvent
-import android.hardware.TriggerEventListener
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -62,10 +57,9 @@ class MyPageActivity : AppCompatActivity() {
     private lateinit var barDataSet: BarDataSet
     private lateinit var barData: BarData
 
-    var walkLogIds = ArrayList<Float>()
+    var xValues = ArrayList<Float>()
     var walks = ArrayList<Float>()
     var dates = ArrayList<String>()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,9 +73,8 @@ class MyPageActivity : AppCompatActivity() {
 
         setContentView(binding.root)
         setViews()
+        observeStep()
         setUpViewModel()
-
-
 
         // 이벤트 등록 : 마지막 아이템을 누르면 나무 목록 리스트 페이지 전환
         myTreeAdapter.setOnItemClickListener(object : MyTreeAdapter.OnItemClickListener {
@@ -112,17 +105,25 @@ class MyPageActivity : AppCompatActivity() {
             finish()
         }
 
-        val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        val mSensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION)
-        val triggerEventListener = object : TriggerEventListener() {
-            override fun onTrigger(event: TriggerEvent?) {
-                // Do work
-                myPageViewModel.increase()
-            }
-        }
-        mSensor?.also { sensor ->
-            sensorManager.requestTriggerSensor(triggerEventListener, sensor)
-        }
+//        val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+//        val mSensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION)
+//        val triggerEventListener = object : TriggerEventListener() {
+//            override fun onTrigger(event: TriggerEvent?) {
+//                // Do work
+//                myPageViewModel.increase()
+//            }
+//        }
+//        mSensor?.also { sensor ->
+//            sensorManager.requestTriggerSensor(triggerEventListener, sensor)
+//        }
+    }
+
+    private fun observeStep() {
+        myPageViewModel.steps.observe(this, {
+
+            myPageViewModel.countStep()
+
+        })
     }
 
 
@@ -205,78 +206,80 @@ class MyPageActivity : AppCompatActivity() {
 //            myTreeAdapter.notifyDataSetChanged()
         })
 
-        
+        // 수정 시작!
         myPageViewModel.getMyWalkLogs(userId) // 데이터 갱신 안하기로 결정
         myPageViewModel.myWalkLogsLiveData.observe(this, {
 
             // test
-            Log.d("tag", ": $it, ${it.size}") // [WalkLog(date=2022-03-22, walkLogId=12, walks=402), 1]
+            Log.d("tag", ": $it, ${it.size}") // e.g. [WalkLog(date=2022-03-22, walkLogId=12, walks=402), 1]
 
             val index = it.size - 1
 
-                // walkLogId 와 walk 와 date 를 모두 따로따로 ArrayList 로 저장
-                for(i in 0..index) {// x축
-                    walkLogIds.add(it[i].walkLogId.toFloat())
+            // walkLogId 와 walk 와 date 를 모두 따로따로 ArrayList 로 저장
+            for(i in 0..index) {// x축
+                xValues.add(i.toFloat())
+            }
+
+            for(i in 0..index) { // y축
+                walks.add(it[i].walks.toFloat())
+            }
+
+            for(i in 0..index) { // 날짜 저장 -> x 축 대체 예정
+                dates.add(it[i].date)
+            }
+
+            for(i in 0..index) // (id, date) 구조로 map 에 데이터 추가
+                idAndDate[xValues[i]] = it[i].date
+
+            // BarEntry 에 데이터 삽입
+            for(i in 0 until walks.size)
+                barEntries.add(BarEntry(xValues[i], walks[i]))
+
+            // setting bar chart data
+            // initialize bar data set
+            barDataSet = BarDataSet(barEntries,"Walk Logs")
+
+
+            //set colors
+            barDataSet.color = ColorTemplate.rgb("#FF408F43") // 바 색상
+            barDataSet.valueTextSize = 18f
+
+            barData = BarData(barDataSet)
+            barData.barWidth = 0.25f
+            barData.isHighlightEnabled
+
+            //binding 으로 접근하여 barData 전달
+            binding.barChart.data = barData
+
+            // prepare chart
+            binding.barChart.run {
+                data = barData
+
+                setFitBars(true)
+
+                description.isEnabled = false //차트 옆에 별도로 표기되는 description
+                setPinchZoom(false) // 핀치줌(두손가락으로 줌인 줌 아웃하는것) 설정
+                setScaleEnabled(false) // 확대 안되게 설정
+                setDrawBarShadow(false) // 그래프의 그림자
+                setTouchEnabled(false)
+
+                xAxis.run {
+                    position = XAxis.XAxisPosition.BOTTOM//X축을 아래에다가 둔다.
+                    setDrawAxisLine(true) // 축 그림
+                    setDrawGridLines(false) // 격자
+                    textSize = 12f // 텍스트 크기
+                    granularity = 1F
+                    valueFormatter = DateFormatter()  // MM/dd 형태로 날짜 모두 표시
                 }
 
-                for(i in 0..index) { // y축
-                    walks.add(it[i].walks.toFloat())
-                }
-
-                for(i in 0..index) { // 날짜 저장 -> x 축 대체 예정
-                    dates.add(it[i].date)
-                }
-
-                for(i in 0..index) // (id, date) 구조로 map 에 데이터 추가
-                    idAndDate[it[i].walkLogId.toFloat()] = it[i].date
-
-                // BarEntry 에 데이터 삽입
-                for(i in 0 until walks.size)
-                    barEntries.add(BarEntry(walkLogIds[i], walks[i]))
-
-                // setting bar chart data
-                // initialize bar data set
-                barDataSet = BarDataSet(barEntries,"Walk Logs")
+                axisRight.isEnabled = false // 오른쪽 Y축을 안보이게 설정
+                axisLeft.isEnabled = false // 왼쪽 Y축을 안보이게 설정
+                animateY(3000) // 애니메이션 추가
+                legend.isEnabled = false //차트 범례 설정
 
 
-                //set colors
-                barDataSet.color = ColorTemplate.rgb("#FF408F43") // 바 색상
-                barDataSet.valueTextSize = 18f
-
-                barData = BarData(barDataSet)
-                barData.barWidth = 0.15f
-
-                //binding 으로 접근하여 barData 전달
-                binding.barChart.data = barData
-
-                // prepare chart
-                binding.barChart.run {
-                    data = barData
-
-                    setFitBars(true)
-
-                    description.isEnabled = false //차트 옆에 별도로 표기되는 description
-                    setPinchZoom(false) // 핀치줌(두손가락으로 줌인 줌 아웃하는것) 설정
-                    setScaleEnabled(false) // 확대 안되게 설정
-                    setDrawBarShadow(false) // 그래프의 그림자
-                    setTouchEnabled(false)
-
-                    xAxis.run {
-                        position = XAxis.XAxisPosition.BOTTOM//X축을 아래에다가 둔다.
-                        setDrawAxisLine(true) // 축 그림
-                        setDrawGridLines(false) // 격자
-                        textSize = 12f // 텍스트 크기
-                        valueFormatter = DateFormatter()  // MM/dd 형태로 날짜 모두 표시
-                    }
-
-                    axisRight.isEnabled = false // 오른쪽 Y축을 안보이게 설정
-                    axisLeft.isEnabled = false // 왼쪽 Y축을 안보이게 설정
-                    animateY(3000) // 애니메이션 추가
-                    legend.isEnabled = false //차트 범례 설정
-
-
-                    invalidate() // refresh
-                }
+                invalidate() // refresh
+            }
         })
     }
 
@@ -297,7 +300,7 @@ class MyPageActivity : AppCompatActivity() {
     }
 }
 
-class DateFormatter() : ValueFormatter() { // x 축의 float 값을 날짜로 변환해줄 class
+class DateFormatter : ValueFormatter() { // x 축의 float 값을 날짜로 변환해줄 class
     override fun getFormattedValue(value: Float): String {
         if(idAndDate[value] == null){
             return ""

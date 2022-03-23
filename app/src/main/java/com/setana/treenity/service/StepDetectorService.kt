@@ -9,18 +9,25 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil.findBinding
+import androidx.databinding.DataBindingUtil.setContentView
 import androidx.lifecycle.LifecycleService
 import com.google.gson.Gson
+import com.setana.treenity.R
 import com.setana.treenity.TreenityApplication.Companion.DAILY_WALK_LOG
 import com.setana.treenity.TreenityApplication.Companion.PREFS
+import com.setana.treenity.TreenityApplication.Companion.daily_Step
 import com.setana.treenity.data.repository.TreeRepository
+import com.setana.treenity.ui.mypage.MyPageActivity
 import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.math.absoluteValue
 
 /**
  * Coroutine 사용법
@@ -37,6 +44,8 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
     private var mSteps = 0
     private var mStepBuffer = 0
     private var stepsBeforeDetection = 0
+
+    private var hour = SimpleDateFormat("kk", Locale.US) // HOUR in day(1-24)
 
     companion object {
         const val CHANNEL_ID = "CHANNEL_ID"
@@ -90,6 +99,13 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
             val currentDetectedSteps =
                 if (stepsBeforeDetection == 0) stepsBeforeDetection else it.values[0].toInt() - stepsBeforeDetection
             mSteps += currentDetectedSteps
+
+            val currentTime : Long = System.currentTimeMillis()
+
+
+            if(hour.format(currentTime) != "24") {// 하루가 넘어가지 않았다면 센서 측정마다 1씩 더 해감
+                daily_Step.plus(1)
+            } else daily_Step = 0
 
             mStepBuffer += currentDetectedSteps
             storeStepToGlobalHashMap(mSteps)

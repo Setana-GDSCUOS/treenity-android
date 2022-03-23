@@ -3,6 +3,7 @@ package com.setana.treenity.ui.mypage
 import android.util.Log
 import androidx.lifecycle.*
 import com.setana.treenity.TreenityApplication.Companion.DAILY_WALK_LOG
+import com.setana.treenity.TreenityApplication.Companion.daily_Step
 import com.setana.treenity.data.api.dto.mypage.tree.MyTreeItem
 import com.setana.treenity.data.api.dto.mypage.user.User
 import com.setana.treenity.data.api.dto.mypage.walklog.WalkLog
@@ -33,17 +34,11 @@ class MyPageViewModel @Inject constructor(
     private val _showErrorToast = MutableLiveData<Event<String>>()
     val showErrorToast: LiveData<Event<String>> = _showErrorToast
 
-    var steps = MutableLiveData<Int>()
+    var steps = MutableLiveData<String>()
 
 
-    init {
-        steps.value = DAILY_WALK_LOG[SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())]?.toInt()
-    }
-
-    fun increase(){
-        steps.value =
-            DAILY_WALK_LOG[SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())]?.toInt()
-                ?.plus(1)
+    fun countStep(){
+        steps.value = daily_Step.toString()
     }
 
     private fun setToastMessage(content: String) {

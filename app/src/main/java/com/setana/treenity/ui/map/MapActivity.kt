@@ -265,6 +265,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         mapViewModel.treeListLiveData.observe(this, { data ->
             googleMap.clear()
             markerHashMap.clear()
+            bookmarkHashMap.clear()
             data?.let { treeList ->
                 Log.d(TAG, data.toString())
                 for (tree in treeList) {

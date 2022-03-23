@@ -20,5 +20,6 @@ interface TreeApiHelper {
     suspend fun getTreeInformation(treeId: Long): Response<GetTreeInformationResponseDTO>
     suspend fun waterTree(userId: Long,treeId: Long,waterTreeRequestDTO: WaterTreeRequestDTO): Response<Void>
     suspend fun putTreeInfo(userId:Long, treeId:Long, putTreeInfoRequestDTO:PutTreeInfoRequestDTO): Response<Void>
-
+    suspend fun postTreeBookmark(userId: Long, treeId: Long): Response<Void>
+    suspend fun deleteTreeBookmark(userId: Long, treeId: Long): Response<Void>
 }

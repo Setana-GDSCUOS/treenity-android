@@ -49,4 +49,16 @@ interface TreeApiService {
     fun getTreeData(
         @Path(value = "uid", encoded = true) userId: Long
     ) : Response<List<MyTreeItem>>
+
+    @POST("users/{userId}/trees/{treeId}/bookmark")
+    suspend fun postTreeBookmark(
+        @Path("userId") userId: Long,
+        @Path("treeId") treeId: Long,
+    ): Response<Void>
+
+    @DELETE("users/{userId}/trees/{treeId}/bookmark")
+    suspend fun deleteTreeBookmark(
+        @Path("userId") userId: Long,
+        @Path("treeId") treeId: Long,
+    ): Response<Void>
 }

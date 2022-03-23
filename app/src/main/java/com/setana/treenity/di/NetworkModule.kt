@@ -5,6 +5,8 @@ import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GetTokenResult
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.setana.treenity.BuildConfig
 import com.setana.treenity.data.api.*
 import com.setana.treenity.data.repository.*
@@ -28,8 +30,8 @@ object NetworkModule {
         val request = it.request()
         val result = runCatching {
             val user =
-                FirebaseAuth.getInstance().currentUser ?: return@Interceptor it.proceed(request)
-            val task: Task<GetTokenResult> = user.getIdToken(false)
+                Firebase.auth.currentUser ?: return@Interceptor it.proceed(request)
+            val task: Task<GetTokenResult> = user.getIdToken(true)
             // Timeout 10s
             val tokenResult: GetTokenResult =
                 Tasks.await(task, 10, java.util.concurrent.TimeUnit.SECONDS)

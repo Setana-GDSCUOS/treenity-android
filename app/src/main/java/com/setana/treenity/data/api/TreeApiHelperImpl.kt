@@ -23,4 +23,6 @@ class TreeApiHelperImpl @Inject constructor(
     override suspend fun getTreeInformation(treeId: Long): Response<GetTreeInformationResponseDTO> = treeApiService.getTreeInformation(treeId)
     override suspend fun waterTree(userId: Long,treeId: Long,waterTreeRequestDTO: WaterTreeRequestDTO): Response<Void> = treeApiService.waterTree(userId,treeId,waterTreeRequestDTO)
     override suspend fun putTreeInfo(userId: Long, treeId: Long, putTreeInfoRequestDTO: PutTreeInfoRequestDTO) = treeApiService.putTreeInfo(userId,treeId,putTreeInfoRequestDTO)
+    override suspend fun postTreeBookmark(userId: Long, treeId: Long): Response<Void> = treeApiService.postTreeBookmark(userId, treeId)
+    override suspend fun deleteTreeBookmark(userId: Long, treeId: Long): Response<Void> = treeApiService.deleteTreeBookmark(userId, treeId)
 }

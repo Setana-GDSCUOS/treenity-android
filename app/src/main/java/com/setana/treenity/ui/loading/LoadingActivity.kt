@@ -39,10 +39,7 @@ import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
 import com.setana.treenity.databinding.ActivityLoadingBinding
 import com.setana.treenity.service.StepDetectorService
 import com.setana.treenity.ui.ar.ArActivity
-
-import com.setana.treenity.ui.mypage.MyPageActivity
 import com.setana.treenity.ui.map.MapActivity
-
 import com.setana.treenity.util.EventObserver
 import com.setana.treenity.util.PermissionUtils
 import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
@@ -51,7 +48,6 @@ import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
-
 
 @AndroidEntryPoint
 class LoadingActivity : AppCompatActivity() {
@@ -168,11 +164,12 @@ class LoadingActivity : AppCompatActivity() {
                     if (checkAndRequestPermissions()) {
                         startStepDetectorService()
                         // TODO onRequestPermissionsResult 코드 중복 제거
-                         val intent = Intent(this, MyPageActivity::class.java)
-                         startActivity(intent)
+//                         val intent = Intent(this, MyPageActivity::class.java)
+//                         startActivity(intent)
 
                         //startArActivity()
                         startMapActivity()
+                        finish()
                     }
                 } else {
                     Log.d(TAG, "걸음 수 전송 실패")
@@ -265,8 +262,12 @@ class LoadingActivity : AppCompatActivity() {
         if (currentUser == null) {
             googleSignIn()
         } else {
-            PREFS.setString(USER_EMAIL_KEY, currentUser.email ?: "")
-            loadingViewModel.loginByFirebaseToken()
+            currentUser.reload().addOnCompleteListener {
+                PREFS.setString(USER_EMAIL_KEY, currentUser.email ?: "")
+                loadingViewModel.loginByFirebaseToken()
+            }.addOnFailureListener {
+                Toast.makeText(this, "Invalid firebase user.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -354,12 +355,12 @@ class LoadingActivity : AppCompatActivity() {
             Toast.makeText(this, "All Permission Granted", Toast.LENGTH_SHORT).show()
             startStepDetectorService()
 
-             val intent = Intent(this, MyPageActivity::class.java)
-             startActivity(intent)
+//             val intent = Intent(this, MyPageActivity::class.java)
+//             startActivity(intent)
 
             // startArActivity()
-            //startMapActivity
-
+            startMapActivity()
+            finish()
         } else {
             permissionDenied = true
         }

@@ -10,7 +10,11 @@ import javax.inject.Inject
 class TreeRepositoryImpl @Inject constructor(
     private val remoteSource: TreeApiHelper
 ) : TreeRepository {
-    override suspend fun getAroundTrees(lat: Double, lng: Double, userId:Long): Response<List<GetAroundTreeResponseDTO>> =
+    override suspend fun getAroundTrees(
+        lat: Double,
+        lng: Double,
+        userId: Long
+    ): Response<List<GetAroundTreeResponseDTO>> =
         remoteSource.getAroundTrees(lat, lng, userId)
 
 //     override suspend fun getAroundArTrees(lat: Double, lng: Double, userId:Long): Response<List<GetAroundArTreeResponseDTO>> =
@@ -27,16 +31,36 @@ class TreeRepositoryImpl @Inject constructor(
 
     override suspend fun getUserTrees(userId: Long): Response<ArrayList<MyTreeItem>> =
         remoteSource.getUserTrees(userId)
+
     override suspend fun getTreeData(userId: Long): Response<List<MyTreeItem>> =
         remoteSource.getTreeData(userId)
 
-    override suspend fun postTree(userId: Long, postTreeRequestDTO: PostTreeRequestDTO): Response<Void> =
-        remoteSource.postTree(userId,postTreeRequestDTO)
+    override suspend fun postTree(
+        userId: Long,
+        postTreeRequestDTO: PostTreeRequestDTO
+    ): Response<Void> =
+        remoteSource.postTree(userId, postTreeRequestDTO)
+
     override suspend fun getTreeInformation(treeId: Long): Response<GetTreeInformationResponseDTO> =
         remoteSource.getTreeInformation(treeId)
-    override suspend fun waterTree(userId:Long,treeId: Long, waterTreeRequestDTO: WaterTreeRequestDTO): Response<Void> =
-        remoteSource.waterTree(userId, treeId,waterTreeRequestDTO)
-    override suspend fun putTreeInfo(userId: Long, treeId: Long, putTreeInfoRequestDTO: PutTreeInfoRequestDTO): Response<Void> =
-        remoteSource.putTreeInfo(userId,treeId,putTreeInfoRequestDTO)
 
+    override suspend fun waterTree(
+        userId: Long,
+        treeId: Long,
+        waterTreeRequestDTO: WaterTreeRequestDTO
+    ): Response<Void> =
+        remoteSource.waterTree(userId, treeId, waterTreeRequestDTO)
+
+    override suspend fun putTreeInfo(
+        userId: Long,
+        treeId: Long,
+        putTreeInfoRequestDTO: PutTreeInfoRequestDTO
+    ): Response<Void> =
+        remoteSource.putTreeInfo(userId, treeId, putTreeInfoRequestDTO)
+
+    override suspend fun postTreeBookmark(userId: Long, treeId: Long): Response<Void> =
+        remoteSource.postTreeBookmark(userId, treeId)
+
+    override suspend fun deleteTreeBookmark(userId: Long, treeId: Long): Response<Void> =
+        remoteSource.postTreeBookmark(userId, treeId)
 }

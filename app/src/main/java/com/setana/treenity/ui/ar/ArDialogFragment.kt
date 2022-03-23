@@ -82,7 +82,6 @@ class ArDialogFragment(context: Context, treeInfoResponse: GetTreeInformationRes
             arInfoDialogBinding.treeName.setTextColor(context.getColor(R.color.black))
         }
         val plantDate = treeInfo.createdDate.slice(IntRange(0,9))
-        // 이상한데 들어가있는데 의도된건가
         arInfoDialogBinding.treeImage.load(treeInfo.item.imagePath)
         arInfoDialogBinding.created.text = "Planted : ${plantDate}"
         arInfoDialogBinding.water.isEnabled = false

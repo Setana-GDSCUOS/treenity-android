@@ -52,7 +52,7 @@ class MyPageActivity : AppCompatActivity() {
     private lateinit var binding: MypageMypageActivityMainBinding
 
     private lateinit var myTreeAdapter: MyTreeAdapter
-    private var listSize = 0
+    private var myTreeSize = 0
 
     private val myPageViewModel: MyPageViewModel by viewModels()
     val userId = PREFS.getLong(USER_ID_KEY, -1)
@@ -78,31 +78,15 @@ class MyPageActivity : AppCompatActivity() {
         binding.mypageviewmodel = myPageViewModel
 
         setContentView(binding.root)
-
+        setViews()
         setUpViewModel()
 
-        setViews()
 
-        activityTransitionEvent()
 
-        val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        val mSensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION)
-        val triggerEventListener = object : TriggerEventListener() {
-            override fun onTrigger(event: TriggerEvent?) {
-                // Do work
-                myPageViewModel.increase()
-            }
-        }
-        mSensor?.also { sensor ->
-            sensorManager.requestTriggerSensor(triggerEventListener, sensor)
-        }
-    }
-
-    private fun activityTransitionEvent() {
         // 이벤트 등록 : 마지막 아이템을 누르면 나무 목록 리스트 페이지 전환
         myTreeAdapter.setOnItemClickListener(object : MyTreeAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                if (position == listSize-1) { // 마지막 아이템 누를 시
+                if (position == myTreeSize-1) { // 마지막 아이템 누를 시
                     val nextIntent = Intent(this@MyPageActivity, TreeListActivity::class.java)
                     startActivity(nextIntent)
                 }
@@ -127,7 +111,20 @@ class MyPageActivity : AppCompatActivity() {
             startActivity(nextIntent)
             finish()
         }
+
+        val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val mSensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION)
+        val triggerEventListener = object : TriggerEventListener() {
+            override fun onTrigger(event: TriggerEvent?) {
+                // Do work
+                myPageViewModel.increase()
+            }
+        }
+        mSensor?.also { sensor ->
+            sensorManager.requestTriggerSensor(triggerEventListener, sensor)
+        }
     }
+
 
     private fun checkActionPermission() {
         // 걷는 것 인식하기 위한 권한 요청
@@ -169,13 +166,12 @@ class MyPageActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStart() {
+    override fun onStart() { // 바뀌는 거 탐지!
         super.onStart()
 
         if(userId != -1L) {
             myPageViewModel.getUserInfo(userId)
-            myPageViewModel.getMyTrees(userId)
-            myPageViewModel.getMyWalkLogs(userId) // 데이터 갱신
+            myPageViewModel.getTreeData(userId)
         }
     }
 
@@ -191,21 +187,26 @@ class MyPageActivity : AppCompatActivity() {
                 }
         })
 
-        myPageViewModel.myTreesLiveData.observe(this, {response ->
-            response?.let {
+        myPageViewModel.myTreesLiveData.observe(this, {myTrees ->
 
-                // test
-                Log.d("TAG", "These are my Trees: $response") // These are my Trees: []
+            // test
+            Log.d("TAG", "These are my Trees: $myTrees") // These are my Trees: []
 
-                val lastItem = MyTreeItem(0, "Goto TreeList", Item("https://ifh.cc/g/eA7BXD.jpg"), 0, 0, "")
-                response.add(lastItem)
+            val lastItem = MyTreeItem(0, "Goto TreeList", Item("https://ifh.cc/g/eA7BXD.jpg"), 0, 0, "")
+            var arrayList = ArrayList<MyTreeItem>()
+            for(i in myTrees.indices)
+                arrayList.add(myTrees[i])
+            arrayList.add(lastItem)
 
-                myTreeAdapter.trees = response
+            myTreeSize = arrayList.size // 마지막 아이템 눌렀을 때 TreeListActivity 로 가는데 그때 position 을 쉽게 알기 위함
+            myTreeAdapter.trees = arrayList
+            
 
-                listSize = response.size
-            }
+//            myTreeAdapter.notifyDataSetChanged()
         })
 
+        
+        myPageViewModel.getMyWalkLogs(userId) // 데이터 갱신 안하기로 결정
         myPageViewModel.myWalkLogsLiveData.observe(this, {
 
             // test

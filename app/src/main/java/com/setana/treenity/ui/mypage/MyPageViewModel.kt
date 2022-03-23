@@ -1,6 +1,5 @@
 package com.setana.treenity.ui.mypage
 
-import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
 import com.setana.treenity.TreenityApplication.Companion.DAILY_WALK_LOG
@@ -15,7 +14,7 @@ import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
+
 
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
@@ -25,8 +24,8 @@ class MyPageViewModel @Inject constructor(
     private val _userLiveData: MutableLiveData<User> = MutableLiveData()
     val userLiveData: LiveData<User> = _userLiveData
 
-    private val _myTreesLiveData: MutableLiveData<ArrayList<MyTreeItem>> = MutableLiveData()
-    val myTreesLiveData: LiveData<ArrayList<MyTreeItem>> = _myTreesLiveData
+    private val _myTreesLiveData: MutableLiveData<List<MyTreeItem>> = MutableLiveData()
+    val myTreesLiveData: LiveData<List<MyTreeItem>> = _myTreesLiveData
 
     private val _myWalkLogsLiveData: MutableLiveData<List<WalkLog>> = MutableLiveData()
     val myWalkLogsLiveData: LiveData<List<WalkLog>> = _myWalkLogsLiveData
@@ -35,6 +34,7 @@ class MyPageViewModel @Inject constructor(
     val showErrorToast: LiveData<Event<String>> = _showErrorToast
 
     var steps = MutableLiveData<Int>()
+
 
     init {
         steps.value = DAILY_WALK_LOG[SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())]?.toInt()
@@ -50,12 +50,12 @@ class MyPageViewModel @Inject constructor(
         _showErrorToast.postValue(Event(content))
     }
 
-    var walkLogList = ArrayList<WalkLog>()
-    var job: Job? = null
-    var item = WalkLog("",0,0)
-    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        Log.d("tag","Exception handled: ${throwable.localizedMessage}")
-    }
+//    var walkLogList = ArrayList<WalkLog>()
+//    var job: Job? = null
+//    var item = WalkLog("",0,0)
+//    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+//        Log.d("tag","Exception handled: ${throwable.localizedMessage}")
+//    }
 
 
     fun getUserInfo(userId:Long) = viewModelScope.launch(Dispatchers.Main) {
@@ -78,25 +78,27 @@ class MyPageViewModel @Inject constructor(
         }
     }
 
-    fun getMyTrees(userId:Long) = viewModelScope.launch(Dispatchers.Main) {
+
+    fun getTreeData(userId:Long) = viewModelScope.launch(Dispatchers.Main) {
 
         val handler = CoroutineExceptionHandler { _, throwable ->
-            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
-            throwable.message?.let { Log.d("MyPageViewModel.kt", it) }
+          setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+          throwable.message?.let { Log.d("MyPageViewModel.kt", it) }
         }
 
         withContext(Dispatchers.IO + handler) {
 
-            val response = treeRepository.getUserTrees(userId)
-
-            if (response.isSuccessful) {
-                setToastMessage("success bringing MyTree data!!")
-                _myTreesLiveData.postValue(response.body())
-            } else {
-                Log.d("tag", "getMyTrees: has an error receiving data")
+            treeRepository.getUserTrees(userId.toString()).let { response ->
+                if (response.isSuccessful) {
+                    setToastMessage("success bringing My Tree data!!")
+                    _myTreesLiveData.postValue(response.body())
+                } else {
+                    Log.d("tag", "getUserInfo: has an error receiving data")
+                }
             }
         }
     }
+
 
     fun getMyWalkLogs(userId:Long) = viewModelScope.launch(Dispatchers.Main) {
 

@@ -172,7 +172,7 @@ class LoadingActivity : AppCompatActivity() {
                          startActivity(intent)
 
                         //startArActivity()
-                        startMapActivity()
+                        // startMapActivity()
                     }
                 } else {
                     Log.d(TAG, "걸음 수 전송 실패")

@@ -1,7 +1,9 @@
 package com.setana.treenity.data.repository
 
+import androidx.lifecycle.MutableLiveData
 import com.setana.treenity.data.api.dto.*
 import com.setana.treenity.data.api.dto.mypage.tree.MyTreeItem
+import retrofit2.Call
 import retrofit2.Response
 
 interface TreeRepository {
@@ -13,8 +15,8 @@ interface TreeRepository {
 //     suspend fun waterTree(id:Long, waterTreeDTO: WaterTreeDTO): Response<Void>
 //     suspend fun putTreeInfo(userId:Long,treeId:Long,putTreeInfoDTO:PutTreeInfoDTO):Response<Void>
 
-    suspend fun getUserTrees(userId:Long): Response<ArrayList<MyTreeItem>> // MyPageActivity
-    suspend fun getTreeData(userId:Long): Response<List<MyTreeItem>> // TreeListActivity
+    suspend fun getUserTrees(userId:String): Response<List<MyTreeItem>> // MyPageActivity
+    suspend fun getTreeData(userId:String): Response<List<MyTreeItem>> // TreeListActivity
 
     //suspend fun getAroundArTrees(lat: Double, lng: Double,userId:Long): Response<List<GetAroundArTreeResponseDTO>>
     suspend fun postTree(userId: Long, postTreeRequestDTO: PostTreeRequestDTO) : Response<Void>

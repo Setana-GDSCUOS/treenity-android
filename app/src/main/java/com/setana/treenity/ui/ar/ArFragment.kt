@@ -35,6 +35,7 @@ import com.google.ar.core.Config
 import com.google.ar.sceneform.Camera
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ViewRenderable
+import com.gorisse.thomas.lifecycle.doOnCreate
 import com.setana.treenity.R
 import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.data.api.dto.*
@@ -47,11 +48,17 @@ import com.setana.treenity.util.EventObserver
 import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sceneview.ar.ArSceneView
+import io.github.sceneview.ar.arcore.ArFrame
 import io.github.sceneview.ar.arcore.depthEnabled
 import io.github.sceneview.ar.arcore.planeFindingEnabled
+import io.github.sceneview.ar.node.ArModelNode
 import io.github.sceneview.ar.node.ArNode
 import io.github.sceneview.ar.node.CursorNode
+import io.github.sceneview.ar.node.PlacementMode
 import io.github.sceneview.ar.scene.PlaneRenderer
+import io.github.sceneview.math.Position
+import io.github.sceneview.math.Scale
+import io.github.sceneview.utils.FrameTime
 import io.github.sceneview.utils.doOnApplyWindowInsets
 
 
@@ -80,7 +87,6 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     private var cloudAnchorManager = CloudAnchorManager()
     private var modelNode: ArNode? = null
     private var textNode: ArNode? = null
-    private var isPlaneRenderEnabled = false
 
     // 나무 심기 모드 액티베이트
     private var isSeeding = false
@@ -144,16 +150,25 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         sceneView = arFragmentBinding.sceneView
         // 뷰의 터치된 장소에 노드를 생성 hitResult 가 터치된 장소. -> 커서노드로 품질 좋은 위치를 선정하도록 유도
         // 씨앗심기 모드에서만 노드 생성 가능
-        sceneView.configureSession {
-            it.planeFindingMode = Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL
-            it.planeFindingEnabled = true
-            it.depthMode = Config.DepthMode.DISABLED
-            it.depthEnabled = false
-            it.cloudAnchorMode = Config.CloudAnchorMode.ENABLED
-            it.lightEstimationMode = Config.LightEstimationMode.ENVIRONMENTAL_HDR
+        sceneView.configureSession { arSession, config ->
+            config.planeFindingMode = Config.PlaneFindingMode.HORIZONTAL
+            config.planeFindingEnabled = true
+            config.depthMode = Config.DepthMode.DISABLED
+            config.depthEnabled = false
+            config.cloudAnchorMode = Config.CloudAnchorMode.ENABLED
+            config.lightEstimationMode = Config.LightEstimationMode.ENVIRONMENTAL_HDR
+        }
+        sceneView.onArFrame = {
+            cloudAnchorManager.onUpdate()
+        }
+        sceneView.planeRenderer.lifecycle.doOnCreate {
+            sceneView.planeRenderer.isShadowReceiver = true
+            sceneView.planeRenderer.planeRendererMode = PlaneRenderer.PlaneRendererMode.RENDER_TOP_MOST
         }
 
 
+        // frametime에 관한거 확인
+        /*
         sceneView.onArFrameUpdated = {
             // CloudAnchorManager 의 onUpdate 는 Frame 이 업데이트되어 Session 이 갱신될 때 작동하도록 설계되어 있음.
             cloudAnchorManager.onUpdate()
@@ -165,6 +180,8 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             }
             */
         }
+        */
+
 
         sceneView.onTouchAr = { _, _ ->
             if(isSeeding && cursorNode.isTracking) {
@@ -203,36 +220,41 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         //configureSession()
         // Todo 씨앗 종류에 따라서 샘플 종류도 1단계로 나무로 바꿔주기
         isLoading = true
-        modelNode = ArNode(
-            modelGlbFileLocation = "models/sample.glb",
-            context = requireContext(),
-            coroutineScope = lifecycleScope,
-            onModelLoaded = {
-                //actionButton.text = getString(R.string.hosted_tree)
-                //actionButton.icon = resources.getDrawable(R.drawable.ic_target)
-                //actionButton.icon = ResourcesCompat.getDrawable(resources,R.drawable.ic_target,null)
+        modelNode = ArModelNode(placementMode = PlacementMode.BEST_AVAILABLE).apply {
+            loadModelAsync(
+                context = requireContext(),
+                glbFileLocation = "models/sample.glb",
+                coroutineScope = lifecycleScope,
+                autoAnimate = true,
+                autoScale = false,
+                // Place the model origin at the bottom center
+                centerOrigin = Position(y = -1.0f)
+            ) {
                 ViewRenderable.builder()
                     .setView(requireContext(),R.layout.title_button_plant)
                     .build()
-                    .thenAccept { renderable->
-                        // button_plant 라는 textview xml 을 3D 모델로 변환하여 버튼 위에 표시
-                        textNode= ArNode(
-                            // 기 생성된 layout xml 을 사용하여 렌더링
-                            viewLayoutResId = R.id.button_plant,
-                            context = requireContext(),
-                            coroutineScope = lifecycleScope,
-                        )
-                        // textNode 는 버튼이 있는 ModelNode 의 좌표에 생성되므로 위치를 올려 줌
-                        textNode!!.positionY+=0.05f
-                        textNode!!.setRenderable(renderable)
-                        modelNode!!.addChild(textNode!!)
+                    .thenAccept { renderable ->
+                        textNode = ArModelNode(placementMode = PlacementMode.BEST_AVAILABLE).apply {
+                            loadModelAsync(
+                                context = requireContext(),
+                                glbFileLocation = "models/sample.glb",
+                                coroutineScope = lifecycleScope,
+                                autoAnimate = true,
+                                autoScale = false,
+                                // Place the model origin at the bottom center
+                                centerOrigin = Position(y = +0.1f)
+                            )
+                            // textNode 는 버튼이 있는 ModelNode 의 좌표에 생성되므로 위치를 올려 줌
+                            textNode!!.setModel(renderable)
+                            modelNode!!.addChild(textNode!!)
+                        }
                     }
                     .exceptionally {
                         throw AssertionError("Could not load title of the button")
                     }
                 isLoading = false
             }
-        )
+        }
         modelNode!!.anchor=anchor
         sceneView.addChild(modelNode!!)
 
@@ -266,7 +288,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
     private fun createCloudAnchorWithAnchor(anchor:Anchor?){
         //ttl 여기
-        sceneView.session?.let{
+        sceneView.arSession?.let{
             cloudAnchorManager.hostCloudAnchor(it,anchor,7,
                 object : CloudAnchorManager.CloudAnchorResultListener {
                     override fun onCloudTaskComplete(anchor: Anchor?) {
@@ -310,7 +332,8 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     /** 등록된 cloudAnchor 를 ID 를 통해 받아옴, session configure 은 Resolve 버튼의 리스너에서 처리 */
     @Synchronized
     fun resolveAnchor(cloudAnchorId:String, treeId: Long, level: Int) {
-        sceneView.session?.let {
+
+        sceneView.arSession?.let {
             isLoading = true
 
             cloudAnchorManager.resolveCloudAnchor(
@@ -343,27 +366,33 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
      * 로드된 앵커 위에 노드를 덧씌워 준다.
      * */
     @Synchronized
-    private fun onResolvedAnchor(anchor:Anchor?, treeId: Long, level: Int){
+    private fun onResolvedAnchor(anchor:Anchor?, treeId: Long, level: Int) {
         // 레벨 반영비율 + 상수로 크기 결정, 따로 value 로 관리해도 좋을 것 같음
-        var fLevel = 0.5f*level.toFloat()
+        var fLevel = 0.5f * level.toFloat()
         var modelPath = "models/sample.glb"
-        if (level ==2){
+        if (level == 2) {
             //Todo 나중에 이거 해시맵으로
             modelPath = "models/acorn_sample.glb"
-            fLevel*=0.005f
+            fLevel *= 0.005f
         }
-        if(anchor!=null){
-            modelNode = ArNode(
-                //로드하는 모델의 종류는 서버에서 받아와야 함
-                modelGlbFileLocation = modelPath,
-                context = requireContext(),
-                coroutineScope = lifecycleScope,
-                scales = Vector3(0.3f+fLevel,0.3f+fLevel,0.3f+fLevel),
-                onModelLoaded = {
+        if (anchor != null) {
+            modelNode = ArModelNode(placementMode = PlacementMode.BEST_AVAILABLE).apply {
+                loadModelAsync(
+                    context = requireContext(),
+                    glbFileLocation = modelPath,
+                    coroutineScope = lifecycleScope,
+                    autoAnimate = true,
+                    autoScale = false,
+                    // Place the model origin at the bottom center
+                    //scale = Vector3(0.3f+fLevel,0.3f+fLevel,0.3f+fLevel),
+                    centerOrigin = Position(y = -1.0f),
+                ){
                     isLoading = false
+                    modelNode!!.modelScale = Scale(0.3f+fLevel,0.3f+fLevel,0.3f+fLevel)
                 }
-            )
-            modelNode!!.onTap = { _,_ ->
+            }
+
+            modelNode!!.onTouched = { _, _ ->
                 arViewModel.treeListLiveData.value?.find { it.treeId == treeId }
                 arViewModel.getTreeInformation(treeId)
             }

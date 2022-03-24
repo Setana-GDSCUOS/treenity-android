@@ -166,8 +166,11 @@ class MyPageActivity : AppCompatActivity() {
                     username.text = user.username
                     point.text = user.point.toString()
                     bucket.text = user.buckets.toString()
+                    dailyWalk.text = user.dailyWalks.toString()
                 }
 
+            initialStep = user.dailyWalks
+            Log.d("TAG", "setUpViewModel: This is the initial step $initialStep") //
         })
 
         // test
@@ -290,7 +293,8 @@ class MyPageActivity : AppCompatActivity() {
         override fun onReceive(context: Context?, intent: Intent) {
             val bundle = intent.extras
             if (bundle != null) {
-                binding.dailyWalk.text = bundle.getInt("detectedStep").toString()
+                binding.dailyWalk.text = (binding.dailyWalk.text.toString().toInt() + bundle.getInt("detectedStep")).toString()
+                Log.d("TAG", "onReceive: this is my daily step : ${binding.dailyWalk.text}")
             }
         }
     }
@@ -301,11 +305,6 @@ class MyPageActivity : AppCompatActivity() {
         registerReceiver(br, IntentFilter("1"))
     }
 
-    override fun onPause() {
-        // TODO Auto-generated method stub
-        super.onPause()
-        unregisterReceiver(br)
-    }
 }
 
 class DateFormatter : ValueFormatter() { // x 축의 float 값을 날짜로 변환해줄 class

@@ -30,13 +30,6 @@ class MyPageViewModel @Inject constructor(
     private val _showErrorToast = MutableLiveData<Event<String>>()
     val showErrorToast: LiveData<Event<String>> = _showErrorToast
 
-//    var steps = MutableLiveData<String>()
-//
-//
-//    fun countStep(){
-//        steps.value = daily_Step.toString()
-//    }
-
     private fun setToastMessage(content: String) {
         _showErrorToast.postValue(Event(content))
     }

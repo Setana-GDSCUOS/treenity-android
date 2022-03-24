@@ -102,7 +102,7 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
             }
             stepsBeforeDetection = it.values[0].toInt()
 
-            publishResults(mSteps)
+            publishResults(1)
         }
 
         /* [DEBUG LOG]
@@ -140,7 +140,7 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
         super.onDestroy()
     }
 
-    private fun publishResults(detectedStep: Int) { // 감지된 걸음 수와 초기값을 같이 보냄
+    private fun publishResults(detectedStep: Int) {
         val intent = Intent("1")
         intent.putExtra("detectedStep", detectedStep)
         sendBroadcast(intent)

@@ -13,7 +13,7 @@ import com.setana.treenity.databinding.ArInfoDialogBinding
 
 
 
-class ArDialogFragment(context: Context, treeInfoResponse: GetTreeInformationResponseDTO, isTreeOwner:Boolean) {
+class ArInfoDialogFragment(context: Context, treeInfoResponse: GetTreeInformationResponseDTO, isTreeOwner:Boolean) {
     interface ArDialogListener {
         fun onWaterListener(treeId:Long)
         fun onDescriptionSaveListener(treeName:String, description:String)

@@ -308,12 +308,15 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                     arViewModel.postHostedTree(userId,postTreeDTO)
                     clearView(false) // 이거 Forced 안 되게 해야 나무 심고 안 없어진다.
                     arViewModel.listAroundTrees(mLastLocation!!.latitude,mLastLocation!!.longitude,userId)
-                    Toast.makeText(requireContext(), "Succeed to plant tree!", Toast.LENGTH_SHORT).show()
                     modelNode.onTouched = { _, _ ->
                         // Todo 서버에서 받아온 treeId를 통해서 바로 interaction 가능하게
                         //arViewModel.treeListLiveData.value?.find { it.treeId == postedTreeId }
                         //arViewModel.getTreeInformation(postedTreeId)
                     }
+                    // 바로 다이얼로그 띄워서 나무 이름과 설명 설정할 수 있게
+                    //Toast.makeText(requireContext(), "Plant succeed! Please enter your tree information", Toast.LENGTH_SHORT).show()
+                    //arViewModel.treeListLiveData.value?.find { it.treeId == postedTreeId }
+                    //arViewModel.getTreeInformation(postedTreeId)
                 }
             }else if(anchorState == CloudAnchorState.ERROR_HOSTING_DATASET_PROCESSING_FAILED || anchorState == CloudAnchorState.ERROR_INTERNAL){
                 Toast.makeText(requireContext(), "Failed : Not enough 3D information", Toast.LENGTH_SHORT).show()
@@ -644,9 +647,9 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             oldInfo.treeName = "No name"
         }
 
-        val arDialogFragment = ArDialogFragment(requireContext(),treeInfoResponse,isTreeOwner)
+        val arDialogFragment = ArInfoDialogFragment(requireContext(),treeInfoResponse,isTreeOwner)
         arDialogFragment.createDialog()
-        arDialogFragment.setListener(object: ArDialogFragment.ArDialogListener{
+        arDialogFragment.setListener(object: ArInfoDialogFragment.ArDialogListener{
             override fun onNameSaveListener(treeName: String,description:String) {
                 Toast.makeText(requireContext(), "Tree name saved", Toast.LENGTH_SHORT).show()
                 //Todo 북마크 끌어오기

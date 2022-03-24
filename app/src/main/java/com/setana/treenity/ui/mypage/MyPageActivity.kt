@@ -10,7 +10,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
@@ -18,7 +17,6 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
-import com.setana.treenity.R
 import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.TreenityApplication.Companion.idAndDate
 import com.setana.treenity.data.api.dto.mypage.tree.Item
@@ -34,6 +32,9 @@ import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import kotlin.collections.ArrayList
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.IntentFilter
 
 
 @AndroidEntryPoint
@@ -45,6 +46,7 @@ class MyPageActivity : AppCompatActivity() {
 
     // MyPage main
     private lateinit var binding: MypageMypageActivityMainBinding
+    private var initialStep = 0
 
     private lateinit var myTreeAdapter: MyTreeAdapter
     private var myTreeSize = 0
@@ -67,14 +69,12 @@ class MyPageActivity : AppCompatActivity() {
         checkActionPermission()
 
         //inflate
-        binding = DataBindingUtil.setContentView(this, R.layout.mypage_mypage_activity_main)
-        binding.lifecycleOwner = this
-        binding.mypageviewmodel = myPageViewModel
+        binding = MypageMypageActivityMainBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
         setViews()
-        observeStep()
         setUpViewModel()
+
 
         // 이벤트 등록 : 마지막 아이템을 누르면 나무 목록 리스트 페이지 전환
         myTreeAdapter.setOnItemClickListener(object : MyTreeAdapter.OnItemClickListener {
@@ -105,27 +105,7 @@ class MyPageActivity : AppCompatActivity() {
             finish()
         }
 
-//        val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-//        val mSensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION)
-//        val triggerEventListener = object : TriggerEventListener() {
-//            override fun onTrigger(event: TriggerEvent?) {
-//                // Do work
-//                myPageViewModel.increase()
-//            }
-//        }
-//        mSensor?.also { sensor ->
-//            sensorManager.requestTriggerSensor(triggerEventListener, sensor)
-//        }
     }
-
-    private fun observeStep() {
-        myPageViewModel.steps.observe(this, {
-
-            myPageViewModel.countStep()
-
-        })
-    }
-
 
     private fun checkActionPermission() {
         // 걷는 것 인식하기 위한 권한 요청
@@ -173,7 +153,9 @@ class MyPageActivity : AppCompatActivity() {
         if(userId != -1L) {
             myPageViewModel.getUserInfo(userId)
             myPageViewModel.getTreeData(userId)
+            myPageViewModel.getMyWalkLogs(userId) // 데이터 갱신 안하기로 결정
         }
+
     }
 
     private fun setUpViewModel() {
@@ -184,9 +166,14 @@ class MyPageActivity : AppCompatActivity() {
                     username.text = user.username
                     point.text = user.point.toString()
                     bucket.text = user.buckets.toString()
-                    dailyWalk.text = user.dailyWalks.toString()
                 }
+
         })
+
+        // test
+        Log.d("TAG", "setUpViewModel: This is the initial step $initialStep") //
+
+        binding.dailyWalk.text = initialStep.toString() // step 기존의 것 초기값 설정
 
         myPageViewModel.myTreesLiveData.observe(this, {myTrees ->
 
@@ -207,7 +194,7 @@ class MyPageActivity : AppCompatActivity() {
         })
 
         // 수정 시작!
-        myPageViewModel.getMyWalkLogs(userId) // 데이터 갱신 안하기로 결정
+
         myPageViewModel.myWalkLogsLiveData.observe(this, {
 
             // test
@@ -298,6 +285,27 @@ class MyPageActivity : AppCompatActivity() {
         )
         binding.itemRecycler.adapter = myTreeAdapter
     }
+
+    private val br: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent) {
+            val bundle = intent.extras
+            if (bundle != null) {
+                binding.dailyWalk.text = bundle.getInt("detectedStep").toString()
+            }
+        }
+    }
+
+    override fun onResume() {
+        // TODO Auto-generated method stub
+        super.onResume()
+        registerReceiver(br, IntentFilter("1"))
+    }
+
+    override fun onPause() {
+        // TODO Auto-generated method stub
+        super.onPause()
+        unregisterReceiver(br)
+    }
 }
 
 class DateFormatter : ValueFormatter() { // x 축의 float 값을 날짜로 변환해줄 class
@@ -309,3 +317,7 @@ class DateFormatter : ValueFormatter() { // x 축의 float 값을 날짜로 변�
     }
 
 }
+
+
+
+

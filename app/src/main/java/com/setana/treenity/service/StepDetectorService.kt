@@ -9,25 +9,18 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil.findBinding
-import androidx.databinding.DataBindingUtil.setContentView
 import androidx.lifecycle.LifecycleService
 import com.google.gson.Gson
-import com.setana.treenity.R
 import com.setana.treenity.TreenityApplication.Companion.DAILY_WALK_LOG
 import com.setana.treenity.TreenityApplication.Companion.PREFS
-import com.setana.treenity.TreenityApplication.Companion.daily_Step
 import com.setana.treenity.data.repository.TreeRepository
-import com.setana.treenity.ui.mypage.MyPageActivity
 import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.math.absoluteValue
 
 /**
  * Coroutine 사용법
@@ -85,6 +78,7 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
+
         return START_NOT_STICKY
     }
 
@@ -100,13 +94,6 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
                 if (stepsBeforeDetection == 0) stepsBeforeDetection else it.values[0].toInt() - stepsBeforeDetection
             mSteps += currentDetectedSteps
 
-            val currentTime : Long = System.currentTimeMillis()
-
-
-            if(hour.format(currentTime) != "24") {// 하루가 넘어가지 않았다면 센서 측정마다 1씩 더 해감
-                daily_Step.plus(1)
-            } else daily_Step = 0
-
             mStepBuffer += currentDetectedSteps
             storeStepToGlobalHashMap(mSteps)
             if (mStepBuffer >= 10) {
@@ -114,6 +101,8 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
                 mStepBuffer = 0
             }
             stepsBeforeDetection = it.values[0].toInt()
+
+            publishResults(mSteps)
         }
 
         /* [DEBUG LOG]
@@ -149,7 +138,11 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        // TODO: 발걸음 수 POST 요청
     }
 
+    private fun publishResults(detectedStep: Int) { // 감지된 걸음 수와 초기값을 같이 보냄
+        val intent = Intent("1")
+        intent.putExtra("detectedStep", detectedStep)
+        sendBroadcast(intent)
+    }
 }

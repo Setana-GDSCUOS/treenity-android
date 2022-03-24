@@ -163,8 +163,8 @@ class LoadingActivity : AppCompatActivity() {
                     // 권한 확인 후 Activity 및 Service 실행
                     if (checkAndRequestPermissions()) {
                         startStepDetectorService()
-                        //startArActivity()
-                        startMapActivity()
+                        startArActivity()
+                        //startMapActivity()
                         finish()
                     }
                 } else {
@@ -350,7 +350,8 @@ class LoadingActivity : AppCompatActivity() {
         ) {
             Toast.makeText(this, "All Permission Granted", Toast.LENGTH_SHORT).show()
             startStepDetectorService()
-            startMapActivity()
+            //startMapActivity()
+            startArActivity()
             finish()
         } else {
             permissionDenied = true

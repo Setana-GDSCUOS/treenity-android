@@ -18,6 +18,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.airbnb.lottie.LottieDrawable
@@ -37,7 +40,8 @@ import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.data.api.dto.RegisterCurrentFirebaseUserRequestDTO
 import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
 import com.setana.treenity.databinding.ActivityLoadingBinding
-import com.setana.treenity.service.StepDetectorService
+import com.setana.treenity.service.PushNotificationWorker
+import com.setana.treenity.service.TreenityForegroundService
 import com.setana.treenity.ui.ar.ArActivity
 import com.setana.treenity.ui.map.MapActivity
 import com.setana.treenity.util.EventObserver
@@ -48,6 +52,7 @@ import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class LoadingActivity : AppCompatActivity() {
@@ -80,6 +85,14 @@ class LoadingActivity : AppCompatActivity() {
      * Start Activity or Service Methods
      */
 
+    private fun startMainApplicationWorks() {
+        startStepDetectorService()
+        startPushNotificationWorker()
+        // startArActivity()
+        startMapActivity()
+        finish()
+    }
+
     private fun startArActivity() {
         val intent = Intent(this, ArActivity::class.java)
         startActivity(intent)
@@ -93,8 +106,23 @@ class LoadingActivity : AppCompatActivity() {
     }
 
     private fun startStepDetectorService() {
-        val intent = Intent(this, StepDetectorService::class.java)
+        val intent = Intent(this, TreenityForegroundService::class.java)
         startService(intent)
+    }
+
+    private fun startPushNotificationWorker() {
+        val periodicWorkRequest = PeriodicWorkRequest.Builder(
+            PushNotificationWorker::class.java,
+            15, TimeUnit.MINUTES,
+            5, TimeUnit.MINUTES
+        ).build()
+
+        // TODO 설정 값 확인
+        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+            PushNotificationWorker.WORK_NAME,
+            ExistingPeriodicWorkPolicy.REPLACE,
+            periodicWorkRequest
+        )
     }
 
     /**
@@ -162,10 +190,7 @@ class LoadingActivity : AppCompatActivity() {
 
                     // 권한 확인 후 Activity 및 Service 실행
                     if (checkAndRequestPermissions()) {
-                        startStepDetectorService()
-                        //startArActivity()
-                        startMapActivity()
-                        finish()
+                        startMainApplicationWorks()
                     }
                 } else {
                     Log.d(TAG, "걸음 수 전송 실패")
@@ -347,9 +372,7 @@ class LoadingActivity : AppCompatActivity() {
             }
         ) {
             Toast.makeText(this, "All Permission Granted", Toast.LENGTH_SHORT).show()
-            startStepDetectorService()
-            startMapActivity()
-            finish()
+            startMainApplicationWorks()
         } else {
             permissionDenied = true
         }

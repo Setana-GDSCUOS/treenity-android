@@ -7,7 +7,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import com.setana.treenity.service.StepDetectorService
+import com.setana.treenity.service.TreenityForegroundService
 import com.setana.treenity.ui.loading.LoadingActivity
 import dagger.Module
 import dagger.Provides
@@ -22,7 +22,7 @@ object ServiceModule {
     fun provideNotification(@ApplicationContext app: Context): Notification =
         NotificationCompat.Builder(
             app,
-            StepDetectorService.CHANNEL_ID
+            "CHANNEL_ID"
         ).apply {
             val notificationIntent = Intent(app, LoadingActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -40,7 +40,7 @@ object ServiceModule {
             val channelDescription = "Treenity"
             val channelImportance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(
-                StepDetectorService.CHANNEL_ID,
+                TreenityForegroundService.CHANNEL_ID,
                 channelName,
                 channelImportance
             ).apply {

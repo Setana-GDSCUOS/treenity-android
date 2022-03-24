@@ -29,7 +29,7 @@ import com.setana.treenity.TreenityApplication.Companion.idAndDate
 import com.setana.treenity.data.api.dto.mypage.tree.Item
 import com.setana.treenity.data.api.dto.mypage.tree.MyTreeItem
 import com.setana.treenity.databinding.MypageMypageActivityMainBinding
-import com.setana.treenity.service.StepDetectorService
+import com.setana.treenity.service.TreenityForegroundService
 import com.setana.treenity.ui.ar.ArActivity
 import com.setana.treenity.ui.mytreelist.TreeListActivity
 import com.setana.treenity.ui.mypage.adapter.MyTreeAdapter
@@ -161,7 +161,7 @@ class MyPageActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             } else { // 승인은 했다면
-                val intent = Intent(this, StepDetectorService::class.java)
+                val intent = Intent(this, TreenityForegroundService::class.java)
                 startService(intent)
 
                 Toast.makeText(this, "Activity Sensor is Activated", Toast.LENGTH_SHORT).show()

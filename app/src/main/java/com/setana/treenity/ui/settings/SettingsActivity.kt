@@ -11,7 +11,6 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import android.provider.Settings
 import android.util.Log
-import android.view.Gravity
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -24,16 +23,10 @@ import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.setana.treenity.R
 import com.setana.treenity.TreenityApplication.Companion.PREFS
-import com.setana.treenity.data.api.UserApiService
-import com.setana.treenity.data.api.dto.mypage.user.User
-import com.setana.treenity.data.repository.UserRepository
-import com.setana.treenity.di.NetworkModule
-import com.setana.treenity.service.PushAlarmWorker
-import com.setana.treenity.service.StepDetectorService
+import com.setana.treenity.service.PushNotificationWorker
+import com.setana.treenity.service.TreenityForegroundService
 import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
-import retrofit2.Call
-import retrofit2.Response
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
@@ -54,7 +47,7 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         .build()
 
     private val alarmRequest = PeriodicWorkRequest.Builder(
-        PushAlarmWorker::class.java,
+        PushNotificationWorker::class.java,
         15, // 최소 시간이 15분 -> TODO 나중에 1시간으로 설정할 것
         TimeUnit.MINUTES
     ).setConstraints(constraints).build()
@@ -180,7 +173,7 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         if (requestCode == activityPermission) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
 
-                val intent = Intent(this, StepDetectorService::class.java)
+                val intent = Intent(this, TreenityForegroundService::class.java)
                 startService(intent)
 
                 Toast.makeText(this, "Activity Permission Activated", Toast.LENGTH_SHORT).show()

@@ -28,7 +28,7 @@ import javax.inject.Inject
  */
 
 @AndroidEntryPoint
-class StepDetectorService : LifecycleService(), SensorEventListener {
+class TreenityForegroundService : LifecycleService(), SensorEventListener {
     @Inject
     lateinit var treeRepository: TreeRepository
     @Inject
@@ -86,18 +86,19 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
 
     override fun onSensorChanged(sensor: SensorEvent?) {
         sensor?.let {
+            if (it.sensor.type == Sensor.TYPE_STEP_COUNTER) {
+                val currentDetectedSteps =
+                    if (stepsBeforeDetection == 0) stepsBeforeDetection else it.values[0].toInt() - stepsBeforeDetection
+                mSteps += currentDetectedSteps
 
-            val currentDetectedSteps =
-                if (stepsBeforeDetection == 0) stepsBeforeDetection else it.values[0].toInt() - stepsBeforeDetection
-            mSteps += currentDetectedSteps
-
-            mStepBuffer += currentDetectedSteps
-            storeStepToGlobalHashMap(mSteps)
-            if (mStepBuffer >= 10) {
-                storeStepToSharedPreference()
-                mStepBuffer = 0
+                mStepBuffer += currentDetectedSteps
+                storeStepToGlobalHashMap(mSteps)
+                if (mStepBuffer >= 10) {
+                    storeStepToSharedPreference()
+                    mStepBuffer = 0
+                }
+                stepsBeforeDetection = it.values[0].toInt()
             }
-            stepsBeforeDetection = it.values[0].toInt()
         }
 
         /* [DEBUG LOG]

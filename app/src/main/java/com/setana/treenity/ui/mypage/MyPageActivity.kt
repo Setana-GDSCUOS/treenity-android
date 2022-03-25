@@ -66,7 +66,6 @@ class MyPageActivity : AppCompatActivity() {
     private val hashMapString = PREFS.getString(DAILY_WALK_LOG_KEY, "")
     val type = object : TypeToken<HashMap<String, String>>() {}.type
 
-
     // Walk Log
     var barEntries = ArrayList<BarEntry>()
     private lateinit var barDataSet: BarDataSet
@@ -93,6 +92,7 @@ class MyPageActivity : AppCompatActivity() {
         setViews()
         setUpViewModel()
 
+        registerReceiver(br, IntentFilter("1"))
 
         // TODO: 이벤트 등록 : 마지막 아이템을 누르면 나무 목록 리스트 페이지 전환
         myTreeAdapter.setOnItemClickListener(object : MyTreeAdapter.OnItemClickListener {
@@ -167,7 +167,7 @@ class MyPageActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        registerReceiver(br, IntentFilter("1"))
+
 
         // POST WalkLog
         val hashMap = Gson().fromJson<HashMap<String, String>>(hashMapString, type)
@@ -193,6 +193,7 @@ class MyPageActivity : AppCompatActivity() {
             myPageViewModel.getTreeData(userId)
 
         }
+
 
         // test
         Log.d("TAG", "onStart: post dailyWalk in onStart!!!")
@@ -260,6 +261,9 @@ class MyPageActivity : AppCompatActivity() {
                     newlyAddedStep = 0
                     PREFS.setString(DAILY_WALK_LOG_KEY, "")
 
+                    // dailyWalk 갱신
+                    myPageViewModel.getUserInfo(userId)
+
                 } else {
                     Log.d(TAG, "failed to post daily walk!")
                 }
@@ -281,7 +285,7 @@ class MyPageActivity : AppCompatActivity() {
             myTreeAdapter.trees = arrayList
             
 
-//            myTreeAdapter.notifyDataSetChanged()
+            myTreeAdapter.notifyDataSetChanged()
         })
 
         myPageViewModel.getMyWalkLogs(userId)

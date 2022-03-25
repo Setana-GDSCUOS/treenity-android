@@ -35,10 +35,14 @@ import kotlin.collections.ArrayList
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.IntentFilter
+import android.view.View
+import android.widget.FrameLayout
+import com.airbnb.lottie.LottieDrawable
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.setana.treenity.TreenityApplication.Companion.newlyAddedStep
 import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
+import com.setana.treenity.databinding.ActivityLoadingBinding
 import com.setana.treenity.util.PreferenceManager
 import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
 import java.text.DecimalFormat
@@ -51,6 +55,9 @@ class MyPageActivity : AppCompatActivity() {
     // sensor permission
     private val MY_PERMISSION_ACCESS_ALL = 100
     val permission = arrayOf(Manifest.permission.ACTIVITY_RECOGNITION)
+
+    // animation
+    private lateinit var loadingAnimationFrameLayout: FrameLayout
 
     // MyPage main
     private lateinit var binding: MypageMypageActivityMainBinding
@@ -84,11 +91,9 @@ class MyPageActivity : AppCompatActivity() {
 
         checkActionPermission()
 
-        //inflate
-        binding = MypageMypageActivityMainBinding.inflate(layoutInflater)
-
-
-        setContentView(binding.root)
+        setupViewBinding()
+        setupLoadingAnimationFrameLayout()
+        showLoadingAnimation()
         setViews()
         setUpViewModel()
 
@@ -123,6 +128,32 @@ class MyPageActivity : AppCompatActivity() {
             finish()
         }
 
+    }
+
+    private fun setupViewBinding() {
+        binding = MypageMypageActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+    }
+
+    private fun setupLoadingAnimationFrameLayout() {
+        loadingAnimationFrameLayout = binding.frameLottieHolder
+        loadingAnimationFrameLayout.bringToFront()
+    }
+
+    private fun showLoadingAnimation() {
+        loadingAnimationFrameLayout.visibility = View.VISIBLE
+        playLottieAnimation()
+    }
+
+    private fun hideLoadingAnimation() {
+        loadingAnimationFrameLayout.visibility = View.INVISIBLE
+    }
+
+    private fun playLottieAnimation() {
+        val lottieAnimationView = binding.lottieLoading
+        lottieAnimationView.setAnimation("loading.json")
+        lottieAnimationView.repeatCount = LottieDrawable.INFINITE
+        lottieAnimationView.playAnimation()
     }
 
     private fun checkActionPermission() {
@@ -199,30 +230,30 @@ class MyPageActivity : AppCompatActivity() {
         Log.d("TAG", "onStart: post dailyWalk in onStart!!!")
     }
 
-//    override fun onPause() {
-//        super.onPause()
-//
-//        // POST WalkLog
-//        val hashMap = Gson().fromJson<HashMap<String, String>>(hashMapString, type)
-//            ?: hashMapOf(
-//                SimpleDateFormat(
-//                    "yyyy-MM-dd",
-//                    Locale.US
-//                ).format(Date()) to newlyAddedStep.toString()
-//            )
-//
-//        val updateUserWalkLogsRequestDTO = UpdateUserWalkLogsRequestDTO(hashMap)
-//
-//        if(userId != -1L) {
-//            myPageViewModel.updateUserWalkLogs(
-//                userId.toString(),
-//                updateUserWalkLogsRequestDTO
-//            )
-//
-//            newlyAddedStep = 0 // 보내고 난다음에는 초기화!
-//            PREFS.setString(DAILY_WALK_LOG_KEY, "")
-//        }
-//    }
+    override fun onPause() {
+        super.onPause()
+
+        // POST WalkLog
+        val hashMap = Gson().fromJson<HashMap<String, String>>(hashMapString, type)
+            ?: hashMapOf(
+                SimpleDateFormat(
+                    "yyyy-MM-dd",
+                    Locale.US
+                ).format(Date()) to newlyAddedStep.toString()
+            )
+
+        val updateUserWalkLogsRequestDTO = UpdateUserWalkLogsRequestDTO(hashMap)
+
+        if(userId != -1L) {
+            myPageViewModel.updateUserWalkLogs(
+                userId.toString(),
+                updateUserWalkLogsRequestDTO
+            )
+
+            newlyAddedStep = 0 // 보내고 난다음에는 초기화!
+            PREFS.setString(DAILY_WALK_LOG_KEY, "")
+        }
+    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -275,6 +306,7 @@ class MyPageActivity : AppCompatActivity() {
             // test
             Log.d("TAG", "These are my Trees: $myTrees") // These are my Trees: []
 
+            // hosting image is free for 180 days. update it in July 12th
             val lastItem = MyTreeItem(0, "Goto TreeList", Item("https://ifh.cc/g/eA7BXD.jpg"), 0, 0, "")
             var arrayList = ArrayList<MyTreeItem>()
             for(i in myTrees.indices)
@@ -286,6 +318,7 @@ class MyPageActivity : AppCompatActivity() {
             
 
             myTreeAdapter.notifyDataSetChanged()
+            hideLoadingAnimation()
         })
 
         myPageViewModel.getMyWalkLogs(userId)

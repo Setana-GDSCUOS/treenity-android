@@ -20,4 +20,5 @@
     <string name="title_activity_settings">SettingsActivity</string>
     <string name="tutorial_1">models/sample.glb</string>
     <string name="basic_1">models/acorn_sample.glb</string>
+    <string name="instruction_ar">To load trees fast and accurate, you have to carefully give your phone information of the place to plant. \n Please see the video upside.</string>
 </resources>

@@ -504,9 +504,14 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             startMyPageActivity()
         }
         fabSeed.setOnClickListener{
-            // 아이템 페이지랑 사이즈 하드코딩
-            arViewModel.getUserItems(userId)
             isSeeding = true
+            val instructionDialog = ArInstructionDialog(requireContext())
+            instructionDialog.createInstruction()
+            instructionDialog.setButtonListener(object:ArInstructionDialog.ArInstructionDialogListener{
+                override fun onButtonClickListener() {
+                    arViewModel.getUserItems(userId)
+                }
+            })
             // 선택된 아이템은 전역변수 공유
         }
         fabRefresh.setOnClickListener{
@@ -569,6 +574,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                     resolveNotResolvedAnchor(arTree)
                 }
             }
+            isLoading = false
         }
 
         arViewModel.treeInformationResponseLiveData.observe(viewLifecycleOwner){
@@ -608,6 +614,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     private fun clearView(forced : Boolean){
         // Todo 여기 최대 렌더링 수
         if(sceneView.children.size>10 || forced){
+            isLoading = true
             // 최대 렌더링 수보다 SceneView 에 자식노드가 많으면 카메라랑 커서 빼고 잘라버림
             for(child in sceneView.children){
                 if(child !is Camera && child !=cursorNode){

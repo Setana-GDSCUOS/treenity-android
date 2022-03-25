@@ -89,8 +89,8 @@ class LoadingActivity : AppCompatActivity() {
     private fun startMainApplicationWorks() {
         startStepDetectorService()
         startPushNotificationWorker()
-        // startArActivity()
-        startMapActivity()
+        startArActivity()
+        //startMapActivity()
         finish()
     }
 

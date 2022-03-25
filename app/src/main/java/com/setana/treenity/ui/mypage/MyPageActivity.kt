@@ -35,6 +35,13 @@ import kotlin.collections.ArrayList
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.IntentFilter
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.setana.treenity.TreenityApplication.Companion.newlyAddedStep
+import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
+import com.setana.treenity.util.PreferenceManager
+import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
+import java.text.SimpleDateFormat
 
 
 @AndroidEntryPoint
@@ -54,6 +61,11 @@ class MyPageActivity : AppCompatActivity() {
     private val myPageViewModel: MyPageViewModel by viewModels()
     val userId = PREFS.getLong(USER_ID_KEY, -1)
 
+    // Post WalkLog
+    private val hashMapString = PREFS.getString(DAILY_WALK_LOG_KEY, "")
+    val type = object : TypeToken<HashMap<String, String>>() {}.type
+
+
     // Walk Log
     var barEntries = ArrayList<BarEntry>()
     private lateinit var barDataSet: BarDataSet
@@ -63,6 +75,10 @@ class MyPageActivity : AppCompatActivity() {
     var walks = ArrayList<Float>()
     var dates = ArrayList<String>()
 
+    companion object {
+        private const val TAG = "MyPageActivity"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -70,6 +86,7 @@ class MyPageActivity : AppCompatActivity() {
 
         //inflate
         binding = MypageMypageActivityMainBinding.inflate(layoutInflater)
+
 
         setContentView(binding.root)
         setViews()
@@ -147,16 +164,79 @@ class MyPageActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStart() { // 바뀌는 거 탐지!
+    override fun onStart() {
         super.onStart()
+        registerReceiver(br, IntentFilter("1"))
+
+        // POST WalkLog
+        val hashMap = Gson().fromJson<HashMap<String, String>>(hashMapString, type)
+            ?: hashMapOf(
+                SimpleDateFormat(
+                    "yyyy-MM-dd",
+                    Locale.US
+                ).format(Date()) to newlyAddedStep.toString()
+            )
+
+        val updateUserWalkLogsRequestDTO = UpdateUserWalkLogsRequestDTO(hashMap)
 
         if(userId != -1L) {
+            myPageViewModel.updateUserWalkLogs(
+                userId.toString(),
+                updateUserWalkLogsRequestDTO
+            )
+
+            newlyAddedStep = 0 // 보내고 난다음에는 초기화!
+            PREFS.setString(DAILY_WALK_LOG_KEY, "")
+
             myPageViewModel.getUserInfo(userId)
             myPageViewModel.getTreeData(userId)
-            myPageViewModel.getMyWalkLogs(userId) // 데이터 갱신 안하기로 결정
         }
 
+        // test
+        Log.d("TAG", "onStart: post dailyWalk in onStart!!!")
     }
+
+    override fun onPause() {
+        super.onPause()
+
+        // POST WalkLog
+        val hashMap = Gson().fromJson<HashMap<String, String>>(hashMapString, type)
+            ?: hashMapOf(
+                SimpleDateFormat(
+                    "yyyy-MM-dd",
+                    Locale.US
+                ).format(Date()) to newlyAddedStep.toString()
+            )
+
+        val updateUserWalkLogsRequestDTO = UpdateUserWalkLogsRequestDTO(hashMap)
+
+        if(userId != -1L) {
+            myPageViewModel.updateUserWalkLogs(
+                userId.toString(),
+                updateUserWalkLogsRequestDTO
+            )
+
+            newlyAddedStep = 0 // 보내고 난다음에는 초기화!
+            PREFS.setString(DAILY_WALK_LOG_KEY, "")
+        }
+
+        myPageViewModel.getUserInfo(userId)
+        myPageViewModel.getTreeData(userId)
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        myPageViewModel.getUserInfo(userId)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        unregisterReceiver(br)
+    }
+
 
     private fun setUpViewModel() {
 
@@ -167,16 +247,32 @@ class MyPageActivity : AppCompatActivity() {
                     point.text = user.point.toString()
                     bucket.text = user.buckets.toString()
                     dailyWalk.text = user.dailyWalks.toString()
+                    Log.d(TAG, "setUpViewModel: This is your dailyWalk: ${dailyWalk.text}")
                 }
 
-            initialStep = user.dailyWalks
-            Log.d("TAG", "setUpViewModel: This is the initial step $initialStep") //
+//            initialStep = user.dailyWalks
+//            Log.d("TAG", "setUpViewModel: This is the initial step $initialStep") //
         })
 
         // test
         Log.d("TAG", "setUpViewModel: This is the initial step $initialStep") //
 
-        binding.dailyWalk.text = initialStep.toString() // step 기존의 것 초기값 설정
+//        binding.dailyWalk.text = initialStep.toString() // step 기존의 것 초기값 설정
+
+        // response 에 대한 코드 작성
+        myPageViewModel.updateWalkLogsResponseLiveData.observe(this, { response ->
+            response?.let {
+                if (it.isSuccessful) {
+
+                    // 전역변수, SharedPreference 초기화
+                    newlyAddedStep = 0
+                    PREFS.setString(DAILY_WALK_LOG_KEY, "")
+
+                } else {
+                    Log.d(TAG, "failed to post daily walk!")
+                }
+            }
+        })
 
         myPageViewModel.myTreesLiveData.observe(this, {myTrees ->
 
@@ -196,8 +292,7 @@ class MyPageActivity : AppCompatActivity() {
 //            myTreeAdapter.notifyDataSetChanged()
         })
 
-        // 수정 시작!
-
+        myPageViewModel.getMyWalkLogs(userId)
         myPageViewModel.myWalkLogsLiveData.observe(this, {
 
             // test
@@ -291,20 +386,33 @@ class MyPageActivity : AppCompatActivity() {
 
     private val br: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent) {
+
+            
+//            val now = System.currentTimeMillis()
+//            val date = Date(now)
+//            val dateFormat = SimpleDateFormat("dd", Locale.US)
+//            val str_date = dateFormat.format(date)
+            
+            
             val bundle = intent.extras
             if (bundle != null) {
-                binding.dailyWalk.text = (binding.dailyWalk.text.toString().toInt() + bundle.getInt("detectedStep")).toString()
-                Log.d("TAG", "onReceive: this is my daily step : ${binding.dailyWalk.text}")
+                
+//                if(str_date == dd) {
+//                    binding.dailyWalk.text = (binding.dailyWalk.text.toString()
+//                        .toInt() + bundle.getInt("detectedStep")).toString()
+                    Log.d("TAG", "onReceive: this is my daily step : ${binding.dailyWalk.text}")
+//                } else {
+//                    binding.dailyWalk.text = "0" // 날짜가 다르다면 0으로 초기화 후, 1씩 걸음 수를 더해줌
+//
+//                    binding.dailyWalk.text = (binding.dailyWalk.text.toString()
+//                        .toInt() + bundle.getInt("detectedStep")).toString()
+//                    Log.d("TAG", "onReceive: this is my daily step : ${binding.dailyWalk.text}")
+//                }
+
+                newlyAddedStep += 1 // 신호 보낼 때마다 걸었다는 뜻이니까 newlyAddedStep(전역변수 값) + 1
             }
         }
     }
-
-    override fun onResume() {
-        // TODO Auto-generated method stub
-        super.onResume()
-        registerReceiver(br, IntentFilter("1"))
-    }
-
 }
 
 class DateFormatter : ValueFormatter() { // x 축의 float 값을 날짜로 변환해줄 class

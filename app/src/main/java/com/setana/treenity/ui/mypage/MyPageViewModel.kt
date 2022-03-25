@@ -2,6 +2,7 @@ package com.setana.treenity.ui.mypage
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
 import com.setana.treenity.data.api.dto.mypage.tree.MyTreeItem
 import com.setana.treenity.data.api.dto.mypage.user.User
 import com.setana.treenity.data.api.dto.mypage.walklog.WalkLog
@@ -10,6 +11,7 @@ import com.setana.treenity.data.repository.UserRepository
 import com.setana.treenity.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
+import retrofit2.Response
 import javax.inject.Inject
 
 
@@ -26,6 +28,9 @@ class MyPageViewModel @Inject constructor(
 
     private val _myWalkLogsLiveData: MutableLiveData<List<WalkLog>> = MutableLiveData()
     val myWalkLogsLiveData: LiveData<List<WalkLog>> = _myWalkLogsLiveData
+
+    private val _updateWalkLogsResponseLiveData: MutableLiveData<Response<Void>> = MutableLiveData()
+    val updateWalkLogsResponseLiveData: LiveData<Response<Void>> = _updateWalkLogsResponseLiveData // TODO: isSuccessful 시도 해보기!
 
     private val _showErrorToast = MutableLiveData<Event<String>>()
     val showErrorToast: LiveData<Event<String>> = _showErrorToast
@@ -96,5 +101,19 @@ class MyPageViewModel @Inject constructor(
             }
         }
     }
+
+    fun updateUserWalkLogs(userId: String, updateUserWalkLogsRequestDTO: UpdateUserWalkLogsRequestDTO) =
+        viewModelScope.launch(Dispatchers.Main) {
+            val handler = CoroutineExceptionHandler { _, throwable ->
+                setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+                throwable.message?.let { Log.d("SignInViewModel.kt", it) }
+            }
+
+            withContext(Dispatchers.IO + handler) {
+                val response =
+                    userRepository.updateUserWalkLogs(userId, updateUserWalkLogsRequestDTO)
+                _updateWalkLogsResponseLiveData.postValue(response)
+            }
+        }
 
 }

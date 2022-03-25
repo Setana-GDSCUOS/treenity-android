@@ -10,7 +10,7 @@
     <FrameLayout
         android:id="@+id/frame_lottie_holder"
         android:animateLayoutChanges="true"
-        android:visibility="visible"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

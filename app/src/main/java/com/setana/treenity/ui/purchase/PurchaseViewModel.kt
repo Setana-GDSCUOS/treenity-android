@@ -55,7 +55,7 @@ class PurchaseViewModel @Inject constructor(
 
     }
 
-    fun buyItem(userId: String, storeItem: StoreItem) =
+    fun buyItem(userId: Long, storeItem: StoreItem) =
         viewModelScope.launch(Dispatchers.Main) {
 
             val handler = CoroutineExceptionHandler { _, throwable ->
@@ -65,7 +65,7 @@ class PurchaseViewModel @Inject constructor(
 
             withContext(Dispatchers.IO + handler) {
                 val response =
-                    storeRepository.buyTree(userId, storeItem)
+                    storeRepository.buyTree(userId.toString(), storeItem)
                 _buyItemResponseLiveData.postValue(response)
             }
         }

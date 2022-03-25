@@ -37,6 +37,7 @@ import com.google.gson.reflect.TypeToken
 import com.setana.treenity.BuildConfig
 import com.setana.treenity.R
 import com.setana.treenity.TreenityApplication.Companion.PREFS
+import com.setana.treenity.TreenityApplication.Companion.newlyAddedStep
 import com.setana.treenity.data.api.dto.RegisterCurrentFirebaseUserRequestDTO
 import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
 import com.setana.treenity.databinding.ActivityLoadingBinding
@@ -187,6 +188,7 @@ class LoadingActivity : AppCompatActivity() {
                     Log.d(TAG, "걸음 수 전송 성공")
                     // SharedPreference 초기화
                     PREFS.setString(DAILY_WALK_LOG_KEY, "")
+                    newlyAddedStep = 0
 
                     // 권한 확인 후 Activity 및 Service 실행
                     if (checkAndRequestPermissions()) {

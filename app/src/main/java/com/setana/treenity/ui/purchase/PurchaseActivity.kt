@@ -57,7 +57,7 @@ class PurchaseActivity : AppCompatActivity() {
                 itemId = secondIntent.getIntExtra("ChosenItemId", 0).toLong()
                 val item = StoreItem(0, "", "", itemId, "", "")
 
-                purchaseViewModel.buyItem(userId.toString(), item)
+                purchaseViewModel.buyItem(userId, item)
                 // POST
                 purchaseViewModel.buyItemResponseLiveData.observe(this, {response ->
                     response.let {
@@ -123,7 +123,7 @@ class PurchaseActivity : AppCompatActivity() {
                 binding.apply {
                     itemImage.load((items[chosenItemId-1].imagePath)) // 처음에 seedList 로 만들어 어댑터에 넣을 때 물을 뺐기 때문
                     seedName.text = items[chosenItemId-1].itemName
-                    description.text = items[chosenItemId-1].description
+                    description.text = items[chosenItemId-1].itemDescription
                     (items[chosenItemId-1].cost.toString() + "P").also { cost.text = it }
 
                     itemId = items[chosenItemId-1].itemId
@@ -133,7 +133,7 @@ class PurchaseActivity : AppCompatActivity() {
                     binding.apply {
                         itemImage.load(water.imagePath)
                         seedName.text = water.itemName
-                        description.text = water.description
+                        description.text = water.itemDescription
                         (water.cost.toString() + "P").also { cost.text = it }
 
                         itemId = water.itemId // 후에 POST 요청을 위해 필요한 부분

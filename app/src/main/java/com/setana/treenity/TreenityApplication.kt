@@ -16,6 +16,8 @@ class TreenityApplication : Application(), Configuration.Provider {
         lateinit var PREFS: PreferenceManager
         val DAILY_WALK_LOG = hashMapOf<String, String>()
         var idAndDate: MutableMap<Float, String> = mutableMapOf()
+        var newlyAddedStep = 0
+//        var dd = "" // date
     }
 
     override fun onCreate() {

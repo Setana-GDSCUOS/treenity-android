@@ -1,13 +1,8 @@
 package com.setana.treenity.ui.mypage
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.hardware.Sensor
-import android.hardware.SensorManager
-import android.hardware.TriggerEvent
-import android.hardware.TriggerEventListener
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -15,7 +10,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
@@ -23,7 +17,6 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
-import com.setana.treenity.R
 import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.TreenityApplication.Companion.idAndDate
 import com.setana.treenity.data.api.dto.mypage.tree.Item
@@ -39,6 +32,17 @@ import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import kotlin.collections.ArrayList
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.IntentFilter
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.setana.treenity.TreenityApplication.Companion.newlyAddedStep
+import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
+import com.setana.treenity.util.PreferenceManager
+import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
+import java.text.DecimalFormat
+import java.text.SimpleDateFormat
 
 
 @AndroidEntryPoint
@@ -50,22 +54,31 @@ class MyPageActivity : AppCompatActivity() {
 
     // MyPage main
     private lateinit var binding: MypageMypageActivityMainBinding
+    private var initialStep = 0
 
     private lateinit var myTreeAdapter: MyTreeAdapter
-    private var listSize = 0
+    private var myTreeSize = 0
 
     private val myPageViewModel: MyPageViewModel by viewModels()
     val userId = PREFS.getLong(USER_ID_KEY, -1)
+
+    // Post WalkLog
+    private val hashMapString = PREFS.getString(DAILY_WALK_LOG_KEY, "")
+    val type = object : TypeToken<HashMap<String, String>>() {}.type
+
 
     // Walk Log
     var barEntries = ArrayList<BarEntry>()
     private lateinit var barDataSet: BarDataSet
     private lateinit var barData: BarData
 
-    var walkLogIds = ArrayList<Float>()
+    var xValues = ArrayList<Float>()
     var walks = ArrayList<Float>()
     var dates = ArrayList<String>()
 
+    companion object {
+        private const val TAG = "MyPageActivity"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,36 +86,18 @@ class MyPageActivity : AppCompatActivity() {
         checkActionPermission()
 
         //inflate
-        binding = DataBindingUtil.setContentView(this, R.layout.mypage_mypage_activity_main)
-        binding.lifecycleOwner = this
-        binding.mypageviewmodel = myPageViewModel
+        binding = MypageMypageActivityMainBinding.inflate(layoutInflater)
+
 
         setContentView(binding.root)
-
+        setViews()
         setUpViewModel()
 
-        setViews()
 
-        activityTransitionEvent()
-
-        val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        val mSensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION)
-        val triggerEventListener = object : TriggerEventListener() {
-            override fun onTrigger(event: TriggerEvent?) {
-                // Do work
-                myPageViewModel.increase()
-            }
-        }
-        mSensor?.also { sensor ->
-            sensorManager.requestTriggerSensor(triggerEventListener, sensor)
-        }
-    }
-
-    private fun activityTransitionEvent() {
-        // 이벤트 등록 : 마지막 아이템을 누르면 나무 목록 리스트 페이지 전환
+        // TODO: 이벤트 등록 : 마지막 아이템을 누르면 나무 목록 리스트 페이지 전환
         myTreeAdapter.setOnItemClickListener(object : MyTreeAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                if (position == listSize-1) { // 마지막 아이템 누를 시
+                if (position == myTreeSize-1) { // 마지막 아이템 누를 시
                     val nextIntent = Intent(this@MyPageActivity, TreeListActivity::class.java)
                     startActivity(nextIntent)
                 }
@@ -127,6 +122,7 @@ class MyPageActivity : AppCompatActivity() {
             startActivity(nextIntent)
             finish()
         }
+
     }
 
     private fun checkActionPermission() {
@@ -171,13 +167,68 @@ class MyPageActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        registerReceiver(br, IntentFilter("1"))
+
+        // POST WalkLog
+        val hashMap = Gson().fromJson<HashMap<String, String>>(hashMapString, type)
+            ?: hashMapOf(
+                SimpleDateFormat(
+                    "yyyy-MM-dd",
+                    Locale.US
+                ).format(Date()) to newlyAddedStep.toString()
+            )
+
+        val updateUserWalkLogsRequestDTO = UpdateUserWalkLogsRequestDTO(hashMap)
 
         if(userId != -1L) {
+            myPageViewModel.updateUserWalkLogs(
+                userId.toString(),
+                updateUserWalkLogsRequestDTO
+            )
+
+            newlyAddedStep = 0 // 보내고 난다음에는 초기화!
+            PREFS.setString(DAILY_WALK_LOG_KEY, "")
+
             myPageViewModel.getUserInfo(userId)
-            myPageViewModel.getMyTrees(userId)
-            myPageViewModel.getMyWalkLogs(userId) // 데이터 갱신
+            myPageViewModel.getTreeData(userId)
+
         }
+
+        // test
+        Log.d("TAG", "onStart: post dailyWalk in onStart!!!")
     }
+
+//    override fun onPause() {
+//        super.onPause()
+//
+//        // POST WalkLog
+//        val hashMap = Gson().fromJson<HashMap<String, String>>(hashMapString, type)
+//            ?: hashMapOf(
+//                SimpleDateFormat(
+//                    "yyyy-MM-dd",
+//                    Locale.US
+//                ).format(Date()) to newlyAddedStep.toString()
+//            )
+//
+//        val updateUserWalkLogsRequestDTO = UpdateUserWalkLogsRequestDTO(hashMap)
+//
+//        if(userId != -1L) {
+//            myPageViewModel.updateUserWalkLogs(
+//                userId.toString(),
+//                updateUserWalkLogsRequestDTO
+//            )
+//
+//            newlyAddedStep = 0 // 보내고 난다음에는 초기화!
+//            PREFS.setString(DAILY_WALK_LOG_KEY, "")
+//        }
+//    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        unregisterReceiver(br)
+    }
+
 
     private fun setUpViewModel() {
 
@@ -188,94 +239,125 @@ class MyPageActivity : AppCompatActivity() {
                     point.text = user.point.toString()
                     bucket.text = user.buckets.toString()
                     dailyWalk.text = user.dailyWalks.toString()
+                    Log.d(TAG, "setUpViewModel: This is your dailyWalk: ${dailyWalk.text}")
                 }
+
+//            initialStep = user.dailyWalks
+//            Log.d("TAG", "setUpViewModel: This is the initial step $initialStep") //
         })
 
-        myPageViewModel.myTreesLiveData.observe(this, {response ->
+        // test
+        Log.d("TAG", "setUpViewModel: This is the initial step $initialStep") //
+
+//        binding.dailyWalk.text = initialStep.toString() // step 기존의 것 초기값 설정
+
+        // response 에 대한 코드 작성
+        myPageViewModel.updateWalkLogsResponseLiveData.observe(this, { response ->
             response?.let {
+                if (it.isSuccessful) {
 
-                // test
-                Log.d("TAG", "These are my Trees: $response") // These are my Trees: []
+                    // 전역변수, SharedPreference 초기화
+                    newlyAddedStep = 0
+                    PREFS.setString(DAILY_WALK_LOG_KEY, "")
 
-                val lastItem = MyTreeItem(0, "Goto TreeList", Item("https://ifh.cc/g/eA7BXD.jpg"), 0, 0, "")
-                response.add(lastItem)
-
-                myTreeAdapter.trees = response
-
-                listSize = response.size
+                } else {
+                    Log.d(TAG, "failed to post daily walk!")
+                }
             }
         })
 
+        myPageViewModel.myTreesLiveData.observe(this, {myTrees ->
+
+            // test
+            Log.d("TAG", "These are my Trees: $myTrees") // These are my Trees: []
+
+            val lastItem = MyTreeItem(0, "Goto TreeList", Item("https://ifh.cc/g/eA7BXD.jpg"), 0, 0, "")
+            var arrayList = ArrayList<MyTreeItem>()
+            for(i in myTrees.indices)
+                arrayList.add(myTrees[i])
+            arrayList.add(lastItem)
+
+            myTreeSize = arrayList.size // 마지막 아이템 눌렀을 때 TreeListActivity 로 가는데 그때 position 을 쉽게 알기 위함
+            myTreeAdapter.trees = arrayList
+            
+
+//            myTreeAdapter.notifyDataSetChanged()
+        })
+
+        myPageViewModel.getMyWalkLogs(userId)
         myPageViewModel.myWalkLogsLiveData.observe(this, {
 
             // test
-            Log.d("tag", ": $it, ${it.size}") // [WalkLog(date=2022-03-22, walkLogId=12, walks=402), 1]
+            Log.d("tag", ": $it, ${it.size}") // e.g. [WalkLog(date=2022-03-22, walkLogId=12, walks=402), 1]
 
             val index = it.size - 1
 
-                // walkLogId 와 walk 와 date 를 모두 따로따로 ArrayList 로 저장
-                for(i in 0..index) {// x축
-                    walkLogIds.add(it[i].walkLogId.toFloat())
+            // walkLogId 와 walk 와 date 를 모두 따로따로 ArrayList 로 저장
+            for(i in 0..index) {// x축
+                xValues.add(i.toFloat())
+            }
+
+            for(i in 0..index) { // y축
+                walks.add(it[i].walks.toFloat())
+            }
+
+            for(i in 0..index) { // 날짜 저장 -> x 축 대체 예정
+                dates.add(it[i].date)
+            }
+
+            for(i in 0..index) // (id, date) 구조로 map 에 데이터 추가
+                idAndDate[xValues[i]] = it[i].date
+
+            // BarEntry 에 데이터 삽입
+            for(i in 0 until walks.size)
+                barEntries.add(BarEntry(xValues[i], walks[i]))
+
+            // setting bar chart data
+            // initialize bar data set
+            barDataSet = BarDataSet(barEntries,"Walk Logs")
+
+
+            //set colors
+            barDataSet.color = ColorTemplate.rgb("#FF408F43") // 바 색상
+            barDataSet.valueTextSize = 18f
+            barDataSet.valueFormatter = DecimalFormatter()
+
+            barData = BarData(barDataSet)
+            barData.barWidth = 0.25f
+            barData.isHighlightEnabled
+
+            //binding 으로 접근하여 barData 전달
+            binding.barChart.data = barData
+
+            // prepare chart
+            binding.barChart.run {
+                data = barData
+
+                setFitBars(true)
+
+                description.isEnabled = false //차트 옆에 별도로 표기되는 description
+                setPinchZoom(false) // 핀치줌(두손가락으로 줌인 줌 아웃하는것) 설정
+                setScaleEnabled(false) // 확대 안되게 설정
+                setDrawBarShadow(false) // 그래프의 그림자
+                setTouchEnabled(false)
+
+                xAxis.run {
+                    position = XAxis.XAxisPosition.BOTTOM//X축을 아래에다가 둔다.
+                    setDrawAxisLine(true) // 축 그림
+                    setDrawGridLines(false) // 격자
+                    textSize = 12f // 텍스트 크기
+                    granularity = 1F
+                    valueFormatter = DateFormatter()  // MM/dd 형태로 날짜 모두 표시
                 }
 
-                for(i in 0..index) { // y축
-                    walks.add(it[i].walks.toFloat())
-                }
-
-                for(i in 0..index) { // 날짜 저장 -> x 축 대체 예정
-                    dates.add(it[i].date)
-                }
-
-                for(i in 0..index) // (id, date) 구조로 map 에 데이터 추가
-                    idAndDate[it[i].walkLogId.toFloat()] = it[i].date
-
-                // BarEntry 에 데이터 삽입
-                for(i in 0 until walks.size)
-                    barEntries.add(BarEntry(walkLogIds[i], walks[i]))
-
-                // setting bar chart data
-                // initialize bar data set
-                barDataSet = BarDataSet(barEntries,"Walk Logs")
+                axisRight.isEnabled = false // 오른쪽 Y축을 안보이게 설정
+                axisLeft.isEnabled = false // 왼쪽 Y축을 안보이게 설정
+                animateY(3000) // 애니메이션 추가
+                legend.isEnabled = false //차트 범례 설정
 
 
-                //set colors
-                barDataSet.color = ColorTemplate.rgb("#FF408F43") // 바 색상
-                barDataSet.valueTextSize = 18f
-
-                barData = BarData(barDataSet)
-                barData.barWidth = 0.15f
-
-                //binding 으로 접근하여 barData 전달
-                binding.barChart.data = barData
-
-                // prepare chart
-                binding.barChart.run {
-                    data = barData
-
-                    setFitBars(true)
-
-                    description.isEnabled = false //차트 옆에 별도로 표기되는 description
-                    setPinchZoom(false) // 핀치줌(두손가락으로 줌인 줌 아웃하는것) 설정
-                    setScaleEnabled(false) // 확대 안되게 설정
-                    setDrawBarShadow(false) // 그래프의 그림자
-                    setTouchEnabled(false)
-
-                    xAxis.run {
-                        position = XAxis.XAxisPosition.BOTTOM//X축을 아래에다가 둔다.
-                        setDrawAxisLine(true) // 축 그림
-                        setDrawGridLines(false) // 격자
-                        textSize = 12f // 텍스트 크기
-                        valueFormatter = DateFormatter()  // MM/dd 형태로 날짜 모두 표시
-                    }
-
-                    axisRight.isEnabled = false // 오른쪽 Y축을 안보이게 설정
-                    axisLeft.isEnabled = false // 왼쪽 Y축을 안보이게 설정
-                    animateY(3000) // 애니메이션 추가
-                    legend.isEnabled = false //차트 범례 설정
-
-
-                    invalidate() // refresh
-                }
+                invalidate() // refresh
+            }
         })
     }
 
@@ -294,9 +376,50 @@ class MyPageActivity : AppCompatActivity() {
         )
         binding.itemRecycler.adapter = myTreeAdapter
     }
+
+    private val br: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent) {
+
+            
+//            val now = System.currentTimeMillis()
+//            val date = Date(now)
+//            val dateFormat = SimpleDateFormat("dd", Locale.US)
+//            val str_date = dateFormat.format(date)
+            
+            
+            val bundle = intent.extras
+            if (bundle != null) {
+                
+//                if(str_date == dd) {
+                    binding.dailyWalk.text = (binding.dailyWalk.text.toString()
+                        .toInt() + bundle.getInt("detectedStep")).toString()
+                    Log.d("TAG", "onReceive: this is my daily step : ${binding.dailyWalk.text}")
+//                } else {
+//                    binding.dailyWalk.text = "0" // 날짜가 다르다면 0으로 초기화 후, 1씩 걸음 수를 더해줌
+//
+//                    binding.dailyWalk.text = (binding.dailyWalk.text.toString()
+//                        .toInt() + bundle.getInt("detectedStep")).toString()
+//                    Log.d("TAG", "onReceive: this is my daily step : ${binding.dailyWalk.text}")
+//                }
+
+                newlyAddedStep += 1 // 신호 보낼 때마다 걸었다는 뜻이니까 newlyAddedStep(전역변수 값) + 1
+            }
+        }
+    }
 }
 
-class DateFormatter() : ValueFormatter() { // x 축의 float 값을 날짜로 변환해줄 class
+class DecimalFormatter : ValueFormatter() {
+    private lateinit var decimalFormat : DecimalFormat
+
+    override fun getFormattedValue(value: Float): String {
+        decimalFormat = DecimalFormat("#")
+
+        return decimalFormat.format(value)
+    }
+
+}
+
+class DateFormatter : ValueFormatter() { // x 축의 float 값을 날짜로 변환해줄 class
     override fun getFormattedValue(value: Float): String {
         if(idAndDate[value] == null){
             return ""
@@ -305,3 +428,7 @@ class DateFormatter() : ValueFormatter() { // x 축의 float 값을 날짜로 �
     }
 
 }
+
+
+
+

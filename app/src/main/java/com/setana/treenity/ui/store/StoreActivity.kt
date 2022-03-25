@@ -31,16 +31,12 @@ class StoreActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         binding = StoreActivityMainBinding.inflate(layoutInflater)
         binding2 = StoreConfirmationMainBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
-
-        setUpViewModel()
-
         initRecyclerView()
-
+        setUpViewModel()
 
 
         // 이벤트 등록 : Seeds의 아이템을 누르면, 해당 아이템의 itemId 을 상세페이지로 전달해줌
@@ -67,6 +63,7 @@ class StoreActivity : AppCompatActivity() {
 
     }
 
+
     private fun setUpViewModel() {
 
         // observe point and # of buckets
@@ -90,7 +87,7 @@ class StoreActivity : AppCompatActivity() {
 
             storeAdapter.itemList = seedList // adapter 에서 binding
 
-            binding.apply {
+            binding.apply { // 물은 따로 바인딩 해주어야 함
                 (water.cost.toString() + "P").also { bucketPrice.text = it }
                 bucketImage.load(water.imagePath)
             }
@@ -109,15 +106,15 @@ class StoreActivity : AppCompatActivity() {
     }
 
 
-
-    // adapter 부착
     private fun initRecyclerView() {
         // init adapter
         val item = StoreItem(0,"", "", 0L, "", "")
         storeAdapter = StoreAdapter(listOf(item))
 
-        binding.storeRecycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-
+        binding.storeRecycler.layoutManager = LinearLayoutManager(
+            this,
+            LinearLayoutManager.HORIZONTAL,
+            false)
         binding.storeRecycler.adapter = storeAdapter
 
     }

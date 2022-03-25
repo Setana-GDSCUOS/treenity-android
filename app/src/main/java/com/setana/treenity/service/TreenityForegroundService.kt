@@ -72,6 +72,23 @@ class TreenityForegroundService : LifecycleService(), SensorEventListener {
         ) {
             startForegroundServiceWithNotification()
         }
+
+//        // 현재시간을 가져오기 TODO: 창구님이 dailyWalks 초기화 시켜주시면 필요 없는 부분!
+//        val now = System.currentTimeMillis()
+//
+//        // 현재 시간을 Date 타입으로 변환
+//        val date = Date(now)
+//
+//        // 날짜만 가져올 예정 (us 기준)
+//        val dateFormat = SimpleDateFormat("dd", Locale.US)
+//
+//        /*
+//         현재 시간을 dateFormat 에 선언한 형태의 String 으로 변환한 후, 날짜를 가지는 전역변수에 저장!
+//         -> 후에 마이페이지에서 broadcast 된 신호를 받을 때, 날짜를 구별하여
+//         기존 데이터에 걸음 수를 1씩 더할 것인 지, 0으로 초기화 한 후 1씩 더할 것인 지 정할 예정
+//         */
+//        val str_date = dateFormat.format(date)
+//        dd = str_date
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -98,6 +115,8 @@ class TreenityForegroundService : LifecycleService(), SensorEventListener {
                     mStepBuffer = 0
                 }
                 stepsBeforeDetection = it.values[0].toInt()
+
+                addDailyWalkBy1() // sensor 인식할 때마다 1씩 더해야 함
             }
         }
 
@@ -137,4 +156,9 @@ class TreenityForegroundService : LifecycleService(), SensorEventListener {
         // TODO: 발걸음 수 POST 요청
     }
 
+    private fun addDailyWalkBy1() {
+        val intent = Intent("1")
+        intent.putExtra("detectedStep", 1)
+        sendBroadcast(intent)
+    }
 }

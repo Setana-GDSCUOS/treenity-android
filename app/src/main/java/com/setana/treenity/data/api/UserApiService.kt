@@ -1,5 +1,6 @@
 package com.setana.treenity.data.api
 
+import com.setana.treenity.data.api.dto.GetUserItemResponseDTO
 import com.setana.treenity.data.api.dto.LoginByFirebaseTokenResponseDTO
 import com.setana.treenity.data.api.dto.RegisterCurrentFirebaseUserRequestDTO
 import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
@@ -40,5 +41,10 @@ interface UserApiService {
         @Path(value = "uid", encoded = true) userId: String,
         @Body username: String
     ) : Response<Void>
+
+    @GET("users/{id}/items")
+    suspend fun getUserItems(
+        @Path(value = "id") id: Long
+    ) : Response<List<GetUserItemResponseDTO>>
 
 }

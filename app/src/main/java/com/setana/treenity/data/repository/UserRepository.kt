@@ -1,5 +1,6 @@
 package com.setana.treenity.data.repository
 
+import com.setana.treenity.data.api.dto.GetUserItemResponseDTO
 import com.setana.treenity.data.api.dto.LoginByFirebaseTokenResponseDTO
 import com.setana.treenity.data.api.dto.RegisterCurrentFirebaseUserRequestDTO
 import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
@@ -17,4 +18,5 @@ interface UserRepository {
     suspend fun getUserData(userId:String): Response<User>
     suspend fun getUserWalkLogs(userId:String): Response<List<WalkLog>>
     suspend fun changeUserName(userId:String, username: String): Response<Void>
+    suspend fun getUserItems(userId:Long): Response<List<GetUserItemResponseDTO>>
 }

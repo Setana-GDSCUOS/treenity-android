@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.setana.treenity.data.api.dto.*
 import com.setana.treenity.data.repository.TreeRepository
+import com.setana.treenity.data.repository.UserRepository
 import com.setana.treenity.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -17,13 +18,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ArViewModel @Inject constructor(
-    private val treeRepository: TreeRepository
+    private val treeRepository: TreeRepository,
+    private val userRepository: UserRepository
 ): ViewModel() {
     private val _treeListLiveData: MutableLiveData<List<GetAroundTreeResponseDTO>> = MutableLiveData()
     val treeListLiveData: LiveData<List<GetAroundTreeResponseDTO>> = _treeListLiveData
 
     private val _treeInformationResponseLiveData: MutableLiveData<GetTreeInformationResponseDTO> = MutableLiveData()
     val treeInformationResponseLiveData: LiveData<GetTreeInformationResponseDTO> = _treeInformationResponseLiveData
+
+    private val _userItemListLiveData: MutableLiveData<List<GetUserItemResponseDTO>> = MutableLiveData()
+    val userItemListLiveData: LiveData<List<GetUserItemResponseDTO>> = _userItemListLiveData
 
     //private val _treeIdLiveData: MutableLiveData<Long> = MutableLiveData()
     //val treeIdLiveData: LiveData<Long> = _treeIdLiveData
@@ -44,7 +49,6 @@ class ArViewModel @Inject constructor(
         withContext(Dispatchers.IO + handler) {
             val response = treeRepository.getAroundTrees(lat, lng, userId)
             if (response.isSuccessful) {
-                setToastMessage("loading trees around, please look around")
                 _treeListLiveData.postValue(response.body())
             } else {
                 setToastMessage(response.message())
@@ -59,14 +63,6 @@ class ArViewModel @Inject constructor(
         }
         withContext(Dispatchers.IO + handler) {
             val response = treeRepository.postTree(userId,requestDto)
-            /*if (response.code() == 200) {
-                //_treeIdLiveData.postValue(response.body)
-            } else if(response.code()==500){
-
-            }
-            else{
-                setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
-            }*/
             when(response.code()){
               200  -> {
 
@@ -75,7 +71,7 @@ class ArViewModel @Inject constructor(
                   setToastMessage("주변에 나무가 너무 많습니다. 다른 곳에 나무를 심어주세요")
               }
               else -> {
-
+                  setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
               }
             }
         }
@@ -92,7 +88,7 @@ class ArViewModel @Inject constructor(
             if (response.isSuccessful) {
                 _treeInformationResponseLiveData.postValue(response.body())
             } else {
-                setToastMessage(response.message())
+                setToastMessage("Error occured while loading data : ${response.code().toString()}")
             }
         }
     }
@@ -112,6 +108,7 @@ class ArViewModel @Inject constructor(
                     setToastMessage("You have not enough buckets")
                 }
                 else -> {
+                    setToastMessage("Error occured while loading data : ${response.code().toString()}")
 
                 }
             }
@@ -128,8 +125,25 @@ class ArViewModel @Inject constructor(
             if (response.isSuccessful) {
                 // Todo Not implemented yet
             } else {
-                setToastMessage(response.message())
+                setToastMessage("Error occured while loading data : ${response.code().toString()}")
             }
         }
     }
+
+    fun getUserItems(userId: Long) = viewModelScope.launch(Dispatchers.Main) {
+        val handler = CoroutineExceptionHandler { _, throwable ->
+            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            throwable.message?.let { Log.d("ArViewModel.kt", it) }
+        }
+
+        withContext(Dispatchers.IO + handler) {
+            val response = userRepository.getUserItems(userId)
+            if (response.isSuccessful) {
+                _userItemListLiveData.postValue(response.body())
+            } else {
+                setToastMessage("Error occured while loading data : ${response.code().toString()}")
+            }
+        }
+    }
+
 }

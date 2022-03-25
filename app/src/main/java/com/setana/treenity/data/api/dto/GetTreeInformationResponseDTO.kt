@@ -32,8 +32,4 @@ data class GetTreeInformationResponseDTO(
     val user: User,
     @SerializedName("treeName")
     val treeName: String
-) :Serializable {
-    companion object{
-        val EMPTY = GetTreeInformationResponseDTO(true,0,"","","","", SeedItem.EMPTY,0.0,0,0.0,0,User.EMPTY,"")
-    }
-}
+) :Serializable

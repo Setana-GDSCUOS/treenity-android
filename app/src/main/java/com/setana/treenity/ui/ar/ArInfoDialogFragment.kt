@@ -13,11 +13,11 @@ import com.setana.treenity.databinding.ArInfoDialogBinding
 
 
 
-class ArDialogFragment(context: Context, treeInfoResponse: GetTreeInformationResponseDTO, isTreeOwner:Boolean) {
+class ArInfoDialogFragment(context: Context, treeInfoResponse: GetTreeInformationResponseDTO, isTreeOwner:Boolean) {
     interface ArDialogListener {
         fun onWaterListener(treeId:Long)
-        fun onDescriptionSaveListener(description:String)
-        fun onNameSaveListener(treeName:String)
+        fun onDescriptionSaveListener(treeName:String, description:String)
+        fun onNameSaveListener(treeName:String, description:String)
     }
     private val context = context
     private val dialog = Dialog(context)
@@ -55,7 +55,7 @@ class ArDialogFragment(context: Context, treeInfoResponse: GetTreeInformationRes
                     Toast.makeText(context, "Please enter your tree description", Toast.LENGTH_SHORT).show()
                 }
                 else{
-                    dialogListener.onDescriptionSaveListener(newDescription)
+                    dialogListener.onDescriptionSaveListener(arInfoDialogBinding.treeName.text.toString(),newDescription)
                 }
 
             }
@@ -65,7 +65,7 @@ class ArDialogFragment(context: Context, treeInfoResponse: GetTreeInformationRes
                     Toast.makeText(context, "Please enter your tree name", Toast.LENGTH_SHORT).show()
                 }
                 else{
-                    dialogListener.onNameSaveListener(newName)
+                    dialogListener.onNameSaveListener(newName,arInfoDialogBinding.description.text.toString())
                 }
             }
         }
@@ -97,8 +97,9 @@ class ArDialogFragment(context: Context, treeInfoResponse: GetTreeInformationRes
         if(treeInfo.treeDescription != null){
             arInfoDialogBinding.description.setText(treeInfo.treeDescription)
         }
-
-        arInfoDialogBinding.effort.text = "Footprints : ${treeInfo.bucket * 3000}"
+        // itemId가 k인 경우 n 레벨에서 n*(k-1) 개의 양동이 필요 : (k-1)*(n*(n+1))/2
+        val footPrints = 3000*(treeInfo.item.itemId.toInt()-1)*((treeInfo.level - 1)*(treeInfo.level)/2)
+        arInfoDialogBinding.effort.text = "Footprints : ${footPrints}"
         arInfoDialogBinding.owner.text = "Owner : ${treeInfo.user.username}"
         arInfoDialogBinding.treeName.setText("${treeInfo.treeName}")
 

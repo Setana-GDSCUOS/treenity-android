@@ -2,12 +2,14 @@ package com.setana.treenity.ui.ar
 
 import android.app.Dialog
 import android.content.Context
+import android.graphics.ImageDecoder
 import android.os.Build.VERSION.SDK_INT
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
+import coil.ComponentRegistry
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
@@ -24,15 +26,14 @@ class ArInstructionDialog(context: Context) {
     = ArInstructionDialogBinding.inflate(LayoutInflater.from(context))
     private var page = 0
     private lateinit var dialogListener : ArInstructionDialogListener
-    val imageLoader = ImageLoader.Builder(context)
-        .components {
-            if (SDK_INT >= 28) {
-                add(ImageDecoderDecoder.Factory())
-            } else {
-                add(GifDecoder.Factory())
-            }
+    val imageLoader = ImageLoader.Builder(context).componentRegistry {
+        if (SDK_INT >= 28) {
+            add(ImageDecoderDecoder())
+        } else {
+            add(GifDecoder())
         }
-        .build()
+    }.build()
+
     fun createInstruction(){
 
 
@@ -61,18 +62,17 @@ class ArInstructionDialog(context: Context) {
         dialog.show()
     }
     private fun loadPage(page:Int){
+
+
         when(page){
           0 -> {
-              Log.d("bimoon","p1")
-              
-              arInstructionDialogBinding.instruction.load("https://ifh.cc/g/SfNsk8.gif"){
+              arInstructionDialogBinding.instruction.load("https://ifh.cc/g/SfNsk8.gif",imageLoader){
                   crossfade(true)
                   crossfade(500)
               }
           }
           1 -> {
-              Log.d("bimoon","p2")
-              arInstructionDialogBinding.instruction.load("https://ifh.cc/g/pVpD0f.gif"){
+              arInstructionDialogBinding.instruction.load("https://ifh.cc/g/pVpD0f.gif",imageLoader){
                   crossfade(true)
                   crossfade(500)
               }

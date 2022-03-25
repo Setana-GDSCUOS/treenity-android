@@ -9,10 +9,12 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleService
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.setana.treenity.TreenityApplication.Companion.DAILY_WALK_LOG
 import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.data.repository.TreeRepository
@@ -49,6 +51,9 @@ class TreenityForegroundService : LifecycleService(), SensorEventListener {
      */
     override fun onCreate() {
         super.onCreate()
+
+        // Restore mSteps
+        mSteps = loadStepFromSharedPreference()
 
         val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) // 기존의 걸음 수도 가져오기에 초기값을 나중에 빼줘야 함
@@ -104,10 +109,10 @@ class TreenityForegroundService : LifecycleService(), SensorEventListener {
     override fun onSensorChanged(sensor: SensorEvent?) {
         sensor?.let {
             if (it.sensor.type == Sensor.TYPE_STEP_COUNTER) {
+                mSteps = loadStepFromGlobalHashMap()
                 val currentDetectedSteps =
                     if (stepsBeforeDetection == 0) stepsBeforeDetection else it.values[0].toInt() - stepsBeforeDetection
                 mSteps += currentDetectedSteps
-
                 mStepBuffer += currentDetectedSteps
                 storeStepToGlobalHashMap(mSteps)
                 if (mStepBuffer >= 10) {
@@ -121,9 +126,33 @@ class TreenityForegroundService : LifecycleService(), SensorEventListener {
             }
         }
 
-        /* [DEBUG LOG]
-        Log.d("tag", "onSensorChanged: your step feature is ${DAILY_WALK_LOG[getDateString()]}")
+//        DEBUG
+        Log.d("####################", "onSensorChanged: mSteps $mSteps")
+//
+//        val hashMapString = PREFS.getString(DAILY_WALK_LOG_KEY, "")
+//        val type = object : TypeToken<HashMap<String, String>>() {}.type
+//        val hashMap = Gson().fromJson<HashMap<String, String>>(hashMapString, type)
+//            ?: hashMapOf(
+//                SimpleDateFormat(
+//                    "yyyy-MM-dd",
+//                    Locale.US
+//                ).format(Date()) to "0"
+//            )
+//        Log.d("####################", "onSensorChanged: hm $hashMap")
 
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+
+    private fun getDateString() = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
+
+    private fun loadStepFromGlobalHashMap(): Int = DAILY_WALK_LOG[getDateString()]?.toInt() ?: 0
+
+    private fun storeStepToGlobalHashMap(step: Int) {
+        DAILY_WALK_LOG[getDateString()] = step.toString()
+    }
+
+    private fun loadStepFromSharedPreference(): Int {
         val hashMapString = PREFS.getString(DAILY_WALK_LOG_KEY, "")
         val type = object : TypeToken<HashMap<String, String>>() {}.type
         val hashMap = Gson().fromJson<HashMap<String, String>>(hashMapString, type)
@@ -133,28 +162,12 @@ class TreenityForegroundService : LifecycleService(), SensorEventListener {
                     Locale.US
                 ).format(Date()) to "0"
             )
-        Log.d("tag", "onSensorChanged: your step feature is $hashMap")
-         */
-    }
-
-    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-        // Log.d("SERVICE", p0.toString())
-    }
-
-    private fun getDateString() = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
-
-    private fun storeStepToGlobalHashMap(step: Int) {
-        DAILY_WALK_LOG[getDateString()] = step.toString()
+        return hashMap[getDateString()]?.toInt() ?: 0
     }
 
     private fun storeStepToSharedPreference() {
         val hashMapString = Gson().toJson(DAILY_WALK_LOG)
         PREFS.setString(DAILY_WALK_LOG_KEY, hashMapString)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        // TODO: 발걸음 수 POST 요청
     }
 
     private fun addDailyWalkBy1(mSteps: Int) {

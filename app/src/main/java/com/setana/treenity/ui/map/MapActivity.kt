@@ -80,7 +80,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     /**
      * 현재 User 정보에 대한 간단한 검증을 진행하는 메소드
      * - 액티비티 상단에 userId 로 사용할 private var localUserId: Long = -1 정의
-     * - 사용 시 else 문의 주석 해제
      * - 반드시 onStart() 내에서 제일 먼저 호출
      */
     private fun checkUser() {

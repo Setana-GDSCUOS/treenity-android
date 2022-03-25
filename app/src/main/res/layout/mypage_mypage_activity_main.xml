@@ -1,25 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.mypage.MyPageActivity"
+    android:fillViewport="true"
+    android:layout_below="@+id/toolbar"
+    android:background="#FEFAFA"
     >
-
-    <data>
-
-        <variable
-            name="mypageviewmodel"
-            type="com.setana.treenity.ui.mypage.MyPageViewModel" />
-    </data>
-
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".ui.mypage.MyPageActivity"
-        android:fillViewport="true"
-        android:layout_below="@+id/toolbar"
-        android:background="#FEFAFA"
         >
 
         <LinearLayout
@@ -225,7 +219,7 @@
                     android:layout_marginStart="310dp"
                     android:layout_marginTop="220dp"
                     android:elevation="5dp"
-                    android:text="@{String.valueOf(mypageviewmodel.steps)}"
+                    android:text="{%d}"
 
                     android:textColor="@color/black"
 
@@ -371,6 +365,6 @@
         </LinearLayout>
 
     </ScrollView>
-</layout>
+</FrameLayout>
 
 

@@ -9,27 +9,31 @@ import coil.load
 import com.setana.treenity.data.api.dto.mypage.tree.MyTreeItem
 import com.setana.treenity.databinding.MypageTreelistRowBinding
 
-class TreeListAdapter: RecyclerView.Adapter<TreeListAdapter.MyViewHolder>() {
+class TreeListAdapter(treeList: List<MyTreeItem>): RecyclerView.Adapter<TreeListAdapter.TreeListViewHolder>() {
 
     private lateinit var binding: MypageTreelistRowBinding
 
-    private var treeListItemList: List<MyTreeItem>? = null
+    private val treeList: List<MyTreeItem>
 
-    fun setDataList(treeListItemList: List<MyTreeItem>?) {
-        this.treeListItemList = treeListItemList
+    init {
+        this.treeList = treeList
     }
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): MyViewHolder {
+    inner class TreeListViewHolder(itemView: MypageTreelistRowBinding) :
+        RecyclerView.ViewHolder(itemView.root) {
 
-        val inflater = LayoutInflater.from(parent.context)
-        binding = MypageTreelistRowBinding.inflate(inflater) // xml 에 씌여져 있는 view 의 정의를 실제 view 객체로 만듦
+        fun bind(tree: MyTreeItem) {
+            binding.itemName.text = tree.treeName
+            ("Planted Date : " + tree.createdDate).also { binding.plantedDate.text = it.substring(0,25) }
+            ("LEV : " + tree.level.toString()).also { binding.level.text = it } // assignment 방식으로 concat 하는 것을 권장(ide)
+            ("EXP : " + tree.bucket.toString()).also { binding.exp.text = it }
 
-        return MyViewHolder( // ViewBinding 을 이용하기 위해 view 가 들어가지 않고 view 객체를 넣음
-            binding
-        )
+            // coil 이미지 로더 사용
+            binding.imagePath.load(tree.item.imagePath) {
+                crossfade(true)
+                crossfade(1000)
+            }
+        }
     }
 
     private val diffCallback = object : DiffUtil.ItemCallback<MyTreeItem>() { // 달라지는 부분만 갱신할 수 있도록 recyclerview 최적화하는 코드
@@ -49,7 +53,17 @@ class TreeListAdapter: RecyclerView.Adapter<TreeListAdapter.MyViewHolder>() {
             differ.submitList(value)
         }
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TreeListViewHolder {
+
+        val inflater = LayoutInflater.from(parent.context)
+        binding = MypageTreelistRowBinding.inflate(inflater) // xml 에 씌여져 있는 view 의 정의를 실제 view 객체로 만듦
+
+        return TreeListViewHolder( // ViewBinding 을 이용하기 위해 view 가 들어가지 않고 view 객체를 넣음
+            binding
+        )
+    }
+
+    override fun onBindViewHolder(holder: TreeListViewHolder, position: Int) {
         val myTreeItem = trees[position]
 
         holder.apply {
@@ -58,21 +72,4 @@ class TreeListAdapter: RecyclerView.Adapter<TreeListAdapter.MyViewHolder>() {
     }
 
     override fun getItemCount() = trees.size
-
-    inner class MyViewHolder(itemView: MypageTreelistRowBinding) :
-        RecyclerView.ViewHolder(itemView.root) {
-
-        fun bind(tree: MyTreeItem) {
-            binding.itemName.text = tree.treeName
-            ("Planted Date : " + tree.createdDate).also { binding.plantedDate.text = it.substring(0,25) }
-            ("LEV : " + tree.level.toString()).also { binding.level.text = it } // assignment 방식으로 concat 하는 것을 권장(ide)
-            ("EXP : " + tree.bucket.toString()).also { binding.exp.text = it }
-
-            // coil 이미지 로더 사용
-            binding.imagePath.load(tree.item.imagePath) {
-                crossfade(true)
-                crossfade(1000)
-            }
-        }
-    }
 }

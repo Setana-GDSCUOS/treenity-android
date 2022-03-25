@@ -1,14 +1,13 @@
 package com.setana.treenity.ui.mytreelist
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.setana.treenity.TreenityApplication.Companion.PREFS
+import com.setana.treenity.data.api.dto.mypage.tree.Item
+import com.setana.treenity.data.api.dto.mypage.tree.MyTreeItem
 import com.setana.treenity.databinding.MypageTreelistActivityMainBinding
-import com.setana.treenity.ui.mypage.MyPageActivity
 import com.setana.treenity.ui.mytreelist.adapter.TreeListAdapter
 import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
@@ -16,10 +15,12 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class TreeListActivity : AppCompatActivity() {
-    lateinit var treeListAdapter: TreeListAdapter
+    lateinit var myTreeListAdapter: TreeListAdapter
     private lateinit var binding : MypageTreelistActivityMainBinding
-    private val treeListViewModel: TreeListViewModel by viewModels()
+
+    private val myTreeListViewModel: TreeListViewModel by viewModels()
     val userId = PREFS.getLong(USER_ID_KEY, -1)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,38 +29,39 @@ class TreeListActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
-        initRecyclerView()
         setUpViewModel()
 
-    }
+        initRecyclerView()
 
-    // adapter 부착
-    private fun initRecyclerView() {
-        binding.recyclerview.layoutManager = LinearLayoutManager(this)
-        treeListAdapter = TreeListAdapter()
-        binding.recyclerview.adapter = treeListAdapter
     }
 
     private fun setUpViewModel() {
 
-        treeListViewModel.myTreeListLiveData.observe(this, { response ->
+        myTreeListViewModel.myTreeListLiveData.observe(this, {trees ->
 
-            response?.let {
-                if(it.isSuccessful) {
+            myTreeListAdapter.trees = trees
 
-                    if(userId != -1L) {
-                        treeListViewModel.getTreeList(userId)
-                    }
-
-                    treeListAdapter.setDataList(it.body())
-                    treeListAdapter.notifyDataSetChanged()
-
-                } else {
-                    Log.d("SetupViewModel", response.message())
-                }
-            }
         })
-
     }
+
+    override fun onStart() {
+        super.onStart()
+
+        if(userId != -1L)
+            myTreeListViewModel.getTreeList(userId)
+    }
+
+
+    private fun initRecyclerView() {
+        // init adapter
+        val item = Item("")
+        val treeItem = MyTreeItem(0,"", item, 0, 0, "")
+        myTreeListAdapter = TreeListAdapter(listOf(treeItem))
+
+        binding.recyclerview.layoutManager = LinearLayoutManager(this)
+        binding.recyclerview.adapter = myTreeListAdapter
+    }
+
+
 
 }

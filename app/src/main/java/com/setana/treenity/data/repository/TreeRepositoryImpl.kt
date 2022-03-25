@@ -29,10 +29,10 @@ class TreeRepositoryImpl @Inject constructor(
 //         remoteSource.putTreeInfo(userId,treeId,putTreeInfoDTO)
 
 
-    override suspend fun getUserTrees(userId: Long): Response<ArrayList<MyTreeItem>> =
+    override suspend fun getUserTrees(userId: String): Response<List<MyTreeItem>> =
         remoteSource.getUserTrees(userId)
 
-    override suspend fun getTreeData(userId: Long): Response<List<MyTreeItem>> =
+    override suspend fun getTreeData(userId: String): Response<List<MyTreeItem>> =
         remoteSource.getTreeData(userId)
 
     override suspend fun postTree(
@@ -62,5 +62,5 @@ class TreeRepositoryImpl @Inject constructor(
         remoteSource.postTreeBookmark(userId, treeId)
 
     override suspend fun deleteTreeBookmark(userId: Long, treeId: Long): Response<Void> =
-        remoteSource.postTreeBookmark(userId, treeId)
+        remoteSource.deleteTreeBookmark(userId, treeId)
 }

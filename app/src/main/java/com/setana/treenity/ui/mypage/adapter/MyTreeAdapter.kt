@@ -9,14 +9,14 @@ import coil.load
 import com.setana.treenity.data.api.dto.mypage.tree.MyTreeItem
 import com.setana.treenity.databinding.MypageMytreeItemRowBinding
 
-class MyTreeAdapter(items: List<MyTreeItem>) : RecyclerView.Adapter<MyTreeAdapter.MyTreeViewHolder>() {
+class MyTreeAdapter(myTrees: List<MyTreeItem>) : RecyclerView.Adapter<MyTreeAdapter.MyTreeViewHolder>() {
 
 
-    private val items: List<MyTreeItem>
+    private val myTrees: List<MyTreeItem>
     private lateinit var mListener: OnItemClickListener
 
     init {
-        this.items = items
+        this.myTrees = myTrees
     }
 
     inner class MyTreeViewHolder

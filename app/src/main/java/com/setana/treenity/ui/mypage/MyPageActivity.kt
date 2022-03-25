@@ -96,6 +96,7 @@ class MyPageActivity : AppCompatActivity() {
         setUpViewModel()
 
         registerReceiver(br, IntentFilter("1"))
+        gotoArActivity()
 
         // TODO: 이벤트 등록 : 마지막 아이템을 누르면 나무 목록 리스트 페이지 전환
         myTreeAdapter.setOnItemClickListener(object : MyTreeAdapter.OnItemClickListener {
@@ -126,6 +127,11 @@ class MyPageActivity : AppCompatActivity() {
             finish()
         }
 
+    }
+
+    private fun gotoArActivity() { // 지금은 test 용 TODO: 로딩액티비티에서 시작해야 할 것 같다
+        val nextIntent = Intent(this@MyPageActivity, ArActivity::class.java)
+        startActivity(nextIntent)
     }
 
     private fun setupViewBinding() {

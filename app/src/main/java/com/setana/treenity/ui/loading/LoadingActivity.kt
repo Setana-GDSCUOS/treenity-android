@@ -45,6 +45,8 @@ import com.setana.treenity.service.PushNotificationWorker
 import com.setana.treenity.service.TreenityForegroundService
 import com.setana.treenity.ui.ar.ArActivity
 import com.setana.treenity.ui.map.MapActivity
+import com.setana.treenity.ui.mypage.MyPageActivity
+import com.setana.treenity.ui.mytreelist.TreeListActivity
 import com.setana.treenity.util.EventObserver
 import com.setana.treenity.util.PermissionUtils
 import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
@@ -89,8 +91,10 @@ class LoadingActivity : AppCompatActivity() {
     private fun startMainApplicationWorks() {
         startStepDetectorService()
         startPushNotificationWorker()
-         startArActivity()
+         //startArActivity()
         //startMapActivity()
+        val nextIntent = Intent(this, MyPageActivity::class.java)
+        startActivity(nextIntent)
         finish()
     }
 

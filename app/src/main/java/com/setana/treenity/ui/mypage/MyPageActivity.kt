@@ -41,6 +41,7 @@ import com.setana.treenity.TreenityApplication.Companion.newlyAddedStep
 import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
 import com.setana.treenity.util.PreferenceManager
 import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 
 
@@ -93,7 +94,7 @@ class MyPageActivity : AppCompatActivity() {
         setUpViewModel()
 
 
-        // 이벤트 등록 : 마지막 아이템을 누르면 나무 목록 리스트 페이지 전환
+        // TODO: 이벤트 등록 : 마지막 아이템을 누르면 나무 목록 리스트 페이지 전환
         myTreeAdapter.setOnItemClickListener(object : MyTreeAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
                 if (position == myTreeSize-1) { // 마지막 아이템 누를 시
@@ -190,46 +191,37 @@ class MyPageActivity : AppCompatActivity() {
 
             myPageViewModel.getUserInfo(userId)
             myPageViewModel.getTreeData(userId)
+
         }
 
         // test
         Log.d("TAG", "onStart: post dailyWalk in onStart!!!")
     }
 
-    override fun onPause() {
-        super.onPause()
-
-        // POST WalkLog
-        val hashMap = Gson().fromJson<HashMap<String, String>>(hashMapString, type)
-            ?: hashMapOf(
-                SimpleDateFormat(
-                    "yyyy-MM-dd",
-                    Locale.US
-                ).format(Date()) to newlyAddedStep.toString()
-            )
-
-        val updateUserWalkLogsRequestDTO = UpdateUserWalkLogsRequestDTO(hashMap)
-
-        if(userId != -1L) {
-            myPageViewModel.updateUserWalkLogs(
-                userId.toString(),
-                updateUserWalkLogsRequestDTO
-            )
-
-            newlyAddedStep = 0 // 보내고 난다음에는 초기화!
-            PREFS.setString(DAILY_WALK_LOG_KEY, "")
-        }
-
-        myPageViewModel.getUserInfo(userId)
-        myPageViewModel.getTreeData(userId)
-
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        myPageViewModel.getUserInfo(userId)
-    }
+//    override fun onPause() {
+//        super.onPause()
+//
+//        // POST WalkLog
+//        val hashMap = Gson().fromJson<HashMap<String, String>>(hashMapString, type)
+//            ?: hashMapOf(
+//                SimpleDateFormat(
+//                    "yyyy-MM-dd",
+//                    Locale.US
+//                ).format(Date()) to newlyAddedStep.toString()
+//            )
+//
+//        val updateUserWalkLogsRequestDTO = UpdateUserWalkLogsRequestDTO(hashMap)
+//
+//        if(userId != -1L) {
+//            myPageViewModel.updateUserWalkLogs(
+//                userId.toString(),
+//                updateUserWalkLogsRequestDTO
+//            )
+//
+//            newlyAddedStep = 0 // 보내고 난다음에는 초기화!
+//            PREFS.setString(DAILY_WALK_LOG_KEY, "")
+//        }
+//    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -328,6 +320,7 @@ class MyPageActivity : AppCompatActivity() {
             //set colors
             barDataSet.color = ColorTemplate.rgb("#FF408F43") // 바 색상
             barDataSet.valueTextSize = 18f
+            barDataSet.valueFormatter = DecimalFormatter()
 
             barData = BarData(barDataSet)
             barData.barWidth = 0.25f
@@ -398,8 +391,8 @@ class MyPageActivity : AppCompatActivity() {
             if (bundle != null) {
                 
 //                if(str_date == dd) {
-//                    binding.dailyWalk.text = (binding.dailyWalk.text.toString()
-//                        .toInt() + bundle.getInt("detectedStep")).toString()
+                    binding.dailyWalk.text = (binding.dailyWalk.text.toString()
+                        .toInt() + bundle.getInt("detectedStep")).toString()
                     Log.d("TAG", "onReceive: this is my daily step : ${binding.dailyWalk.text}")
 //                } else {
 //                    binding.dailyWalk.text = "0" // 날짜가 다르다면 0으로 초기화 후, 1씩 걸음 수를 더해줌
@@ -413,6 +406,17 @@ class MyPageActivity : AppCompatActivity() {
             }
         }
     }
+}
+
+class DecimalFormatter : ValueFormatter() {
+    private lateinit var decimalFormat : DecimalFormat
+
+    override fun getFormattedValue(value: Float): String {
+        decimalFormat = DecimalFormat("#")
+
+        return decimalFormat.format(value)
+    }
+
 }
 
 class DateFormatter : ValueFormatter() { // x 축의 float 값을 날짜로 변환해줄 class

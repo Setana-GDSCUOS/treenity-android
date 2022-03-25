@@ -21,7 +21,7 @@ interface TreeRepository {
     suspend fun getTreeData(userId: String): Response<List<MyTreeItem>> // TreeListActivity
 
     //suspend fun getAroundArTrees(lat: Double, lng: Double,userId:Long): Response<List<GetAroundArTreeResponseDTO>>
-    suspend fun postTree(userId: Long, postTreeRequestDTO: PostTreeRequestDTO): Response<Void>
+    suspend fun postTree(userId: Long, postTreeRequestDTO: PostTreeRequestDTO): Response<GetTreeInformationResponseDTO>
     suspend fun getTreeInformation(treeId: Long): Response<GetTreeInformationResponseDTO>
     suspend fun waterTree(
         userId: Long,

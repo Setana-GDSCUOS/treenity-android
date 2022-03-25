@@ -18,7 +18,7 @@ interface TreeApiService {
     suspend fun postTree(
         @Path("id") id:Long,
         @Body postTreeRequestDTO: PostTreeRequestDTO
-    ): Response<Void>
+    ): Response<GetTreeInformationResponseDTO>
 
     // 이제 treeId 로 자신 나무만
     @GET("trees/{id}")

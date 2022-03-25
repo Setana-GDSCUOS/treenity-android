@@ -38,7 +38,7 @@ class TreeRepositoryImpl @Inject constructor(
     override suspend fun postTree(
         userId: Long,
         postTreeRequestDTO: PostTreeRequestDTO
-    ): Response<Void> =
+    ): Response<GetTreeInformationResponseDTO> =
         remoteSource.postTree(userId, postTreeRequestDTO)
 
     override suspend fun getTreeInformation(treeId: Long): Response<GetTreeInformationResponseDTO> =

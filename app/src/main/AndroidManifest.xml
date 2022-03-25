@@ -20,7 +20,8 @@
         android:theme="@style/BaseAppTheme"
         android:allowBackup="false">
 
-        <activity android:name=".ui.store.StoreActivity" />
+        <activity android:name=".ui.store.StoreActivity"
+                  android:theme="@style/StoreTheme"/>
 
         <activity android:name=".ui.map.MapActivity" />
 

@@ -7,6 +7,37 @@
     android:background="?android:attr/colorBackground"
 
     >
+
+    <FrameLayout
+        android:id="@+id/frame_lottie_holder"
+        android:animateLayoutChanges="true"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.9"
+            android:background="@color/black"/>
+
+        <LinearLayout
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:background="@xml/map_loading_bg">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/lottie_loading"
+                android:alpha="1.0"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                />
+
+        </LinearLayout>
+
+    </FrameLayout>
     
     <TextView
         android:layout_width="wrap_content"
@@ -105,6 +136,7 @@
         android:layout_marginTop="500dp"
         android:layout_marginStart="10dp"
         android:clickable="true"
+        android:visibility="invisible"
         >
 
         <LinearLayout
@@ -140,7 +172,7 @@
         android:layout_marginStart="170dp"
 
         android:text="You can only buy up to 3 per day"
-
+        android:textAlignment="center"
         android:textSize="15sp"/>
 
     <Button

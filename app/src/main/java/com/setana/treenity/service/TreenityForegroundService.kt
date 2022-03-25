@@ -116,7 +116,8 @@ class TreenityForegroundService : LifecycleService(), SensorEventListener {
                 }
                 stepsBeforeDetection = it.values[0].toInt()
 
-                addDailyWalkBy1() // sensor 인식할 때마다 1씩 더해야 함
+                addDailyWalkBy1(currentDetectedSteps) // sensor 인식할 때마다 1씩 더해야 함
+
             }
         }
 
@@ -156,9 +157,9 @@ class TreenityForegroundService : LifecycleService(), SensorEventListener {
         // TODO: 발걸음 수 POST 요청
     }
 
-    private fun addDailyWalkBy1() {
+    private fun addDailyWalkBy1(mSteps: Int) {
         val intent = Intent("1")
-        intent.putExtra("detectedStep", 1)
+        intent.putExtra("detectedStep", mSteps)
         sendBroadcast(intent)
     }
 }

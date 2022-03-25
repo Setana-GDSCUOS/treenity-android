@@ -42,8 +42,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.setana.treenity.TreenityApplication.Companion.newlyAddedStep
 import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
-import com.setana.treenity.databinding.ActivityLoadingBinding
-import com.setana.treenity.util.PreferenceManager
 import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
@@ -53,14 +51,14 @@ import java.text.SimpleDateFormat
 class MyPageActivity : AppCompatActivity() {
 
     // sensor permission
-    private val MY_PERMISSION_ACCESS_ALL = 100
+    private val PERMISSION_PHYSICAL_ACTIVITY = 100
     val permission = arrayOf(Manifest.permission.ACTIVITY_RECOGNITION)
 
     // animation
     private lateinit var loadingAnimationFrameLayout: FrameLayout
 
     // MyPage main
-    private lateinit var binding: MypageMypageActivityMainBinding
+    private lateinit var mypageActivityMainBinding: MypageMypageActivityMainBinding
     private var initialStep = 0
 
     private lateinit var myTreeAdapter: MyTreeAdapter
@@ -110,19 +108,19 @@ class MyPageActivity : AppCompatActivity() {
         })
 
         // 이벤트 등록 : 설정 아이콘 누르면 환경 설정 페이지로 전환
-        binding.settings.setOnClickListener {
+        mypageActivityMainBinding.settings.setOnClickListener {
             val nextIntent = Intent(this@MyPageActivity, SettingsActivity::class.java)
             startActivity(nextIntent)
         }
 
         // 이벤트 등록 : 설정 아이콘 누르면 상점 페이지로 전환
-        binding.store.setOnClickListener {
+        mypageActivityMainBinding.store.setOnClickListener {
             val nextIntent = Intent(this@MyPageActivity, StoreActivity::class.java)
             startActivity(nextIntent)
         }
 
         // 이벤트 등록 : "LET'S SAVE OUR EARTH" 버튼 누르면 상점 페이지로 전환
-        binding.gotoAr.setOnClickListener {
+        mypageActivityMainBinding.gotoAr.setOnClickListener {
             val nextIntent = Intent(this@MyPageActivity, ArActivity::class.java)
             startActivity(nextIntent)
             finish()
@@ -131,12 +129,12 @@ class MyPageActivity : AppCompatActivity() {
     }
 
     private fun setupViewBinding() {
-        binding = MypageMypageActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        mypageActivityMainBinding = MypageMypageActivityMainBinding.inflate(layoutInflater)
+        setContentView(mypageActivityMainBinding.root)
     }
 
     private fun setupLoadingAnimationFrameLayout() {
-        loadingAnimationFrameLayout = binding.frameLottieHolder
+        loadingAnimationFrameLayout = mypageActivityMainBinding.frameLottieHolder
         loadingAnimationFrameLayout.bringToFront()
     }
 
@@ -150,7 +148,7 @@ class MyPageActivity : AppCompatActivity() {
     }
 
     private fun playLottieAnimation() {
-        val lottieAnimationView = binding.lottieLoading
+        val lottieAnimationView = mypageActivityMainBinding.lottieLoading
         lottieAnimationView.setAnimation("loading.json")
         lottieAnimationView.repeatCount = LottieDrawable.INFINITE
         lottieAnimationView.playAnimation()
@@ -158,7 +156,7 @@ class MyPageActivity : AppCompatActivity() {
 
     private fun checkActionPermission() {
         // 걷는 것 인식하기 위한 권한 요청
-        ActivityCompat.requestPermissions(this, permission, MY_PERMISSION_ACCESS_ALL)
+        ActivityCompat.requestPermissions(this, permission, PERMISSION_PHYSICAL_ACTIVITY)
 
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -199,7 +197,6 @@ class MyPageActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-
         // POST WalkLog
         val hashMap = Gson().fromJson<HashMap<String, String>>(hashMapString, type)
             ?: hashMapOf(
@@ -224,7 +221,6 @@ class MyPageActivity : AppCompatActivity() {
             myPageViewModel.getTreeData(userId)
 
         }
-
 
         // test
         Log.d("TAG", "onStart: post dailyWalk in onStart!!!")
@@ -266,7 +262,7 @@ class MyPageActivity : AppCompatActivity() {
 
         myPageViewModel.userLiveData.observe(this, { user ->
 
-                binding.apply {
+                mypageActivityMainBinding.apply {
                     username.text = user.username
                     point.text = user.point.toString()
                     bucket.text = user.buckets.toString()
@@ -364,10 +360,10 @@ class MyPageActivity : AppCompatActivity() {
             barData.isHighlightEnabled
 
             //binding 으로 접근하여 barData 전달
-            binding.barChart.data = barData
+            mypageActivityMainBinding.barChart.data = barData
 
             // prepare chart
-            binding.barChart.run {
+            mypageActivityMainBinding.barChart.run {
                 data = barData
 
                 setFitBars(true)
@@ -389,7 +385,7 @@ class MyPageActivity : AppCompatActivity() {
 
                 axisRight.isEnabled = false // 오른쪽 Y축을 안보이게 설정
                 axisLeft.isEnabled = false // 왼쪽 Y축을 안보이게 설정
-                animateY(3000) // 애니메이션 추가
+                animateY(2000) // 애니메이션 추가
                 legend.isEnabled = false //차트 범례 설정
 
 
@@ -398,7 +394,6 @@ class MyPageActivity : AppCompatActivity() {
         })
     }
 
-
     private fun setViews() {
         // init adapter
         val item = Item("")
@@ -406,12 +401,12 @@ class MyPageActivity : AppCompatActivity() {
         myTreeAdapter = MyTreeAdapter(listOf(myTreeItem))
 
         // recyclerview 에 myTreeRecyclerviewAdapter 붙이기
-        binding.itemRecycler.layoutManager = LinearLayoutManager(
+        mypageActivityMainBinding.itemRecycler.layoutManager = LinearLayoutManager(
             this,
             LinearLayoutManager.HORIZONTAL,
             false
         )
-        binding.itemRecycler.adapter = myTreeAdapter
+        mypageActivityMainBinding.itemRecycler.adapter = myTreeAdapter
     }
 
     private val br: BroadcastReceiver = object : BroadcastReceiver() {
@@ -428,9 +423,9 @@ class MyPageActivity : AppCompatActivity() {
             if (bundle != null) {
                 
 //                if(str_date == dd) {
-                    binding.dailyWalk.text = (binding.dailyWalk.text.toString()
+                    mypageActivityMainBinding.dailyWalk.text = (mypageActivityMainBinding.dailyWalk.text.toString()
                         .toInt() + bundle.getInt("detectedStep")).toString()
-                    Log.d("TAG", "onReceive: this is my daily step : ${binding.dailyWalk.text}")
+                    Log.d("TAG", "onReceive: this is my daily step : ${mypageActivityMainBinding.dailyWalk.text}")
 //                } else {
 //                    binding.dailyWalk.text = "0" // 날짜가 다르다면 0으로 초기화 후, 1씩 걸음 수를 더해줌
 //

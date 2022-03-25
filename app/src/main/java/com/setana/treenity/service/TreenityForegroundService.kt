@@ -28,7 +28,7 @@ import javax.inject.Inject
  */
 
 @AndroidEntryPoint
-class StepDetectorService : LifecycleService(), SensorEventListener {
+class TreenityForegroundService : LifecycleService(), SensorEventListener {
     @Inject
     lateinit var treeRepository: TreeRepository
     @Inject
@@ -93,7 +93,6 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-
         return START_NOT_STICKY
     }
 
@@ -104,20 +103,21 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
 
     override fun onSensorChanged(sensor: SensorEvent?) {
         sensor?.let {
+            if (it.sensor.type == Sensor.TYPE_STEP_COUNTER) {
+                val currentDetectedSteps =
+                    if (stepsBeforeDetection == 0) stepsBeforeDetection else it.values[0].toInt() - stepsBeforeDetection
+                mSteps += currentDetectedSteps
 
-            val currentDetectedSteps =
-                if (stepsBeforeDetection == 0) stepsBeforeDetection else it.values[0].toInt() - stepsBeforeDetection
-            mSteps += currentDetectedSteps
+                mStepBuffer += currentDetectedSteps
+                storeStepToGlobalHashMap(mSteps)
+                if (mStepBuffer >= 10) {
+                    storeStepToSharedPreference()
+                    mStepBuffer = 0
+                }
+                stepsBeforeDetection = it.values[0].toInt()
 
-            mStepBuffer += currentDetectedSteps
-            storeStepToGlobalHashMap(mSteps)
-            if (mStepBuffer >= 10) {
-                storeStepToSharedPreference()
-                mStepBuffer = 0
+                addDailyWalkBy1() // sensor 인식할 때마다 1씩 더해야 함
             }
-            stepsBeforeDetection = it.values[0].toInt()
-
-            addDailyWalkBy1() // sensor 인식할 때마다 1씩 더해야 함
         }
 
         /* [DEBUG LOG]
@@ -153,6 +153,7 @@ class StepDetectorService : LifecycleService(), SensorEventListener {
 
     override fun onDestroy() {
         super.onDestroy()
+        // TODO: 발걸음 수 POST 요청
     }
 
     private fun addDailyWalkBy1() {

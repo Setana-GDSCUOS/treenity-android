@@ -18,4 +18,6 @@
     <string name="imageview_descriptor">This is the picture of your tree. Thanks for using app</string>
     <string name="item_classification_button">This image button is for item classification. Enjoy your walk</string>
     <string name="title_activity_settings">SettingsActivity</string>
+    <string name="tutorial_1">models/sample.glb</string>
+    <string name="basic_1">models/acorn_sample.glb</string>
 </resources>

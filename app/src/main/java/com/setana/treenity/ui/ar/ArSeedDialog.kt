@@ -14,7 +14,7 @@ import com.setana.treenity.ui.ar.adapter.SeedAdapter
 
 class ArSeedDialog(context: Context, items:List<GetUserItemResponseDTO>) {
     interface ArSeedDialogListener {
-        fun onItemClickListener(itemId:Long)
+        fun onItemClickListener(userItemId:Long,itemId:Long)
     }
     private val context = context
     private val dialog = Dialog(context)
@@ -48,7 +48,7 @@ class ArSeedDialog(context: Context, items:List<GetUserItemResponseDTO>) {
             seedAdapter.items = items.filter { it.itemType == "SEED" && it.count!=0 }
             seedAdapter.setOnItemClickListener(object: SeedAdapter.OnItemClickListener{
                 override fun onItemClick(position:Int) {
-                    dialogListener.onItemClickListener(seedAdapter.items[position].userItemId)
+                    dialogListener.onItemClickListener(seedAdapter.items[position].userItemId,seedAdapter.items[position].itemId)
                     Log.d("bimoon","selectedItemID : ${seedAdapter.items[position].userItemId}")
                     dialog.dismiss()
                 }

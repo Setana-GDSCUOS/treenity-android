@@ -71,7 +71,7 @@ class ArViewModel @Inject constructor(
                   setToastMessage("주변에 나무가 너무 많습니다. 다른 곳에 나무를 심어주세요")
               }
               else -> {
-
+                  setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
               }
             }
         }
@@ -88,7 +88,7 @@ class ArViewModel @Inject constructor(
             if (response.isSuccessful) {
                 _treeInformationResponseLiveData.postValue(response.body())
             } else {
-                setToastMessage(response.message())
+                setToastMessage("Error occured while loading data : ${response.code().toString()}")
             }
         }
     }
@@ -108,6 +108,7 @@ class ArViewModel @Inject constructor(
                     setToastMessage("You have not enough buckets")
                 }
                 else -> {
+                    setToastMessage("Error occured while loading data : ${response.code().toString()}")
 
                 }
             }
@@ -124,7 +125,7 @@ class ArViewModel @Inject constructor(
             if (response.isSuccessful) {
                 // Todo Not implemented yet
             } else {
-                setToastMessage(response.message())
+                setToastMessage("Error occured while loading data : ${response.code().toString()}")
             }
         }
     }
@@ -140,7 +141,7 @@ class ArViewModel @Inject constructor(
             if (response.isSuccessful) {
                 _userItemListLiveData.postValue(response.body())
             } else {
-                setToastMessage(response.message())
+                setToastMessage("Error occured while loading data : ${response.code().toString()}")
             }
         }
     }

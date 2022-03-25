@@ -38,6 +38,7 @@ import com.gorisse.thomas.lifecycle.doOnCreate
 import com.setana.treenity.R
 import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.data.api.dto.*
+import com.setana.treenity.data.model.ArTree
 import com.setana.treenity.databinding.ArFragmentBinding
 import com.setana.treenity.ui.loading.LoadingActivity
 import com.setana.treenity.ui.map.MapActivity
@@ -105,9 +106,11 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     private var isLoggedIn: Boolean = false
     private var once:Boolean = true
     private var selectedItemId:Long = 0
+    private var selectedUserItemId:Long = 0
 
     // 로드된 나무들을 treeId 기준으로 저장하여 다시 로드되는 일 없이 관리. 최대 렌더링수와 분리할 수 있게
     private var resolvedTreeMap: HashMap<Long,Anchor> = hashMapOf()
+
 
     /** 로딩뷰 + 액션 버튼 상호작용 활성/비활성 조작용 */
     private var isLoading = false
@@ -171,7 +174,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
         sceneView.onTouchAr = { _, _ ->
             if(isSeeding && cursorNode.isTracking) {
-                if(selectedItemId != 0L){
+                if(selectedUserItemId != 0L){
                     cursorNode.createAnchor()?.let { createSeed(it) }
                 }
                 else{
@@ -212,16 +215,20 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         //configureSession()
         // Todo 씨앗 종류에 따라서 샘플 종류도 1단계로 나무로 바꿔주기
         isLoading = true
+        val modelPath = getSeedModelWithItemIdAndLevel(selectedItemId,1)
         modelNode = ArModelNode(placementMode = PlacementMode.BEST_AVAILABLE).apply {
             loadModelAsync(
                 context = requireContext(),
-                glbFileLocation = "models/sample.glb",
+                glbFileLocation = modelPath,
                 coroutineScope = lifecycleScope,
                 autoAnimate = true,
                 autoScale = false,
                 // Place the model origin at the bottom center
                 centerOrigin = Position(y = -1.0f)
             ) {
+                if(selectedItemId!=2L){
+                    modelNode!!.modelScale = Scale(0.3f,0.3f,0.3f)
+                }
                 ViewRenderable.builder()
                     .setView(requireContext(),R.layout.title_button_plant)
                     .build()
@@ -267,7 +274,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         builder.setNegativeButton("Cancel"){
             _, _ ->
             // 캔슬하면 씨앗 다시 고르라그래
-            selectedItemId = 0
+            selectedUserItemId = 0
             Toast.makeText(requireContext(), "Seeding plant canceled", Toast.LENGTH_SHORT).show()
             modelNode!!.destroy()
         }
@@ -301,9 +308,9 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             val anchorState = anchor.cloudAnchorState
             if(anchorState== CloudAnchorState.SUCCESS){
                 if(anchor.cloudAnchorId != null){
-                    val postTreeDTO= PostTreeRequestDTO(anchor.cloudAnchorId,mLastLocation!!.latitude,mLastLocation!!.longitude,"No Name",selectedItemId)
+                    val postTreeDTO= PostTreeRequestDTO(anchor.cloudAnchorId,mLastLocation!!.latitude,mLastLocation!!.longitude,"No Name",selectedUserItemId)
                     // 시드 선택된 상태 아니므로
-                    selectedItemId = 0
+                    selectedUserItemId = 0
                     //val postedTreeId = arViewModel.postHostedTree(userId,postTreeDTO)
                     arViewModel.postHostedTree(userId,postTreeDTO)
                     clearView(false) // 이거 Forced 안 되게 해야 나무 심고 안 없어진다.
@@ -332,8 +339,8 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
     /** 등록된 cloudAnchor 를 ID 를 통해 받아옴, session configure 은 Resolve 버튼의 리스너에서 처리 */
     @Synchronized
-    fun resolveAnchor(cloudAnchorId:String, treeId: Long, level: Int) {
-
+    fun resolveAnchor(arTree: GetAroundTreeResponseDTO) {
+        val cloudAnchorId = arTree.cloudAnchorId
         sceneView.arSession?.let {
             isLoading = true
 
@@ -345,7 +352,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                         if(anchor!=null){
                             when(anchor.cloudAnchorState){
                                 CloudAnchorState.SUCCESS -> {
-                                    onResolvedAnchor(anchor, treeId, level)
+                                    onResolvedAnchor(anchor, arTree)
                                 }
                                 CloudAnchorState.ERROR_CLOUD_ID_NOT_FOUND->{
                                     //Toast.makeText(requireContext(), "Oops, your tree was dead left unattended too long.", Toast.LENGTH_SHORT).show()
@@ -367,15 +374,13 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
      * 로드된 앵커 위에 노드를 덧씌워 준다.
      * */
     @Synchronized
-    private fun onResolvedAnchor(anchor:Anchor?, treeId: Long, level: Int) {
-        // 레벨 반영비율 + 상수로 크기 결정, 따로 value 로 관리해도 좋을 것 같음
-        var fLevel = 0.5f * level.toFloat()
-        var modelPath = "models/sample.glb"
-        if (level == 2) {
-            //Todo 나중에 이거 해시맵으로
-            modelPath = "models/acorn_sample.glb"
-            fLevel *= 0.005f
-        }
+    private fun onResolvedAnchor(anchor:Anchor?, arTree: GetAroundTreeResponseDTO) {
+        //val itemId = arTree.item.itemId
+        // 하드코딩 아직 itemID 서버에서 안 줌
+        val itemId = 2L
+        val level = arTree.level
+        var modelPath = getSeedModelWithItemIdAndLevel(itemId,arTree.level)
+        val treeId = arTree.treeId
         if (anchor != null) {
             modelNode = ArModelNode(placementMode = PlacementMode.BEST_AVAILABLE).apply {
                 loadModelAsync(
@@ -385,11 +390,13 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                     autoAnimate = true,
                     autoScale = false,
                     // Place the model origin at the bottom center
-                    //scale = Vector3(0.3f+fLevel,0.3f+fLevel,0.3f+fLevel),
                     centerOrigin = Position(y = -1.0f),
                 ){
                     isLoading = false
-                    modelNode!!.modelScale = Scale(0.3f+fLevel,0.3f+fLevel,0.3f+fLevel)
+                    if(itemId!=2L){
+                        // 하드코딩 모델마다 리스케일이 좀 필요할 것 같습니다.
+                        modelNode!!.modelScale = Scale(0.3f,0.3f,0.3f)
+                    }
                 }
             }
 
@@ -562,13 +569,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         arViewModel.treeListLiveData.observe(viewLifecycleOwner) { treeList ->
             treeList?.let { it ->
                 for (arTree in it) {
-                    val cloudAnchorID = arTree.cloudAnchorId
-                    val treeId = arTree.treeId
-                    val level = arTree.level
-                    Log.d("arTree",arTree.toString())
-                    //if(cloudAnchorID != null) {
-                    resolveNotResolvedAnchor(cloudAnchorID,treeId,level)
-                    //}
+                    resolveNotResolvedAnchor(arTree)
                 }
             }
         }
@@ -614,10 +615,10 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     /**
      * 전역변수인 resolvedTreeSet 을 확인하여 등록되지 않은 나무의 경우만 심어 줌
      * */
-    private fun resolveNotResolvedAnchor(cloudAnchorId: String,treeId: Long, level: Int){
+    private fun resolveNotResolvedAnchor(arTree: GetAroundTreeResponseDTO){
         clearView(false)
-        if (treeId !in resolvedTreeMap.keys){
-            resolveAnchor(cloudAnchorId,treeId,level)
+        if (arTree.treeId !in resolvedTreeMap.keys){
+            resolveAnchor(arTree)
             // 등록은 api 해시맵에 등록은 모델 로드까지 완료되면
         }
     }
@@ -626,8 +627,9 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         val arSeedDialog = ArSeedDialog(requireContext(),userItemList)
         arSeedDialog.createDialog()
         arSeedDialog.setListener(object :ArSeedDialog.ArSeedDialogListener{
-            override fun onItemClickListener(itemId: Long) {
+            override fun onItemClickListener(userItemId:Long,itemId: Long) {
                 //Toast.makeText(requireContext(), "Seed Selected", Toast.LENGTH_SHORT).show()
+                selectedUserItemId = userItemId
                 selectedItemId = itemId
                 Toast.makeText(requireContext(), "Tap plane to plant on Cursor.", Toast.LENGTH_SHORT).show()
             }
@@ -703,5 +705,35 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     private fun startLoadingActivity() {
         val intent = Intent(requireContext(), LoadingActivity::class.java)
         startActivity(intent)
+    }
+
+    private fun getSeedModelWithItemIdAndLevel(itemId:Long,level: Int):String {
+        when(itemId){
+            2L->{
+                return when(level){
+                   1 -> {
+                       getString(R.string.tutorial_1)
+                   }
+                  else -> {
+
+                      getString(R.string.tutorial_1)
+                  }
+                }
+            }
+            3L->{
+                return when(level){
+                    1 -> {
+                        getString(R.string.basic_1)
+                    }
+                    else -> {
+
+                        getString(R.string.basic_1)
+                    }
+                }
+            }
+            else ->{
+                return ""
+            }
+        }
     }
 }

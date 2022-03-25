@@ -97,8 +97,9 @@ class ArInfoDialogFragment(context: Context, treeInfoResponse: GetTreeInformatio
         if(treeInfo.treeDescription != null){
             arInfoDialogBinding.description.setText(treeInfo.treeDescription)
         }
-
-        arInfoDialogBinding.effort.text = "Footprints : ${treeInfo.bucket * 3000}"
+        // itemId가 k인 경우 n 레벨에서 n*(k-1) 개의 양동이 필요 : (k-1)*(n*(n+1))/2
+        val footPrints = 3000*(treeInfo.item.itemId.toInt()-1)*((treeInfo.level - 1)*(treeInfo.level)/2)
+        arInfoDialogBinding.effort.text = "Footprints : ${footPrints}"
         arInfoDialogBinding.owner.text = "Owner : ${treeInfo.user.username}"
         arInfoDialogBinding.treeName.setText("${treeInfo.treeName}")
 

@@ -18,7 +18,7 @@ interface TreeApiHelper {
     suspend fun getUserTrees(userId: String): Response<List<MyTreeItem>>
     suspend fun getTreeData(userId: String): Response<List<MyTreeItem>>
 
-    suspend fun postTree(userId:Long, postTreeRequestDTO: PostTreeRequestDTO): Response<Void>
+    suspend fun postTree(userId:Long, postTreeRequestDTO: PostTreeRequestDTO): Response<GetTreeInformationResponseDTO>
     suspend fun getTreeInformation(treeId: Long): Response<GetTreeInformationResponseDTO>
     suspend fun waterTree(userId: Long,treeId: Long,waterTreeRequestDTO: WaterTreeRequestDTO): Response<Void>
     suspend fun putTreeInfo(userId:Long, treeId:Long, putTreeInfoRequestDTO:PutTreeInfoRequestDTO): Response<Void>

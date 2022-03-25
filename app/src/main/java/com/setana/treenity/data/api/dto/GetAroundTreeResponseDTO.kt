@@ -14,7 +14,7 @@ data class GetAroundTreeResponseDTO(
     val treeId: Long,
     val treeName: String,
     val user: GetAroundTreeResponseUserDTO,
-    //val item: SeedItem
+    val itemId: Long
 ) : Serializable
 
 data class GetAroundTreeResponseUserDTO(

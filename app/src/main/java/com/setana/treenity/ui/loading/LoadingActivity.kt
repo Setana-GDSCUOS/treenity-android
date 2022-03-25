@@ -91,10 +91,12 @@ class LoadingActivity : AppCompatActivity() {
     private fun startMainApplicationWorks() {
         startStepDetectorService()
         startPushNotificationWorker()
+
          //startArActivity()
         //startMapActivity()
         val nextIntent = Intent(this, MyPageActivity::class.java)
         startActivity(nextIntent)
+
         finish()
     }
 

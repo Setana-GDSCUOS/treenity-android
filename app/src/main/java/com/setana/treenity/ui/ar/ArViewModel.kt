@@ -27,6 +27,9 @@ class ArViewModel @Inject constructor(
     private val _treeInformationResponseLiveData: MutableLiveData<GetTreeInformationResponseDTO> = MutableLiveData()
     val treeInformationResponseLiveData: LiveData<GetTreeInformationResponseDTO> = _treeInformationResponseLiveData
 
+    private val _postTreeResponseLiveData: MutableLiveData<GetTreeInformationResponseDTO> = MutableLiveData()
+    val postTreeResponseLiveData: LiveData<GetTreeInformationResponseDTO> = _postTreeResponseLiveData
+
     private val _userItemListLiveData: MutableLiveData<List<GetUserItemResponseDTO>> = MutableLiveData()
     val userItemListLiveData: LiveData<List<GetUserItemResponseDTO>> = _userItemListLiveData
 
@@ -65,7 +68,7 @@ class ArViewModel @Inject constructor(
             val response = treeRepository.postTree(userId,requestDto)
             when(response.code()){
               200  -> {
-
+                  _postTreeResponseLiveData.postValue(response.body())
               }
               500 -> {
                   setToastMessage("주변에 나무가 너무 많습니다. 다른 곳에 나무를 심어주세요")

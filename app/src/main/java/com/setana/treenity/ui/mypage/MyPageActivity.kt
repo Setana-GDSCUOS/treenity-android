@@ -21,7 +21,7 @@ import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.TreenityApplication.Companion.idAndDate
 import com.setana.treenity.data.api.dto.mypage.tree.Item
 import com.setana.treenity.data.api.dto.mypage.tree.MyTreeItem
-import com.setana.treenity.databinding.MypageMypageActivityMainBinding
+import com.setana.treenity.databinding.MypageActivityMainBinding
 import com.setana.treenity.service.TreenityForegroundService
 import com.setana.treenity.ui.ar.ArActivity
 import com.setana.treenity.ui.mytreelist.TreeListActivity
@@ -58,7 +58,7 @@ class MyPageActivity : AppCompatActivity() {
     private lateinit var loadingAnimationFrameLayout: FrameLayout
 
     // MyPage main
-    private lateinit var mypageActivityMainBinding: MypageMypageActivityMainBinding
+    private lateinit var mypageActivityMainBinding: MypageActivityMainBinding
     private var initialStep = 0
 
     private lateinit var myTreeAdapter: MyTreeAdapter
@@ -129,7 +129,7 @@ class MyPageActivity : AppCompatActivity() {
     }
 
     private fun setupViewBinding() {
-        mypageActivityMainBinding = MypageMypageActivityMainBinding.inflate(layoutInflater)
+        mypageActivityMainBinding = MypageActivityMainBinding.inflate(layoutInflater)
         setContentView(mypageActivityMainBinding.root)
     }
 

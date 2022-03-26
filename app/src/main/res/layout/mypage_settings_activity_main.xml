@@ -35,202 +35,264 @@
 
     </FrameLayout>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/colorPrimaryVariant">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp"
-
-            android:background="@drawable/ic_baseline_settings_24"
-            android:backgroundTint="@color/black" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:fontFamily="@font/comfortaa_bold"
-            android:text="Setting"
-            android:textColor="@color/black"
-            android:textSize="25sp"
-            android:paddingBottom="20dp"/>
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingHorizontal="15dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:fontFamily="@font/comfortaa_bold"
-            android:text="Update"
-            android:textColor="@color/black"
-            android:textSize="22sp" />
-
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/colorPrimaryLight"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="match_parent"
-                android:scaleType="fitCenter"
-                app:tint="@color/black"
-                app:srcCompat="@drawable/ic_baseline_edit_24" />
+            android:layout_height="wrap_content">
 
             <LinearLayout
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="10dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="25dp"
-                    android:text="My Name"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"/>
-
-                <TextView
-                    android:id="@+id/newName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Not set"
-                    android:textColor="@color/black"/>
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/name_Dialog"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center|end"
-                android:paddingEnd="10dp"
-                android:text=">"
-                android:textSize="35sp"
-                android:textColor="@color/black"/>
-
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:fontFamily="@font/comfortaa_bold"
-            android:text="Support"
-            android:textSize="22sp"
-            android:textColor="@color/black"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/colorPrimaryLight"
-            android:orientation="horizontal"
-            tools:ignore="UseSwitchCompatOrMaterialXml">
-
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="match_parent"
-                app:srcCompat="@drawable/ic_baseline_directions_walk_24"
-                app:tint="@color/black"/>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginStart="10dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="25dp"
-                    android:text="Physical Activity Check"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Confirm your permission"
-                    android:textColor="@color/black"/>
-            </LinearLayout>
-
-            <Switch
-                android:id="@+id/physicalActivityPermissionCheck"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:checked="false"
-                android:gravity="center" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/colorPrimaryLight"
-            android:orientation="horizontal"
-            tools:ignore="UseSwitchCompatOrMaterialXml">
-
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="match_parent"
-                app:srcCompat="@drawable/ic_baseline_alarm_24"
-                app:tint="@color/black"/>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginStart="10dp"
+                android:background="@color/colorPrimaryVariant"
                 android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="25dp"
-                    android:text="Push Alarm"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"/>
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+
+                    android:background="@drawable/ic_baseline_settings_24"
+                    android:backgroundTint="@color/black" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Push Alarm Status"
-                    android:textColor="@color/black"/>
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:paddingBottom="20dp"
+                    android:text="Setting"
+                    android:textColor="@color/black"
+                    android:textSize="25sp" />
+
             </LinearLayout>
 
-            <Switch
-                android:id="@+id/alarmNotificationCheck"
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:checked="true"
-                android:gravity="center" />
+                android:layout_marginTop="140dp"
+                android:orientation="vertical"
+                android:paddingHorizontal="15dp">
 
-        </LinearLayout>
-    </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="50dp"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:text="Update"
+                    android:textColor="@color/black"
+                    android:textSize="22sp" />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/colorPrimaryLight"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="match_parent"
+                        android:scaleType="fitCenter"
+                        app:srcCompat="@drawable/ic_baseline_edit_24"
+                        app:tint="@color/black" />
+
+                    <LinearLayout
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="25dp"
+                            android:text="My Name"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/newName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Not set"
+                            android:textColor="@color/black" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/name_Dialog"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center|end"
+                        android:paddingEnd="10dp"
+                        android:text=">"
+                        android:textColor="@color/black"
+                        android:textSize="35sp" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:text="Support"
+                    android:textColor="@color/black"
+                    android:textSize="22sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/colorPrimaryLight"
+                    android:orientation="horizontal"
+                    tools:ignore="UseSwitchCompatOrMaterialXml">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="match_parent"
+                        app:srcCompat="@drawable/ic_baseline_directions_walk_24"
+                        app:tint="@color/black" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="25dp"
+                            android:text="Physical Activity Check"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Confirm your permission"
+                            android:textColor="@color/black" />
+                    </LinearLayout>
+
+                    <Switch
+                        android:id="@+id/physicalActivityPermissionCheck"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:checked="false"
+                        android:gravity="center" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/colorPrimaryLight"
+                    android:orientation="horizontal"
+                    tools:ignore="UseSwitchCompatOrMaterialXml">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="match_parent"
+                        app:srcCompat="@drawable/ic_baseline_alarm_24"
+                        app:tint="@color/black" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="25dp"
+                            android:text="Push Alarm"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Push Alarm Status"
+                            android:textColor="@color/black" />
+                    </LinearLayout>
+
+                    <Switch
+                        android:id="@+id/alarmNotificationCheck"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:checked="true"
+                        android:gravity="center" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="30dp"
+                    android:background="@color/colorPrimaryLight"
+                    android:orientation="horizontal"
+                    tools:ignore="UseSwitchCompatOrMaterialXml">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="match_parent"
+                        app:srcCompat="@drawable/ic_baseline_add_location_alt_24"
+                        app:tint="@color/black" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="25dp"
+                            android:text="Rendering"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/renderTreeNo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="4"
+                            android:textColor="@color/black" />
+                    </LinearLayout>
+
+                    <SeekBar
+                        android:id="@+id/seekBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:max="10"
+                        android:min="1"
+                        android:progress="4" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </FrameLayout>
+    </ScrollView>
 </LinearLayout>
 

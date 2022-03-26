@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.View
 import android.widget.CompoundButton
 import android.widget.FrameLayout
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -22,12 +23,14 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import com.airbnb.lottie.LottieDrawable
 import com.setana.treenity.R
+import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.databinding.MypageSettingsActivityMainBinding
 import com.setana.treenity.databinding.MypageSettingsNameDialogBinding
 import com.setana.treenity.service.PushNotificationWorker
 import com.setana.treenity.service.TreenityForegroundService
 import com.setana.treenity.ui.loading.LoadingActivity
 import com.setana.treenity.util.AuthUtils
+import com.setana.treenity.util.PreferenceManager.Companion.RENDER_TREE_NO
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
 
@@ -241,6 +244,23 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
                 Log.d(TAG, "setupUI: alarmNotificationCheck is unchecked")
             }
         }
+
+        mypageSettingsActivityMainBinding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) { // 조작하고 있는 중에 발생
+
+                mypageSettingsActivityMainBinding.renderTreeNo.text = progress.toString()
+                PREFS.setString(RENDER_TREE_NO, progress.toString())
+
+                // test
+                Log.d(TAG, "onProgressChanged: your number of rendering tree is ${PREFS.getString(RENDER_TREE_NO, "")}")
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) { // 처음 터치했을 때 발생
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) { // 터치가 끝났을 때 발생
+            }
+        })
     }
 
 

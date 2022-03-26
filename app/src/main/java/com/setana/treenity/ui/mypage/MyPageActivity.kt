@@ -374,7 +374,7 @@ class MyPageActivity : AppCompatActivity() {
             barDataSet.valueFormatter = object : ValueFormatter() {
                 override fun getFormattedValue(value: Float): String {
                     if(value == walks.last()) { // 현재 bar 의 value 값이 overwritten 되고 있어 임시방편으로 마지막 데이터는 value 를 보이지 않도록 설정하였다
-                        return ""
+                        return "Keep Going!"
                     }
                     else return DecimalFormat("#").format(value)
                 }

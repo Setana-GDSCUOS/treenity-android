@@ -4,9 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorBackground"
-
-    >
+    android:background="?android:attr/colorBackground">
 
     <FrameLayout
         android:id="@+id/frame_lottie_holder"
@@ -38,19 +36,18 @@
         </LinearLayout>
 
     </FrameLayout>
-    
+
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
+        android:background="@color/colorPrimaryVariant"
+        android:fontFamily="@font/comfortaa_bold"
+        android:paddingStart="20dp"
+        android:paddingBottom="10dp"
         android:text="Store"
-        android:textStyle="bold"
-        android:textSize="15sp"
+        android:textColor="@color/black"
+        android:textSize="30sp"/>
 
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="20dp"
-        />
-    
     <TextView
         android:layout_width="40dp"
         android:layout_height="40dp"
@@ -89,15 +86,20 @@
         android:text="{#BUCKET}"
         android:textStyle="bold"/>
 
+
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="125dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginHorizontal="10dp"
+        android:background="@color/colorPrimary"
+        android:paddingStart="5dp"
 
         android:text="Seeds"
+        android:textColor="@color/black"
+        android:gravity="start"
         android:fontFamily="@font/comfortaa_bold"
-        android:textSize="25sp"/>
+        android:textSize="20sp"/>
 
 
 
@@ -118,14 +120,18 @@
     </LinearLayout>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="450dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginHorizontal="10dp"
+        android:background="@color/colorPrimary"
+        android:paddingStart="5dp"
 
         android:text="Water"
+        android:textColor="@color/black"
+        android:gravity="start"
         android:fontFamily="@font/comfortaa_bold"
-        android:textSize="25sp"/>
+        android:textSize="20sp"/>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/water"
@@ -172,18 +178,8 @@
         android:layout_marginStart="170dp"
 
         android:text="You can only buy up to 3 per day"
+        android:paddingEnd="10dp"
         android:textAlignment="center"
         android:textSize="15sp"/>
-
-    <Button
-        android:id="@+id/goto_ar"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-
-        android:layout_marginTop="780dp"
-
-        android:backgroundTint="@color/black"
-
-        android:text="lET’S SAVE OUR EARTH!" />
 
 </FrameLayout>

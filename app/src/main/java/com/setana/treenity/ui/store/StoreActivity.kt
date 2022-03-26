@@ -4,18 +4,19 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.airbnb.lottie.LottieDrawable
-import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.data.api.dto.store.StoreItem
 import com.setana.treenity.databinding.StoreActivityMainBinding
 import com.setana.treenity.databinding.StoreConfirmationMainBinding
+import com.setana.treenity.ui.loading.LoadingActivity
 import com.setana.treenity.ui.purchase.PurchaseActivity
 import com.setana.treenity.ui.store.adapter.StoreAdapter
-import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
+import com.setana.treenity.util.AuthUtils
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import kotlin.collections.ArrayList
@@ -31,16 +32,28 @@ class StoreActivity : AppCompatActivity() {
     private lateinit var loadingAnimationFrameLayout: FrameLayout
 
     private val storeViewModel: StoreViewModel by viewModels()
-    val userId = PREFS.getLong(USER_ID_KEY, -1) // TODO: private var localUserId: Long = -1 이걸로 바꾸기
+    private var localUserId: Long = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        setupUI()
+        setUpViewModel()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        checkUser()
+
+        storeViewModel.getStoreItems()
+        storeViewModel.getUserInfo(localUserId)
+    }
+
+    private fun setupUI() {
         setupViewBinding()
         setupLoadingAnimationFrameLayout()
         showLoadingAnimation()
         initRecyclerView()
-        setUpViewModel()
 
         // 이벤트 등록 : Seeds의 아이템을 누르면, 해당 아이템의 itemId 을 상세페이지로 전달해줌
         storeAdapter.setOnItemClickListener(object : StoreAdapter.OnItemClickListener {
@@ -51,7 +64,6 @@ class StoreActivity : AppCompatActivity() {
                 // 선택한 아이템의 itemId 를 넘겨준다 (itemId 는 1부터 시작하고, 1번인 물을 제외하면 모두 씨앗이다
                 nextIntent.putExtra("ChosenItemId", position + 2)
                 startActivity(nextIntent)
-                finish()
             }
         })
 
@@ -61,9 +73,7 @@ class StoreActivity : AppCompatActivity() {
             val intent = Intent(this@StoreActivity, PurchaseActivity::class.java)
             intent.putExtra("ChosenItemId", 1)
             startActivity(intent)
-            finish()
         }
-
     }
 
     private fun setupViewBinding() {
@@ -93,6 +103,17 @@ class StoreActivity : AppCompatActivity() {
         lottieAnimationView.playAnimation()
     }
 
+    private fun checkUser() {
+        if (AuthUtils.userId <= 0) {
+            Toast.makeText(this, "Invalid user credentials!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, LoadingActivity::class.java)
+            startService(intent)
+            finish()
+        } else {
+            localUserId = AuthUtils.userId
+        }
+    }
+
     private fun setUpViewModel() {
 
         // observe point and # of buckets
@@ -103,8 +124,8 @@ class StoreActivity : AppCompatActivity() {
                 (user.point.toString() + "P").also { point.text = it }
                 ("X " + user.buckets.toString()).also { bucket.text = it }
             }
-        })
 
+        })
 
         storeViewModel.storeItemLiveData.observe(this, {items ->
 
@@ -117,22 +138,12 @@ class StoreActivity : AppCompatActivity() {
             storeAdapter.itemList = seedList // adapter 에서 binding
 
             storeActivityMainBinding.apply { // 물은 따로 바인딩 해주어야 함
-                (water.cost.toString() + "P").also { bucketPrice.text = it }
+                (water.cost.toString() + " P").also { bucketPrice.text = it }
                 bucketImage.load(water.imagePath)
             }
-
             storeActivityMainBinding.water.visibility = View.VISIBLE
             hideLoadingAnimation()
         })
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        storeViewModel.getStoreItems()
-
-        if(userId != -1L)
-            storeViewModel.getUserInfo(userId)
     }
 
     private fun initRecyclerView() {

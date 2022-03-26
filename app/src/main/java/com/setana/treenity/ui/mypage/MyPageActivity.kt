@@ -1,6 +1,7 @@
 package com.setana.treenity.ui.mypage
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -16,6 +17,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.airbnb.lottie.LottieDrawable
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
@@ -23,9 +26,13 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.setana.treenity.TreenityApplication
+import com.setana.treenity.TreenityApplication.Companion.DAILY_WALK_LOG
 import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
 import com.setana.treenity.data.api.dto.mypage.tree.Item
@@ -49,6 +56,8 @@ import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class MyPageActivity : AppCompatActivity() {
+
+    private lateinit var auth: FirebaseAuth
 
     // today steps
     private var todaySteps = 0
@@ -94,7 +103,6 @@ class MyPageActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         checkActionPermission()
         setupUI()
         setUpViewModel()
@@ -151,11 +159,11 @@ class MyPageActivity : AppCompatActivity() {
 
     private fun setupUI() {
         setupViewBinding()
+        setMyPageProfileFromGoogleProfile()
         setupLoadingAnimationFrameLayout()
         showLoadingAnimation()
-        setViews()
+        initRecyclerView()
 
-        // TODO: 이벤트 등록 : 마지막 아이템을 누르면 나무 목록 리스트 페이지 전환
         myTreeAdapter.setOnItemClickListener(object : MyTreeAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
                 if (position == myTreeSize - 1) { // 마지막 아이템 누를 시
@@ -177,11 +185,15 @@ class MyPageActivity : AppCompatActivity() {
             startActivity(nextIntent)
         }
 
-        // 이벤트 등록 : "LET'S SAVE OUR EARTH" 버튼 누르면 상점 페이지로 전환
-        mypageActivityMainBinding.gotoAr.setOnClickListener {
-            val nextIntent = Intent(this@MyPageActivity, ArActivity::class.java)
-            startActivity(nextIntent)
-            finish()
+    }
+
+    private fun setMyPageProfileFromGoogleProfile() {
+        auth = Firebase.auth
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            mypageActivityMainBinding.userprofile.load(currentUser.photoUrl) {
+                transformations(CircleCropTransformation())
+            }
         }
     }
 
@@ -211,7 +223,7 @@ class MyPageActivity : AppCompatActivity() {
         lottieAnimationView.playAnimation()
     }
 
-    private fun setViews() {
+    private fun initRecyclerView() {
         // init adapter
         val item = Item("")
         val myTreeItem = MyTreeItem(0, "", item, 0, 0, "")
@@ -275,6 +287,7 @@ class MyPageActivity : AppCompatActivity() {
                 dailyWalk.text = user.dailyWalks.toString()
                 Log.d(TAG, "setUpViewModel: This is your dailyWalk: ${dailyWalk.text}")
             }
+            hideLoadingAnimation()
         })
 
         myPageViewModel.updateWalkLogsResponseLiveData.observe(this, { response ->
@@ -282,11 +295,11 @@ class MyPageActivity : AppCompatActivity() {
                 if (it.isSuccessful) {
                     // Internal WalkLogs 초기화
                     PREFS.setString(DAILY_WALK_LOG_KEY, "")
-                    TreenityApplication.DAILY_WALK_LOG.clear()
+                    DAILY_WALK_LOG.clear()
 
                     // dailyWalk 갱신
                     myPageViewModel.getMyWalkLogs(localUserId)  // Chart
-                    myPageViewModel.getUserInfo(localUserId)    // Top
+                    myPageViewModel.getUserInfo(localUserId)    // user info
                 } else {
                     Log.d(TAG, "failed to post daily walk!")
                 }
@@ -310,7 +323,7 @@ class MyPageActivity : AppCompatActivity() {
             myTreeAdapter.trees = arrayList
 
             myTreeAdapter.notifyDataSetChanged()
-            hideLoadingAnimation()
+
         })
 
         myPageViewModel.myWalkLogsLiveData.observe(this, { dailyWalkLogs ->
@@ -356,10 +369,15 @@ class MyPageActivity : AppCompatActivity() {
             barDataSet = BarDataSet(barEntries, "Walk Logs")
 
             //set colors
-            barDataSet.color = ColorTemplate.rgb("#FF408F43") // 바 색상
+            barDataSet.color = ColorTemplate.rgb("#7FB414") // 바 색상
             barDataSet.valueTextSize = 18f
             barDataSet.valueFormatter = object : ValueFormatter() {
-                override fun getFormattedValue(value: Float) = DecimalFormat("#").format(value)
+                override fun getFormattedValue(value: Float): String {
+                    if(value == walks.last()) { // 현재 bar 의 value 값이 overwritten 되고 있어 임시방편으로 마지막 데이터는 value 를 보이지 않도록 설정하였다
+                        return "Keep Going!"
+                    }
+                    else return DecimalFormat("#").format(value)
+                }
             }
 
             barData = BarData(barDataSet)
@@ -372,21 +390,21 @@ class MyPageActivity : AppCompatActivity() {
             // prepare chart
             mypageActivityMainBinding.barChart.run {
                 data = barData
-
                 setFitBars(true)
 
                 description.isEnabled = false //차트 옆에 별도로 표기되는 description
-                setPinchZoom(false) // 핀치줌(두손가락으로 줌인 줌 아웃하는것) 설정
+                setPinchZoom(false) // 핀치줌(두 손가락으로 줌인 줌 아웃하는것) 설정
                 setScaleEnabled(false) // 확대 안되게 설정
                 setDrawBarShadow(false) // 그래프의 그림자
                 setTouchEnabled(false)
 
+
                 xAxis.run {
-                    position = XAxis.XAxisPosition.BOTTOM//X축을 아래에다가 둔다.
+                    position = XAxis.XAxisPosition.BOTTOM //X축을 아래에다가 둔다.
                     setDrawAxisLine(true) // 축 그림
                     setDrawGridLines(false) // 격자
                     textSize = 12f // 텍스트 크기
-                    granularity = 1F
+                    granularity = 1.0F
                     valueFormatter = object : ValueFormatter() {
                         override fun getFormattedValue(value: Float): String {
                             if (dailyWalkLogsMap[value] == null) {
@@ -397,12 +415,14 @@ class MyPageActivity : AppCompatActivity() {
                     }  // MM/dd 형태로 날짜 모두 표시
                 }
 
+                notifyDataSetChanged()
                 axisRight.isEnabled = false // 오른쪽 Y축을 안보이게 설정
                 axisLeft.isEnabled = false // 왼쪽 Y축을 안보이게 설정
                 animateY(2000) // 애니메이션 추가
                 legend.isEnabled = false //차트 범례 설정
 
                 invalidate() // refresh
+
             }
         })
     }

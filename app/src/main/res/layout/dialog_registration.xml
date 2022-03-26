@@ -63,10 +63,10 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_centerHorizontal="true"
-            android:scaleType="centerCrop"
-            android:padding="8dp"
             android:background="@xml/loading_registration_imageview_bg"
-            android:contentDescription="User Profile Image" />
+            android:contentDescription="User Profile Image"
+            android:padding="8dp"
+            android:scaleType="centerCrop" />
 
     </RelativeLayout>
 

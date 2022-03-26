@@ -34,12 +34,9 @@ import java.util.concurrent.TimeUnit
 @AndroidEntryPoint
 class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener, View.OnClickListener{
 
-
     private lateinit var mypageSettingsActivityMainBinding: MypageSettingsActivityMainBinding
     private val settingsViewModel: SettingsViewModel by viewModels()
-    private lateinit var hint: String
     private var localUserId: Long = -1
-
 
     // animation
     private lateinit var loadingAnimationFrameLayout: FrameLayout
@@ -68,8 +65,6 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
         super.onCreate(savedInstanceState)
 
         setupUI()
-        setupLoadingAnimationFrameLayout()
-        showLoadingAnimation()
         setupViewModel()
     }
 
@@ -77,13 +72,7 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
         super.onStart()
         checkUser()
 
-
         settingsViewModel.getUserInfo(localUserId)
-    }
-
-    override fun onResume() {
-        super.onResume()
-
     }
 
     override fun onCheckedChanged(p0: CompoundButton?, p1: Boolean) {
@@ -111,8 +100,7 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
     }
 
     private fun setupViewBinding() {
-        mypageSettingsActivityMainBinding =
-            MypageSettingsActivityMainBinding.inflate(layoutInflater)
+        mypageSettingsActivityMainBinding = MypageSettingsActivityMainBinding.inflate(layoutInflater)
         setContentView(mypageSettingsActivityMainBinding.root)
     }
 
@@ -150,10 +138,9 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
         }
     }
 
-
     private fun setupLoadingAnimationFrameLayout() {
         loadingAnimationFrameLayout = mypageSettingsActivityMainBinding.frameLottieHolder
-        loadingAnimationFrameLayout.bringToFront()
+
     }
 
     private fun showLoadingAnimation() {
@@ -163,6 +150,7 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
 
     private fun hideLoadingAnimation() {
         loadingAnimationFrameLayout.visibility = View.INVISIBLE
+        loadingAnimationFrameLayout.bringToFront() // 왜 이걸 앞으로 가져와야 다른 뷰들이 잘 보이는 건지 잘 모르겠음
     }
 
     private fun playLottieAnimation() {
@@ -175,11 +163,12 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
     @SuppressLint("InflateParams")
     private fun setupUI() {
         setupViewBinding()
+        setupLoadingAnimationFrameLayout()
+        showLoadingAnimation()
 
-        val alertDialog = AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this)
         // 이름 변경 탭을 누르면 editText 가 있는 다이얼로그가 나오며 적은게 있고 OK 를 누르면 적은 이름이 textView 에 보이며 PUT 요청이 이루어짐
         mypageSettingsActivityMainBinding.nameDialog.setOnClickListener {
-            val builder = AlertDialog.Builder(this)
             val builderItem = MypageSettingsNameDialogBinding.inflate(layoutInflater)
             val nameField = builderItem.nameField
             with(builder){
@@ -204,11 +193,11 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
                 Log.d(TAG, "setupUI: physicalActivityPermissionCheck is unchecked")
 
 
-                alertDialog.setIcon(R.drawable.ic_baseline_settings_24)    // 제목 아이콘
-                alertDialog.setTitle("AUTHORIZATION")    // 제목
-                alertDialog.setView(layoutInflater.inflate(R.layout.mypage_goto_application_settings, null))
+                builder.setIcon(R.drawable.ic_baseline_settings_24)    // 제목 아이콘
+                builder.setTitle("AUTHORIZATION")    // 제목
+                builder.setView(layoutInflater.inflate(R.layout.mypage_goto_application_settings, null))
 
-                alertDialog.setPositiveButton("GO To APP SETTINGS") { _, _ ->
+                builder.setPositiveButton("GO To APP SETTINGS") { _, _ ->
                     val intent = Intent()
                     intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                     val uri = Uri.fromParts("package", packageName, null)
@@ -232,7 +221,7 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
 
                     } else {
                         // 2. 사용자가 거절을 누른 경우, 요청을 다시 해봤자 다이얼로그가 안뜨기에, 설정 창으로 갈 수 있는 다이얼로그를 띄움
-                        alertDialog.show()
+                        builder.show()
                     }
                 } else {
                     // 3. 권한이 승인된 상태, 승인 되었다고 Toast 메시지 띄우기
@@ -241,12 +230,13 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
             }
         }
 
+        // TODO: 종규님 workManager 작성란
         mypageSettingsActivityMainBinding.alarmNotificationCheck.setOnCheckedChangeListener { _, isChecked ->
-            if(isChecked) { // 알람 설정이 ON 일때
+            if(isChecked) { // 알람 설정 switch 가 ON 일때
                 // test
                 Log.d(TAG, "setupUI: alarmNotificationCheck is checked")
 
-            } else { // 알람 설정이 OFF 일때
+            } else { // 알람 설정 switch 가 OFF 일때
                 // test
                 Log.d(TAG, "setupUI: alarmNotificationCheck is unchecked")
             }

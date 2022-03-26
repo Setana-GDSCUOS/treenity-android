@@ -24,6 +24,9 @@ class SettingsViewModel @Inject constructor(
     private val _userLiveData: MutableLiveData<Response<Void>> = MutableLiveData()
     val userLiveData: LiveData<Response<Void>> = _userLiveData
 
+    private val _userNameLiveData: MutableLiveData<User> = MutableLiveData()
+    val userNameLiveData: LiveData<User> = _userNameLiveData
+
     private val _showErrorToast = MutableLiveData<Event<String>>()
     val showErrorToast: LiveData<Event<String>> = _showErrorToast
 
@@ -46,4 +49,24 @@ class SettingsViewModel @Inject constructor(
                 _userLiveData.postValue(response)
             }
         }
+
+    fun getUserInfo(userId:Long) = viewModelScope.launch(Dispatchers.Main) {
+
+        val handler = CoroutineExceptionHandler { _, throwable ->
+            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            throwable.message?.let { Log.d("MyPageViewModel.kt", it) }
+        }
+
+        withContext(Dispatchers.IO + handler) {
+
+            userRepository.getUserData(userId.toString()).let { response ->
+                if (response.isSuccessful) {
+                    setToastMessage("success bringing user data!!")
+                    _userNameLiveData.postValue(response.body())
+                } else {
+                    Log.d("tag", "getUserInfo: has an error receiving data")
+                }
+            }
+        }
+    }
 }

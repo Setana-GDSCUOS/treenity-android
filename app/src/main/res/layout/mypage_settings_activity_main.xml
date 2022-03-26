@@ -5,6 +5,37 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <FrameLayout
+        android:id="@+id/frame_lottie_holder"
+        android:animateLayoutChanges="true"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.9"
+            android:background="@color/black"/>
+
+        <LinearLayout
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:background="@xml/map_loading_bg">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/lottie_loading"
+                android:alpha="1.0"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
     <TextView
         android:layout_width="60dp"
         android:layout_height="60dp"
@@ -32,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
             android:fontFamily="@font/comfortaa_bold"
-            android:text="Basics"
+            android:text="Update"
             android:textSize="20sp" />
 
         <LinearLayout
@@ -47,7 +78,7 @@
                 app:srcCompat="@drawable/ic_baseline_edit_24" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:layout_marginStart="10dp"
                 android:orientation="vertical">
@@ -56,7 +87,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="25dp"
-                    android:text="Your Name"
+                    android:text="My Name"
                     android:textStyle="bold" />
 
                 <TextView
@@ -67,24 +98,14 @@
                     android:text="Not set" />
             </LinearLayout>
 
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="10dp"
-                android:ems="8"
-                android:gravity="center"
-                android:hint="write your name\nand\ncheck the box\n(maxLength : 8)"
-                android:maxLength="8"
-                android:textAlignment="center"
-                android:textSize="12sp" />
-
-            <CheckBox
+            <TextView
+                android:id="@+id/name_Dialog"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-
-                />
+                android:layout_height="match_parent"
+                android:paddingEnd="10dp"
+                android:text=">"
+                android:gravity="center|end"
+                android:textSize="40sp"/>
 
         </LinearLayout>
 
@@ -93,7 +114,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:fontFamily="@font/comfortaa_bold"
-            android:text="Advanced"
+            android:text="Support"
             android:textSize="20sp" />
 
         <LinearLayout

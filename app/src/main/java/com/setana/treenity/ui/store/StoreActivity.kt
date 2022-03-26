@@ -31,7 +31,7 @@ class StoreActivity : AppCompatActivity() {
     private lateinit var loadingAnimationFrameLayout: FrameLayout
 
     private val storeViewModel: StoreViewModel by viewModels()
-    val userId = PREFS.getLong(USER_ID_KEY, -1)
+    val userId = PREFS.getLong(USER_ID_KEY, -1) // TODO: private var localUserId: Long = -1 이걸로 바꾸기
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

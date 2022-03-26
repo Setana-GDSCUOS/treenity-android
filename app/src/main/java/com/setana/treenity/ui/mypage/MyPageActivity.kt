@@ -1,6 +1,7 @@
 package com.setana.treenity.ui.mypage
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -16,6 +17,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.airbnb.lottie.LottieDrawable
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
@@ -23,6 +26,9 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.setana.treenity.TreenityApplication
@@ -49,6 +55,8 @@ import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class MyPageActivity : AppCompatActivity() {
+
+    private lateinit var auth: FirebaseAuth
 
     // today steps
     private var todaySteps = 0
@@ -151,11 +159,11 @@ class MyPageActivity : AppCompatActivity() {
 
     private fun setupUI() {
         setupViewBinding()
+        setMyPageProfileFromGoogleProfile()
         setupLoadingAnimationFrameLayout()
         showLoadingAnimation()
-        setViews()
+        initRecyclerView()
 
-        // TODO: 이벤트 등록 : 마지막 아이템을 누르면 나무 목록 리스트 페이지 전환
         myTreeAdapter.setOnItemClickListener(object : MyTreeAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
                 if (position == myTreeSize - 1) { // 마지막 아이템 누를 시
@@ -177,11 +185,15 @@ class MyPageActivity : AppCompatActivity() {
             startActivity(nextIntent)
         }
 
-        // 이벤트 등록 : "LET'S SAVE OUR EARTH" 버튼 누르면 상점 페이지로 전환
-        mypageActivityMainBinding.gotoAr.setOnClickListener {
-            val nextIntent = Intent(this@MyPageActivity, ArActivity::class.java)
-            startActivity(nextIntent)
-            finish()
+    }
+
+    private fun setMyPageProfileFromGoogleProfile() {
+        auth = Firebase.auth
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            mypageActivityMainBinding.userprofile.load(currentUser.photoUrl) {
+                transformations(CircleCropTransformation())
+            }
         }
     }
 
@@ -211,7 +223,7 @@ class MyPageActivity : AppCompatActivity() {
         lottieAnimationView.playAnimation()
     }
 
-    private fun setViews() {
+    private fun initRecyclerView() {
         // init adapter
         val item = Item("")
         val myTreeItem = MyTreeItem(0, "", item, 0, 0, "")
@@ -275,6 +287,7 @@ class MyPageActivity : AppCompatActivity() {
                 dailyWalk.text = user.dailyWalks.toString()
                 Log.d(TAG, "setUpViewModel: This is your dailyWalk: ${dailyWalk.text}")
             }
+            hideLoadingAnimation()
         })
 
         myPageViewModel.updateWalkLogsResponseLiveData.observe(this, { response ->
@@ -310,7 +323,7 @@ class MyPageActivity : AppCompatActivity() {
             myTreeAdapter.trees = arrayList
 
             myTreeAdapter.notifyDataSetChanged()
-            hideLoadingAnimation()
+
         })
 
         myPageViewModel.myWalkLogsLiveData.observe(this, { dailyWalkLogs ->
@@ -386,7 +399,7 @@ class MyPageActivity : AppCompatActivity() {
                     setDrawAxisLine(true) // 축 그림
                     setDrawGridLines(false) // 격자
                     textSize = 12f // 텍스트 크기
-                    granularity = 1F
+                    granularity = 1.0F
                     valueFormatter = object : ValueFormatter() {
                         override fun getFormattedValue(value: Float): String {
                             if (dailyWalkLogsMap[value] == null) {
@@ -402,7 +415,7 @@ class MyPageActivity : AppCompatActivity() {
                 animateY(2000) // 애니메이션 추가
                 legend.isEnabled = false //차트 범례 설정
 
-                invalidate() // refresh
+                //invalidate() // refresh
             }
         })
     }

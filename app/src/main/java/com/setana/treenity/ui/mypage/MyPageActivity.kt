@@ -32,6 +32,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.setana.treenity.TreenityApplication
+import com.setana.treenity.TreenityApplication.Companion.DAILY_WALK_LOG
 import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.data.api.dto.UpdateUserWalkLogsRequestDTO
 import com.setana.treenity.data.api.dto.mypage.tree.Item
@@ -102,7 +103,6 @@ class MyPageActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         checkActionPermission()
         setupUI()
         setUpViewModel()
@@ -295,11 +295,11 @@ class MyPageActivity : AppCompatActivity() {
                 if (it.isSuccessful) {
                     // Internal WalkLogs 초기화
                     PREFS.setString(DAILY_WALK_LOG_KEY, "")
-                    TreenityApplication.DAILY_WALK_LOG.clear()
+                    DAILY_WALK_LOG.clear()
 
                     // dailyWalk 갱신
                     myPageViewModel.getMyWalkLogs(localUserId)  // Chart
-                    myPageViewModel.getUserInfo(localUserId)    // Top
+                    myPageViewModel.getUserInfo(localUserId)    // user info
                 } else {
                     Log.d(TAG, "failed to post daily walk!")
                 }
@@ -369,10 +369,15 @@ class MyPageActivity : AppCompatActivity() {
             barDataSet = BarDataSet(barEntries, "Walk Logs")
 
             //set colors
-            barDataSet.color = ColorTemplate.rgb("#FF408F43") // 바 색상
+            barDataSet.color = ColorTemplate.rgb("#7FB414") // 바 색상
             barDataSet.valueTextSize = 18f
             barDataSet.valueFormatter = object : ValueFormatter() {
-                override fun getFormattedValue(value: Float) = DecimalFormat("#").format(value)
+                override fun getFormattedValue(value: Float): String {
+                    if(value == walks.last()) { // 현재 bar 의 value 값이 overwritten 되고 있어 임시방편으로 마지막 데이터는 value 를 보이지 않도록 설정하였다
+                        return ""
+                    }
+                    else return DecimalFormat("#").format(value)
+                }
             }
 
             barData = BarData(barDataSet)
@@ -385,17 +390,17 @@ class MyPageActivity : AppCompatActivity() {
             // prepare chart
             mypageActivityMainBinding.barChart.run {
                 data = barData
-
                 setFitBars(true)
 
                 description.isEnabled = false //차트 옆에 별도로 표기되는 description
-                setPinchZoom(false) // 핀치줌(두손가락으로 줌인 줌 아웃하는것) 설정
+                setPinchZoom(false) // 핀치줌(두 손가락으로 줌인 줌 아웃하는것) 설정
                 setScaleEnabled(false) // 확대 안되게 설정
                 setDrawBarShadow(false) // 그래프의 그림자
                 setTouchEnabled(false)
 
+
                 xAxis.run {
-                    position = XAxis.XAxisPosition.BOTTOM//X축을 아래에다가 둔다.
+                    position = XAxis.XAxisPosition.BOTTOM //X축을 아래에다가 둔다.
                     setDrawAxisLine(true) // 축 그림
                     setDrawGridLines(false) // 격자
                     textSize = 12f // 텍스트 크기
@@ -410,12 +415,14 @@ class MyPageActivity : AppCompatActivity() {
                     }  // MM/dd 형태로 날짜 모두 표시
                 }
 
+                notifyDataSetChanged()
                 axisRight.isEnabled = false // 오른쪽 Y축을 안보이게 설정
                 axisLeft.isEnabled = false // 왼쪽 Y축을 안보이게 설정
                 animateY(2000) // 애니메이션 추가
                 legend.isEnabled = false //차트 범례 설정
 
-                //invalidate() // refresh
+                invalidate() // refresh
+
             }
         })
     }

@@ -16,7 +16,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="1. Click the Permissions tab"
+        android:text="1. Click Permissions tab"
 
         android:fontFamily="@font/comfortaa_bold"
         android:textSize="20sp"
@@ -43,10 +43,11 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="4. Refresh app by scrolling down the screen(어느 페이지에서 scroll down 할 건 지 명시할 것)"
+        android:text="4. Come back to Treenity"
 
         android:fontFamily="@font/comfortaa_bold"
         android:textSize="20sp"
+        android:layout_marginBottom="20dp"
         />
 
     </LinearLayout>

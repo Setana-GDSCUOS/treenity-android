@@ -9,6 +9,7 @@ class PreferenceManager(context: Context) {
         const val DAILY_WALK_LOG_KEY = "DAILY_WALK_LOG_KEY"
         const val USER_ID_KEY = "USER_ID_KEY"
         const val USER_EMAIL_KEY = "USER_EMAIL_KEY"
+        const val RENDER_TREE_NO = "RENDER_TREE_NO"
     }
     private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_FILENAME, 0)
 

@@ -4,8 +4,4 @@
         <item name="android:windowExitAnimation">@anim/slide_bottom</item>
     </style>
 
-    <style name="StoreTheme" parent="Theme.MaterialComponents.DayNight">
-        <item name="windowNoTitle">true</item>
-
-    </style>
 </resources>

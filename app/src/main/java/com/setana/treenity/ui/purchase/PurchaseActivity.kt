@@ -15,7 +15,9 @@ import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.data.api.dto.store.StoreItem
 import com.setana.treenity.databinding.StoreActivityMainBinding
 import com.setana.treenity.databinding.StoreConfirmationMainBinding
+import com.setana.treenity.ui.loading.LoadingActivity
 import com.setana.treenity.ui.store.StoreActivity
+import com.setana.treenity.util.AuthUtils
 import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.properties.Delegates
@@ -26,21 +28,23 @@ class PurchaseActivity : AppCompatActivity() {
     private lateinit var storeConfirmationMainBinding : StoreConfirmationMainBinding
     private lateinit var storeActivityMainBinding : StoreActivityMainBinding
     private val purchaseViewModel: PurchaseViewModel by viewModels()
+    private var localUserId: Long = -1
+    private var itemId by Delegates.notNull<Long>()
 
     // animation
     private lateinit var loadingAnimationFrameLayout: FrameLayout
 
-    val userId = PREFS.getLong(USER_ID_KEY, -1)
-    private var itemId by Delegates.notNull<Long>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        setupUI()
+        setUpViewModel()
+    }
+
+    private fun setupUI() {
         setupViewBinding()
         setupLoadingAnimationFrameLayout()
         showLoadingAnimation()
-        setUpViewModel()
-
 
         storeConfirmationMainBinding.bringConfirmation.setOnClickListener {
             val builder = AlertDialog.Builder(this)
@@ -57,7 +61,7 @@ class PurchaseActivity : AppCompatActivity() {
                 itemId = secondIntent.getIntExtra("ChosenItemId", 0).toLong()
                 val item = StoreItem(0, "", "", itemId, "", "")
 
-                purchaseViewModel.buyItem(userId, item)
+                purchaseViewModel.buyItem(localUserId, item)
                 // POST
                 purchaseViewModel.buyItemResponseLiveData.observe(this, {response ->
                     response.let {
@@ -94,7 +98,6 @@ class PurchaseActivity : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             }
-
             builder.show()
         }
     }
@@ -126,8 +129,20 @@ class PurchaseActivity : AppCompatActivity() {
         lottieAnimationView.playAnimation()
     }
 
+    private fun checkUser() {
+        if (AuthUtils.userId <= 0) {
+            Toast.makeText(this, "Invalid user credentials!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, LoadingActivity::class.java)
+            startService(intent)
+            finish()
+        } else {
+            localUserId = AuthUtils.userId
+        }
+    }
+
     override fun onStart() {
         super.onStart()
+        checkUser()
 
         purchaseViewModel.getStoreItems()
     }

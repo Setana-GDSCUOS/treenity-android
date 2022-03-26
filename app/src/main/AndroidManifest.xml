@@ -21,7 +21,8 @@
         android:allowBackup="false">
 
         <activity android:name=".ui.store.StoreActivity"
-                  android:theme="@style/StoreTheme"/>
+                  android:theme="@style/StoreTheme"
+                  android:launchMode="singleTask"/>
 
         <activity android:name=".ui.map.MapActivity" />
 

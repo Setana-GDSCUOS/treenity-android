@@ -30,7 +30,7 @@ class MyPageViewModel @Inject constructor(
     val myWalkLogsLiveData: LiveData<List<WalkLog>> = _myWalkLogsLiveData
 
     private val _updateWalkLogsResponseLiveData: MutableLiveData<Response<Void>> = MutableLiveData()
-    val updateWalkLogsResponseLiveData: LiveData<Response<Void>> = _updateWalkLogsResponseLiveData // TODO: isSuccessful 시도 해보기!
+    val updateWalkLogsResponseLiveData: LiveData<Response<Void>> = _updateWalkLogsResponseLiveData
 
     private val _showErrorToast = MutableLiveData<Event<String>>()
     val showErrorToast: LiveData<Event<String>> = _showErrorToast

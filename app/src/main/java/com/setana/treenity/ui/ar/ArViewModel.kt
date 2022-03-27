@@ -45,7 +45,7 @@ class ArViewModel @Inject constructor(
 
     fun listAroundTrees(lat: Double, lng: Double, userId: Long) = viewModelScope.launch(Dispatchers.Main) {
         val handler = CoroutineExceptionHandler { _, throwable ->
-            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            setToastMessage("Error occurred while loading data")
             throwable.message?.let { Log.d("ArViewModel.kt", it) }
         }
 
@@ -61,7 +61,7 @@ class ArViewModel @Inject constructor(
 
     fun postHostedTree(userId:Long, requestDto: PostTreeRequestDTO) = viewModelScope.launch(Dispatchers.Main){
         val handler = CoroutineExceptionHandler { _, throwable ->
-            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            setToastMessage("Error occurred while loading data.")
             throwable.message?.let { Log.d("ArViewModel.kt", it) }
         }
         withContext(Dispatchers.IO + handler) {
@@ -71,10 +71,10 @@ class ArViewModel @Inject constructor(
                   _postTreeResponseLiveData.postValue(response.body())
               }
               500 -> {
-                  setToastMessage("주변에 나무가 너무 많습니다. 다른 곳에 나무를 심어주세요")
+                  setToastMessage("There are too many trees around. Please choose another place.")
               }
               else -> {
-                  setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+                  setToastMessage("Error occurred while loading data.")
               }
             }
         }
@@ -83,7 +83,7 @@ class ArViewModel @Inject constructor(
     fun getTreeInformation(treeId: Long) = viewModelScope.launch ( Dispatchers.Main ){
         // 서버쪽 구성때문에 두 개로 나눠졌는데 둘 다 같은 treeId입니다
         val handler = CoroutineExceptionHandler { _, throwable ->
-            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            setToastMessage("Error occurred while loading data.")
             throwable.message?.let { Log.d("ArViewModel.kt", it) }
         }
         withContext(Dispatchers.IO + handler) {
@@ -91,14 +91,14 @@ class ArViewModel @Inject constructor(
             if (response.isSuccessful) {
                 _treeInformationResponseLiveData.postValue(response.body())
             } else {
-                setToastMessage("Error occured while loading data : ${response.code().toString()}")
+                setToastMessage("Error occurred while loading data : ${response.code().toString()}")
             }
         }
     }
 
     fun waterTree(userId: Long, treeId:Long, waterTreeRequestDTO: WaterTreeRequestDTO)  = viewModelScope.launch ( Dispatchers.Main ) {
         val handler = CoroutineExceptionHandler { _, throwable ->
-            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            setToastMessage("Error occurred while loading data.")
             throwable.message?.let { Log.d("ArViewModel.kt", it) }
         }
         withContext(Dispatchers.IO + handler) {
@@ -108,10 +108,10 @@ class ArViewModel @Inject constructor(
                     setToastMessage("You have watered your tree!")
                 }
                 406 -> {
-                    setToastMessage("You have not enough buckets")
+                    setToastMessage("You don't have any buckets!")
                 }
                 else -> {
-                    setToastMessage("Error occured while loading data : ${response.code().toString()}")
+                    setToastMessage("Error occurred while loading data : ${response.code()}")
 
                 }
             }
@@ -120,7 +120,7 @@ class ArViewModel @Inject constructor(
 
     fun putTreeInfo(userId:Long, treeId:Long, putTreeInfoRequestDTO: PutTreeInfoRequestDTO)= viewModelScope.launch ( Dispatchers.Main ){
         val handler = CoroutineExceptionHandler { _, throwable ->
-            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            setToastMessage("Error occurred while loading data.")
             throwable.message?.let {Log.d("ArViewModel.kt", it) }
         }
         withContext(Dispatchers.IO + handler) {
@@ -128,14 +128,14 @@ class ArViewModel @Inject constructor(
             if (response.isSuccessful) {
                 // Todo Not implemented yet
             } else {
-                setToastMessage("Error occured while loading data : ${response.code().toString()}")
+                setToastMessage("Error occurred while loading data : ${response.code().toString()}")
             }
         }
     }
 
     fun getUserItems(userId: Long) = viewModelScope.launch(Dispatchers.Main) {
         val handler = CoroutineExceptionHandler { _, throwable ->
-            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            setToastMessage("Error occurred while loading data.")
             throwable.message?.let { Log.d("ArViewModel.kt", it) }
         }
 
@@ -144,7 +144,7 @@ class ArViewModel @Inject constructor(
             if (response.isSuccessful) {
                 _userItemListLiveData.postValue(response.body())
             } else {
-                setToastMessage("Error occured while loading data : ${response.code().toString()}")
+                setToastMessage("Error occurred while loading data : ${response.code().toString()}")
             }
         }
     }

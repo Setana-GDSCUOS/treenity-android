@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background = "@drawable/ar_dialog_shape"
-    android:backgroundTint="@color/white"
+    android:backgroundTint="?android:attr/colorBackground"
     android:orientation="vertical"
     android:gravity="center"
     android:padding="5dp"
@@ -16,6 +16,7 @@
         android:layout_height="40dp"
         android:layout_margin="10dp"
         android:background="@drawable/description_exit"
+        android:backgroundTint="@color/colorPrimaryVariant"
         android:padding="20dp"
         tools:ignore="SpeakableTextPresentCheck" />
 
@@ -49,7 +50,6 @@
             android:layout_width="150dp"
             android:layout_height="48dp"
             android:hint="TreeName"
-            android:textColor="@color/black"
             android:textColorHint="#AAAAAA"
             android:textStyle="bold"
             android:textSize="20sp"
@@ -57,17 +57,17 @@
 
         <ImageButton
             android:id="@+id/submit_name"
-            android:layout_width="40dp"
+            android:layout_width="80dp"
             android:layout_height="40dp"
             android:layout_margin="10dp"
             android:background="@drawable/description_check"
+            android:backgroundTint="@color/colorPrimaryVariant"
             android:padding="20dp"
             tools:ignore="SpeakableTextPresentCheck" />
 
     </LinearLayout>
 
     <TextView
-        android:textColor="@color/black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="\n"/>
@@ -79,7 +79,6 @@
         tools:srcCompat="@tools:sample/avatars"
         />
     <TextView
-        android:textColor="@color/black"
         android:id="@+id/owner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -87,14 +86,12 @@
         android:layout_marginTop="20dp"
         />
     <TextView
-        android:textColor="@color/black"
         android:id="@+id/created"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
         />
     <TextView
-        android:textColor="@color/black"
         android:id="@+id/effort"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
@@ -131,12 +128,14 @@
 
         <ImageButton
             android:id="@+id/submit_description"
-            android:layout_width="40dp"
+            android:layout_width="80dp"
             android:layout_height="40dp"
             android:layout_margin="10dp"
             android:background="@drawable/description_check"
+            android:backgroundTint="@color/colorPrimaryVariant"
             android:padding="20dp"
-            tools:ignore="SpeakableTextPresentCheck" />
+            tools:ignore="SpeakableTextPresentCheck"
+            />
 
     </LinearLayout>
 
@@ -147,7 +146,7 @@
         android:layout_width="120dp"
         android:layout_height="50dp"
         android:orientation="horizontal"
-        android:backgroundTint="@color/plant_green"
+        android:backgroundTint="@color/colorPrimaryVariant"
         android:background = "@drawable/ar_dialog_shape"
         >
 

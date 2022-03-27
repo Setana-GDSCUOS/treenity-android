@@ -371,9 +371,9 @@
                     android:fontFamily="@font/comfortaa_bold"
                     android:text="75 minutes a week of brisk walking can add almost 2 years to your life"
                     android:textAlignment="center"
-
-                    android:textColor="#000000"
                     android:textSize="14sp" />
+                    <!--android:textColor="#000000"안보여요 밤에!-->
+
 
             </FrameLayout>
 

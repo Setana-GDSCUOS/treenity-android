@@ -261,7 +261,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     }
 
     private fun setupViewModel() {
-        mapViewModel.treeListLiveData.observe(this, { data ->
+        mapViewModel.treeListLiveData.observe(this) { data ->
             googleMap.clear()
             markerHashMap.clear()
             bookmarkHashMap.clear()
@@ -316,15 +316,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                 }
             }
             hideLoadingAnimation()
-        })
+        }
 
-        mapViewModel.treeBookmarkResponseLiveData.observe(this, { response ->
+        mapViewModel.treeBookmarkResponseLiveData.observe(this) { response ->
             if (!response.isSuccessful) {
                 Toast.makeText(this, "Failed to add current tree to favorites.", Toast.LENGTH_SHORT)
                     .show()
                 updateAroundTreeList()
             }
-        })
+        }
 
         mapViewModel.showErrorToast.observe(this, EventObserver {
             Toast.makeText(this, it, Toast.LENGTH_SHORT).show()

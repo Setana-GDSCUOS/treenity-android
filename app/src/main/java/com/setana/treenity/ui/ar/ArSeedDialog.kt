@@ -2,6 +2,8 @@ package com.setana.treenity.ui.ar
 
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Window
@@ -37,6 +39,8 @@ class ArSeedDialog(context: Context, items:List<GetUserItemResponseDTO>) {
         dialog!!.setContentView(arSeedDialogBinding.root)
         dialog.setCancelable(true)
         dialog.setCanceledOnTouchOutside(true)
+        dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
         if(seedAdapter.itemCount == 0){
             arSeedDialogBinding.title.text = "No Items"
         }

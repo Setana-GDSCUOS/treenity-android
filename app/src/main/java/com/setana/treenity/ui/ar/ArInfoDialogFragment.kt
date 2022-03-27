@@ -3,6 +3,8 @@ package com.setana.treenity.ui.ar
 
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.*
 import android.widget.Toast
 import androidx.core.view.isGone
@@ -41,6 +43,8 @@ class ArInfoDialogFragment(context: Context, treeInfoResponse: GetTreeInformatio
         dialog!!.setContentView(arInfoDialogBinding.root)
         dialog.setCancelable(true)
         dialog.setCanceledOnTouchOutside(true)
+        dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
 
         arInfoDialogBinding.exit.setOnClickListener {
             dialog.dismiss()
@@ -98,13 +102,14 @@ class ArInfoDialogFragment(context: Context, treeInfoResponse: GetTreeInformatio
             arInfoDialogBinding.description.setText(treeInfo.treeDescription)
         }
         // itemId가 k인 경우 n 레벨에서 n*(k-1) 개의 양동이 필요 : (k-1)*(n*(n+1))/2
-        val footPrints = 3000*(treeInfo.item.itemId.toInt()-1)*((treeInfo.level - 1)*(treeInfo.level)/2)
+        val footPrints = 3000*((treeInfo.item.itemId.toInt()-1)*((treeInfo.level - 1)*(treeInfo.level)/2) + treeInfo.bucket)
         arInfoDialogBinding.effort.text = "Footprints : ${footPrints}"
         arInfoDialogBinding.owner.text = "Owner : ${treeInfo.user.username}"
         arInfoDialogBinding.treeName.setText("${treeInfo.treeName}")
 
         dialog!!.show()
     }
+
 }
 
 

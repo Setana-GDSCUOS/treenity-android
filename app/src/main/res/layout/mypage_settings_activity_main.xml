@@ -286,7 +286,7 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:max="10"
-                        android:min="1"
+                        android:min="3"
                         android:progress="4" />
 
                 </LinearLayout>

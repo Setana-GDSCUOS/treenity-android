@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="10dp"
     android:background="@xml/map_bottomsheet_bg"
+    android:backgroundTint="?android:attr/colorBackground"
     android:orientation="vertical"
     android:paddingHorizontal="20dp"
     android:paddingVertical="15dp"

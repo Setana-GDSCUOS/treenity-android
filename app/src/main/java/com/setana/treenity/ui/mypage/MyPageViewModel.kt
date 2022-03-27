@@ -39,14 +39,13 @@ class MyPageViewModel @Inject constructor(
         _showErrorToast.postValue(Event(content))
     }
 
-
-    fun getUserInfo(userId:Long) = viewModelScope.launch(Dispatchers.Main) {
+    fun getUserInfo(userId: Long) = viewModelScope.launch(Dispatchers.Main) {
 
         val handler = CoroutineExceptionHandler { _, throwable ->
-            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            setToastMessage("Error has been occurred bringing user data")
             throwable.message?.let { Log.d("MyPageViewModel.kt", it) }
         }
-        
+
         withContext(Dispatchers.IO + handler) {
 
             userRepository.getUserData(userId.toString()).let { response ->
@@ -61,11 +60,11 @@ class MyPageViewModel @Inject constructor(
     }
 
 
-    fun getTreeData(userId:Long) = viewModelScope.launch(Dispatchers.Main) {
+    fun getTreeData(userId: Long) = viewModelScope.launch(Dispatchers.Main) {
 
         val handler = CoroutineExceptionHandler { _, throwable ->
-          setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
-          throwable.message?.let { Log.d("MyPageViewModel.kt", it) }
+            setToastMessage("Error has been occurred bringing my tree data")
+            throwable.message?.let { Log.d("MyPageViewModel.kt", it) }
         }
 
         withContext(Dispatchers.IO + handler) {
@@ -82,10 +81,10 @@ class MyPageViewModel @Inject constructor(
     }
 
 
-    fun getMyWalkLogs(userId:Long) = viewModelScope.launch(Dispatchers.Main) {
+    fun getMyWalkLogs(userId: Long) = viewModelScope.launch(Dispatchers.Main) {
 
         val handler = CoroutineExceptionHandler { _, throwable ->
-            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            setToastMessage("Error has been occurred bringing my walk-log data")
             throwable.message?.let { Log.d("MyPageViewModel.kt", it) }
         }
 
@@ -102,10 +101,13 @@ class MyPageViewModel @Inject constructor(
         }
     }
 
-    fun updateUserWalkLogs(userId: String, updateUserWalkLogsRequestDTO: UpdateUserWalkLogsRequestDTO) =
+    fun updateUserWalkLogs(
+        userId: String,
+        updateUserWalkLogsRequestDTO: UpdateUserWalkLogsRequestDTO
+    ) =
         viewModelScope.launch(Dispatchers.Main) {
             val handler = CoroutineExceptionHandler { _, throwable ->
-                setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+                setToastMessage("Error has been occurred updating my walk-log data")
                 throwable.message?.let { Log.d("SignInViewModel.kt", it) }
             }
 
@@ -115,5 +117,4 @@ class MyPageViewModel @Inject constructor(
                 _updateWalkLogsResponseLiveData.postValue(response)
             }
         }
-
 }

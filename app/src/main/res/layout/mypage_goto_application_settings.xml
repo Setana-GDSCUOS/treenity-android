@@ -4,51 +4,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
-    >
+    android:orientation="horizontal">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_marginHorizontal="25dp"
         android:layout_marginTop="30dp"
-        android:layout_marginHorizontal="25dp">
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="1. Click Permissions tab"
+        android:orientation="vertical">
 
-        android:fontFamily="@font/comfortaa_bold"
-        android:textSize="20sp"
-        />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/comfortaa_bold"
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="2. Check Denied part"
+            android:text="1. Click Permissions tab"
+            android:textSize="20sp" />
 
-        android:fontFamily="@font/comfortaa_bold"
-        android:textSize="20sp"
-        />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/comfortaa_bold"
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="3. Give permission to Physical Activity"
+            android:text="2. Check Denied part"
+            android:textSize="20sp" />
 
-        android:fontFamily="@font/comfortaa_bold"
-        android:textSize="20sp"
-        />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/comfortaa_bold"
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="4. Come back to Treenity"
+            android:text="3. Give permission to Physical Activity"
+            android:textSize="20sp" />
 
-        android:fontFamily="@font/comfortaa_bold"
-        android:textSize="20sp"
-        android:layout_marginBottom="20dp"
-        />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+
+            android:fontFamily="@font/comfortaa_bold"
+            android:text="4. Come back to Treenity"
+            android:textSize="20sp" />
 
     </LinearLayout>
 

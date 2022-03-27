@@ -95,6 +95,8 @@ class PurchaseActivity : AppCompatActivity() {
 
                 // 구매 버튼 누르고 나면, 상점페이지로 화면 전환
                 val intent = Intent(this@PurchaseActivity, StoreActivity::class.java)
+                // 호출하는 Activity 가 스택에 있을 경우, 해당 Activity 를 최상위로 올리면서, 그 위에 있던 Activity들을 모두 삭제하는 Flag
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 startActivity(intent)
                 finish()
             }

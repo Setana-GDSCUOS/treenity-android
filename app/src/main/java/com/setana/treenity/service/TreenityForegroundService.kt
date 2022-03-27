@@ -109,7 +109,7 @@ class TreenityForegroundService : LifecycleService(), SensorEventListener {
     override fun onSensorChanged(sensor: SensorEvent?) {
         sensor?.let {
             if (it.sensor.type == Sensor.TYPE_STEP_COUNTER) {
-                mSteps = loadStepFromGlobalHashMap()
+                mSteps = loadDailyStepFromGlobalHashMap()
                 val currentDetectedSteps =
                     if (stepsBeforeDetection == 0) stepsBeforeDetection else it.values[0].toInt() - stepsBeforeDetection
                 mSteps += currentDetectedSteps
@@ -146,7 +146,7 @@ class TreenityForegroundService : LifecycleService(), SensorEventListener {
 
     private fun getDateString() = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
 
-    private fun loadStepFromGlobalHashMap(): Int = DAILY_WALK_LOG[getDateString()]?.toInt() ?: 0
+    private fun loadDailyStepFromGlobalHashMap(): Int = DAILY_WALK_LOG[getDateString()]?.toInt() ?: 0
 
     private fun storeStepToGlobalHashMap(step: Int) {
         DAILY_WALK_LOG[getDateString()] = step.toString()
@@ -171,8 +171,8 @@ class TreenityForegroundService : LifecycleService(), SensorEventListener {
     }
 
     private fun addDailyWalkBy1(mSteps: Int) {
-        val intent = Intent("1")
-        intent.putExtra("detectedStep", mSteps)
+        val intent = Intent("GOTO_MYPAGE_AND_ADD_DETECTED_STEP")
+        intent.putExtra("NEWLY_DETECTED_STEP", mSteps)
         sendBroadcast(intent)
     }
 }

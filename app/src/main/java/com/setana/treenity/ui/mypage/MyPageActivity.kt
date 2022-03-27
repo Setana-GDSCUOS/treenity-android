@@ -91,7 +91,7 @@ class MyPageActivity : AppCompatActivity() {
     private val br = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent) {
             intent.extras?.let {
-                todaySteps += it.getInt("detectedStep")
+                todaySteps += it.getInt("NEWLY_DETECTED_STEP")
                 mypageActivityMainBinding.dailyWalk.text = todaySteps.toString()
             }
         }
@@ -112,7 +112,7 @@ class MyPageActivity : AppCompatActivity() {
         super.onStart()
         checkUser()
 
-        registerReceiver(br, IntentFilter("1"))
+        registerReceiver(br, IntentFilter("GOTO_MYPAGE_AND_ADD_DETECTED_STEP"))
 
         // POST WalkLog
         val hashMapString = PREFS.getString(DAILY_WALK_LOG_KEY, "")

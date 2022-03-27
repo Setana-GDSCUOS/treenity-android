@@ -73,7 +73,7 @@
         android:layout_marginTop="70dp"
         android:layout_marginStart="130dp"
 
-        android:background="@drawable/mypage_pail"/>
+        android:background="@drawable/mypage_bucket"/>
 
     <TextView
         android:id="@+id/bucket"

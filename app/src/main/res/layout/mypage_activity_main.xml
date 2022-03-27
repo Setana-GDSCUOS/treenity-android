@@ -8,6 +8,7 @@
 
     <FrameLayout
         android:id="@+id/frame_lottie_holder"
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:animateLayoutChanges="true"
@@ -27,6 +28,7 @@
 
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/lottie_loading"
+
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
@@ -154,6 +156,7 @@
 
                             <TextView
                                 android:id="@+id/point"
+
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="10dp"
@@ -191,7 +194,7 @@
                             <TextView
                                 android:layout_width="28dp"
                                 android:layout_height="27dp"
-                                android:background="@drawable/mypage_pail" />
+                                android:background="@drawable/mypage_bucket" />
 
                             <TextView
                                 android:id="@+id/bucket"
@@ -340,6 +343,7 @@
 
                     <com.github.mikephil.charting.charts.BarChart
                         android:id="@+id/barChart"
+
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_marginTop="60dp"
@@ -359,7 +363,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
                     android:fontFamily="@font/comfortaa_bold"
-                    android:text="The total amount of carbon you've saved so far"
+                    android:paddingHorizontal="10dp"
+                    android:text="The total amount of carbon you've saved not using a car"
                     android:textAlignment="center"
                     android:textSize="14sp" />
 
@@ -380,8 +385,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
-                    android:paddingHorizontal="10dp"
                     android:fontFamily="@font/comfortaa_bold"
+                    android:paddingHorizontal="10dp"
                     android:text="U.S. carbon emissions per mile are capped at 224 grams in 2025"
                     android:textAlignment="center"
                     android:textSize="14sp" />

@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -73,7 +74,6 @@ class MyPageActivity : AppCompatActivity() {
 
     // MyPage main
     private lateinit var mypageActivityMainBinding: MypageActivityMainBinding
-    private var initialStep = 0
 
     private lateinit var myTreeAdapter: MyTreeAdapter
     private var myTreeSize = 0
@@ -82,15 +82,10 @@ class MyPageActivity : AppCompatActivity() {
     private var localUserId: Long = -1
 
     // Walk Log
-    private var barEntries = ArrayList<BarEntry>()
-    private lateinit var barDataSet: BarDataSet
-    private lateinit var barData: BarData
 
-    private var xValues = ArrayList<Float>()
-    private var walks = ArrayList<Float>()
-    private var dates = ArrayList<String>()
 
     private val br = object : BroadcastReceiver() {
+
         override fun onReceive(context: Context?, intent: Intent) {
             intent.extras?.let { it ->
                 todaySteps += it.getInt("NEWLY_DETECTED_STEP")
@@ -190,6 +185,7 @@ class MyPageActivity : AppCompatActivity() {
             startActivity(nextIntent)
         }
 
+        mypageActivityMainBinding.carbonEmission.paintFlags = Paint.UNDERLINE_TEXT_FLAG
     }
 
     private fun setMyPageProfileFromGoogleProfile() {
@@ -284,12 +280,14 @@ class MyPageActivity : AppCompatActivity() {
     }
 
     private fun setUpViewModel() {
+
         myPageViewModel.userLiveData.observe(this) { user ->
             mypageActivityMainBinding.apply {
                 username.text = user.username
                 point.text = user.point.toString()
                 bucket.text = user.buckets.toString()
                 dailyWalk.text = user.dailyWalks.toString()
+                carbonEmission.text = user.totalWalks.toString()
 
                 // showing daily total points user have earned
                 ((mypageActivityMainBinding.dailyWalk.text.toString().toFloat()/100F).toInt().toString()
@@ -297,8 +295,8 @@ class MyPageActivity : AppCompatActivity() {
 
                 // TODO: totalWalks 받아서 줄인 탄소배출량 알려주기
                 // using CO2 emissions per km of vehicles in Europe (6/16) [2018] and assume the step width is 50 cm
-                val reducedCarbonEmission = user.totalWalks*0.0005/32.836
-                (carbonEmission.text.toString() + reducedCarbonEmission.toString() + "g").also { carbonEmission.text = it }
+                val reducedCarbonEmission = (mypageActivityMainBinding.carbonEmission.text.toString().toFloat()*0.0005F)/32.836F
+                (reducedCarbonEmission.toString() + "g").also { mypageActivityMainBinding.carbonEmission.text = it }
 
                 // test
                 Log.d(TAG, "setUpViewModel: This is your dailyWalk: ${dailyWalk.text}")
@@ -314,8 +312,6 @@ class MyPageActivity : AppCompatActivity() {
                     DAILY_WALK_LOG.clear()
 
                     // dailyWalk 갱신
-                    mypageActivityMainBinding.barChart.clear()
-                    mypageActivityMainBinding.barChart.notifyDataSetChanged()
                     myPageViewModel.getMyWalkLogs(localUserId)  // Chart
                     myPageViewModel.getUserInfo(localUserId)    // user info
                 } else {
@@ -354,9 +350,13 @@ class MyPageActivity : AppCompatActivity() {
 
             val dailyWalkLogsMap: HashMap<Float, String> = hashMapOf()
 
-            mypageActivityMainBinding.barChart.clear()
-            mypageActivityMainBinding.barChart.notifyDataSetChanged()
-            mypageActivityMainBinding.barChart.invalidate()
+            // init as local variable so that value of graph doesn't overlap with previous data
+            val barEntries : MutableList<BarEntry> = mutableListOf()
+            lateinit var barData: BarData
+
+            val xValues : MutableList<Float> = mutableListOf()
+            val walks : MutableList<Float> = mutableListOf()
+            val dates : MutableList<String> = mutableListOf()
 
             // test
             Log.d(
@@ -388,19 +388,14 @@ class MyPageActivity : AppCompatActivity() {
 
             // setting bar chart data
             // initialize bar data set
-            barDataSet = BarDataSet(barEntries, "Walk Logs")
+            val barDataSet = BarDataSet(barEntries, "Walk Logs")
 
             //set colors
-            //barDataSet.color = ColorTemplate.rgb("#7FB414") // 바 색상
             barDataSet.color = getColor(R.color.colorPrimary)
             barDataSet.valueTextColor = getColor(R.color.colorPrimary)
             barDataSet.valueTextSize = 18f
             barDataSet.valueFormatter = object : ValueFormatter() {
-                override fun getFormattedValue(value: Float): String {
-                    return if (value == walks.last()) { // 현재 bar 의 value 값이 overwritten 되고 있어 임시방편으로 마지막 데이터는 value 를 보이지 않도록 설정하였다
-                        "Keep Going!"
-                    } else DecimalFormat("#").format(value)
-                }
+                override fun getFormattedValue(value: Float): String = DecimalFormat("#").format(value)
             }
 
             barData = BarData(barDataSet)
@@ -440,7 +435,6 @@ class MyPageActivity : AppCompatActivity() {
                     }  // MM/dd 형태로 날짜 모두 표시
                 }
 
-                // notifyDataSetChanged()
                 axisRight.isEnabled = false // 오른쪽 Y축을 안보이게 설정
                 axisLeft.isEnabled = false // 왼쪽 Y축을 안보이게 설정
                 animateY(2000) // 애니메이션 추가

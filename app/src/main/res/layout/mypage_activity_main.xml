@@ -60,27 +60,22 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="30dp"
-
                         android:fontFamily="@font/comfortaa_bold"
                         android:paddingStart="20dp"
                         android:text="My Page"
-                        android:textColor="@color/white"
-
-                        android:textSize="20sp"
-
-                        />
+                        android:textColor="@color/black"
+                        android:textSize="30sp" />
 
                     <ImageView
                         android:id="@+id/userprofile"
+
                         android:layout_width="100dp"
                         android:layout_height="100dp"
-
                         android:layout_gravity="center"
                         android:layout_marginTop="40dp"
                         android:background="@xml/loading_registration_imageview_bg"
                         android:padding="8dp"
                         android:scaleType="centerCrop" />
-
 
                     <TextView
                         android:id="@+id/username"
@@ -89,36 +84,31 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginTop="10dp"
-
                         android:text="{이름}"
                         android:textColor="@color/white"
                         android:textSize="25sp"
-
                         android:textStyle="bold" />
-
 
                 </LinearLayout>
 
                 <TextView
                     android:id="@+id/settings"
+
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_marginStart="340dp"
                     android:layout_marginTop="30dp"
-
                     android:background="@drawable/ic_baseline_settings_24"
-
                     android:elevation="5dp" />
 
                 <TextView
                     android:id="@+id/store"
+
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_marginStart="285dp"
                     android:layout_marginTop="30dp"
-
                     android:background="@drawable/ic_baseline_storefront_24"
-
                     android:elevation="5dp" />
 
             </FrameLayout>
@@ -130,7 +120,6 @@
                 android:padding="20dp">
 
                 <LinearLayout
-
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -143,12 +132,10 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-
                             android:background="@drawable/mypage_custom_small_box"
                             android:gravity="center|top"
                             android:paddingVertical="7dp"
                             android:text="Point"
-
                             android:textColor="@color/white"
                             android:textSize="15sp" />
 
@@ -163,19 +150,15 @@
                             <TextView
                                 android:layout_width="28dp"
                                 android:layout_height="27dp"
-
                                 android:background="@drawable/mypage_point" />
 
                             <TextView
                                 android:id="@+id/point"
-
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-
                                 android:layout_marginStart="10dp"
                                 android:text="{P}"
                                 android:textColor="@color/black"
-
                                 android:textSize="13sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
@@ -190,12 +173,10 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-
                             android:background="@drawable/mypage_custom_small_box"
                             android:gravity="center|top"
                             android:paddingVertical="7dp"
                             android:text="Bucket"
-
                             android:textColor="@color/white"
                             android:textSize="15sp" />
 
@@ -210,7 +191,6 @@
                             <TextView
                                 android:layout_width="28dp"
                                 android:layout_height="27dp"
-
                                 android:background="@drawable/mypage_pail" />
 
                             <TextView
@@ -218,11 +198,9 @@
 
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-
                                 android:layout_marginStart="10dp"
                                 android:text="{P}"
                                 android:textColor="@color/black"
-
                                 android:textSize="13sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
@@ -237,12 +215,10 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-
                             android:background="@drawable/mypage_custom_small_box"
                             android:gravity="center|top"
                             android:paddingVertical="7dp"
                             android:text="Step"
-
                             android:textColor="@color/white"
                             android:textSize="15sp" />
 
@@ -257,7 +233,6 @@
                             <TextView
                                 android:layout_width="28dp"
                                 android:layout_height="27dp"
-
                                 android:background="@drawable/mypage_step" />
 
                             <TextView
@@ -265,11 +240,9 @@
 
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-
                                 android:layout_marginStart="10dp"
                                 android:text="{P}"
                                 android:textColor="@color/black"
-
                                 android:textSize="13sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
@@ -288,8 +261,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:fontFamily="@font/comfortaa_bold"
-                    android:text="Total points you have earned today is "
-                    android:paddingStart="55dp">
+                    android:paddingStart="55dp"
+                    android:text="Total points you have earned today is ">
 
                 </TextView>
 
@@ -298,7 +271,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:fontFamily="@font/comfortaa_bold">
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:text="{daily updated point}">
 
                 </TextView>
 
@@ -313,17 +287,14 @@
                 <TextView
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-
                     android:background="@drawable/mypage_tree_icon" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
                     android:layout_marginStart="80dp"
                     android:layout_marginTop="20dp"
                     android:fontFamily="@font/comfortaa_bold"
-
                     android:text="My Tree"
                     android:textSize="25sp" />
 
@@ -335,9 +306,9 @@
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/item_recycler"
+
                         android:layout_width="match_parent"
                         android:layout_height="250dp"
-
                         android:layout_marginTop="80dp" />
                 </LinearLayout>
             </FrameLayout>
@@ -351,26 +322,21 @@
                 <TextView
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-
                     android:background="@drawable/mypage_walking_icon" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
                     android:layout_marginStart="80dp"
                     android:layout_marginTop="20dp"
                     android:fontFamily="@font/comfortaa_bold"
-
                     android:text="My Walklog"
                     android:textSize="25sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="450dp"
-                    android:orientation="vertical"
-
-                    >
+                    android:orientation="vertical">
 
                     <com.github.mikephil.charting.charts.BarChart
                         android:id="@+id/barChart"
@@ -379,45 +345,50 @@
                         android:layout_marginTop="60dp"
                         android:layout_weight="1"
                         android:padding="10dp" />
-
-
                 </LinearLayout>
+
             </FrameLayout>
 
-            <FrameLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:text="The total amount of carbon you've saved so far"
+                    android:textAlignment="center"
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/carbonEmission"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
 
-                    android:layout_marginHorizontal="15dp"
-                    android:layout_marginTop="60dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:fontFamily="@font/comfortaa_bold"
-                    android:text="The total amount of carbon you've saved so far\n"
+                    android:text="{saved amount of carbon emission}"
                     android:textAlignment="center"
-                    android:textSize="14sp" />
-                <!--android:textColor="#000000"안보여요 밤에!-->
+                    android:textColor="@color/colorSecondary"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-
-                    android:layout_marginHorizontal="15dp"
-                    android:layout_marginTop="120dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:paddingHorizontal="10dp"
                     android:fontFamily="@font/comfortaa_bold"
                     android:text="U.S. carbon emissions per mile are capped at 224 grams in 2025"
                     android:textAlignment="center"
                     android:textSize="14sp" />
 
-
-            </FrameLayout>
-
+            </LinearLayout>
 
         </LinearLayout>
-
     </ScrollView>
 </FrameLayout>
 

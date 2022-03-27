@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.ImageDecoder
+import android.graphics.drawable.ColorDrawable
 import android.os.Build.VERSION.SDK_INT
 import android.util.Log
 import android.view.LayoutInflater
@@ -44,6 +45,7 @@ class ArInstructionDialog(context: Context) {
         dialog!!.setContentView(arInstructionDialogBinding.root)
         dialog.setCancelable(false)
         dialog.setCanceledOnTouchOutside(false)
+        dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         arInstructionDialogBinding.buttonClose.setOnClickListener {
             dialogListener.onButtonClickListener()

@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -31,6 +32,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.setana.treenity.R
 import com.setana.treenity.TreenityApplication
 import com.setana.treenity.TreenityApplication.Companion.DAILY_WALK_LOG
 import com.setana.treenity.TreenityApplication.Companion.PREFS
@@ -279,7 +281,7 @@ class MyPageActivity : AppCompatActivity() {
     }
 
     private fun setUpViewModel() {
-        myPageViewModel.userLiveData.observe(this, { user ->
+        myPageViewModel.userLiveData.observe(this) { user ->
             mypageActivityMainBinding.apply {
                 username.text = user.username
                 point.text = user.point.toString()
@@ -288,9 +290,9 @@ class MyPageActivity : AppCompatActivity() {
                 Log.d(TAG, "setUpViewModel: This is your dailyWalk: ${dailyWalk.text}")
             }
             hideLoadingAnimation()
-        })
+        }
 
-        myPageViewModel.updateWalkLogsResponseLiveData.observe(this, { response ->
+        myPageViewModel.updateWalkLogsResponseLiveData.observe(this) { response ->
             response?.let {
                 if (it.isSuccessful) {
                     // Internal WalkLogs 초기화
@@ -304,9 +306,9 @@ class MyPageActivity : AppCompatActivity() {
                     Log.d(TAG, "failed to post daily walk!")
                 }
             }
-        })
+        }
 
-        myPageViewModel.myTreesLiveData.observe(this, { myTrees ->
+        myPageViewModel.myTreesLiveData.observe(this) { myTrees ->
             // test
             Log.d("TAG", "These are my Trees: $myTrees") // These are my Trees: []
 
@@ -324,9 +326,9 @@ class MyPageActivity : AppCompatActivity() {
 
             myTreeAdapter.notifyDataSetChanged()
 
-        })
+        }
 
-        myPageViewModel.myWalkLogsLiveData.observe(this, { dailyWalkLogs ->
+        myPageViewModel.myWalkLogsLiveData.observe(this) { dailyWalkLogs ->
             todaySteps = dailyWalkLogs.find {
                 it.date == SimpleDateFormat(
                     "yyyy-MM-dd",
@@ -369,20 +371,22 @@ class MyPageActivity : AppCompatActivity() {
             barDataSet = BarDataSet(barEntries, "Walk Logs")
 
             //set colors
-            barDataSet.color = ColorTemplate.rgb("#7FB414") // 바 색상
+            //barDataSet.color = ColorTemplate.rgb("#7FB414") // 바 색상
+            barDataSet.color = getColor(R.color.colorPrimary)
+            barDataSet.valueTextColor = getColor(R.color.colorPrimary)
             barDataSet.valueTextSize = 18f
             barDataSet.valueFormatter = object : ValueFormatter() {
                 override fun getFormattedValue(value: Float): String {
-                    if(value == walks.last()) { // 현재 bar 의 value 값이 overwritten 되고 있어 임시방편으로 마지막 데이터는 value 를 보이지 않도록 설정하였다
-                        return "Keep Going!"
-                    }
-                    else return DecimalFormat("#").format(value)
+                    return if (value == walks.last()) { // 현재 bar 의 value 값이 overwritten 되고 있어 임시방편으로 마지막 데이터는 value 를 보이지 않도록 설정하였다
+                        "Keep Going!"
+                    } else DecimalFormat("#").format(value)
                 }
             }
 
             barData = BarData(barDataSet)
             barData.barWidth = 0.25f
             barData.isHighlightEnabled
+
 
             //binding 으로 접근하여 barData 전달
             mypageActivityMainBinding.barChart.data = barData
@@ -403,6 +407,7 @@ class MyPageActivity : AppCompatActivity() {
                     position = XAxis.XAxisPosition.BOTTOM //X축을 아래에다가 둔다.
                     setDrawAxisLine(true) // 축 그림
                     setDrawGridLines(false) // 격자
+                    textColor = getColor(R.color.colorSecondary)
                     textSize = 12f // 텍스트 크기
                     granularity = 1.0F
                     valueFormatter = object : ValueFormatter() {
@@ -424,7 +429,7 @@ class MyPageActivity : AppCompatActivity() {
                 invalidate() // refresh
 
             }
-        })
+        }
     }
 }
 

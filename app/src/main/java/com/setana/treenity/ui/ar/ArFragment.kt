@@ -48,6 +48,7 @@ import com.setana.treenity.ui.mypage.MyPageActivity
 import com.setana.treenity.util.AuthUtils
 import com.setana.treenity.util.CloudAnchorManager
 import com.setana.treenity.util.EventObserver
+import com.setana.treenity.util.PreferenceManager
 import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sceneview.ar.ArSceneView
@@ -61,6 +62,7 @@ import io.github.sceneview.ar.scene.PlaneRenderer
 import io.github.sceneview.math.Position
 import io.github.sceneview.math.Scale
 import io.github.sceneview.utils.doOnApplyWindowInsets
+import java.lang.Integer.min
 
 
 /** Ar 화면의 MainView 를 담당하는 Fragment
@@ -71,7 +73,6 @@ import io.github.sceneview.utils.doOnApplyWindowInsets
 
 @AndroidEntryPoint
 class ArFragment : Fragment(R.layout.ar_fragment) {
-    //private lateinit var actionButton: ExtendedFloatingActionButton
     private lateinit var arFragmentBinding: ArFragmentBinding
 
     // Floating Action Button
@@ -107,6 +108,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
     // 식별
     //PREFS.getLong(USER_ID_KEY, -1)
+    private val renderLimit = PREFS.getString(PreferenceManager.RENDER_TREE_NO, "4")
     private var localUserId = -1L
     //private var isLoggedIn: Boolean = false
     private var once:Boolean = true
@@ -203,12 +205,13 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         }
         sceneView.onArSessionResumed = {
             // 세션 재시작되면 나무 위치 다 다시 받아와야해서
-            // 이거 false 될 수도 있음
-            clearView(true)
+
             arViewModel?.let{
                 arViewModel->
                 mLastLocation?.let{
                     mLastLocation ->
+                    // 이거 false 될 수도 있음
+                    clearView(forced = true, feedBack = true)
                     arViewModel.listAroundTrees(mLastLocation.latitude,mLastLocation.longitude,localUserId)
                 }
             }
@@ -357,7 +360,8 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                     selectedUserItemId = 0
                     //val postedTreeId = arViewModel.postHostedTree(userId,postTreeDTO)
                     arViewModel.postHostedTree(localUserId,postTreeDTO)
-                    clearView(false) // 이거 Forced 안 되게 해야 나무 심고 안 없어진다.
+                    isLoading = true // 서버 연락 받을 때 까지 로딩
+                    clearView(forced =false, feedBack = false) // 이거 Forced 안 되게 해야 나무 심고 안 없어진다.
                     arViewModel.listAroundTrees(mLastLocation!!.latitude,mLastLocation!!.longitude,localUserId)
                     seedNode = currentNode // 전역변수로 뷰모델 onTouch설정에 사용
                 }
@@ -429,8 +433,8 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                     if(itemId!=2L){
                         // 하드코딩 모델마다 리스케일이 좀 필요할 것 같습니다.
                         //modelNode!!.modelScale = Scale(0.3f,0.3f,0.3f)
-
                     }
+                    modelNode!!.modelScale = Scale(2f,2f,2f)
                     modelNode!!.onTouched = { _, _ ->
                         arViewModel.treeListLiveData.value?.find { it.treeId == treeId }
                         arViewModel.getTreeInformation(treeId)
@@ -512,7 +516,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         val distance = location.distanceTo(mLastLocation)
         // 위치 정확도 관련해서도 추가하면 좋을 듯
         // Todo 하드코딩 나무로드조건
-        if (distance > 30) {
+        if (distance > 15) {
             // 일정 거리 이상 이동시 주변의 나무 불러옴
             arViewModel.listAroundTrees(location.latitude,location.longitude, localUserId)
         }
@@ -551,7 +555,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             // 선택된 아이템은 전역변수 공유
         }
         fabRefresh.setOnClickListener{
-            clearView(true)
+            clearView(forced = true, feedBack = true)
             arViewModel.listAroundTrees(mLastLocation!!.latitude, mLastLocation!!.longitude, localUserId)
         }
         fabMap.setOnClickListener{
@@ -608,9 +612,16 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
         arViewModel.treeListLiveData.observe(viewLifecycleOwner) { treeList ->
             treeList?.let { it ->
+                val renderSize = min(treeList.size,renderLimit.toInt())-1
+                for(i in 0..renderSize){
+                    // 거리순으로 정렬되기 때문에 주변 나무 갯수/최대 렌더링수중에서 고르기
+                    resolveNotResolvedAnchor(it[i])
+                }
+                /*
                 for (arTree in it) {
                     resolveNotResolvedAnchor(arTree)
                 }
+                */
             }
             isLoading = false
         }
@@ -630,6 +641,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                     arViewModel.treeListLiveData.value?.find { it.treeId == plantedTree.treeId }
                     arViewModel.getTreeInformation(plantedTree.treeId)
                 }
+                isLoading = false
                 Toast.makeText(requireContext(), "Succeed to plant tree! click tree to enter its name!", Toast.LENGTH_SHORT).show()
                 arViewModel.getTreeInformation(plantedTree.treeId)
             }
@@ -649,12 +661,14 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
     }
 
-    private fun clearView(forced : Boolean){
-        // Todo 여기 최대 렌더링 수
-        if(sceneView.children.size>10 || forced){
+    private fun clearView(forced : Boolean, feedBack:Boolean){
+        // 어떻게든 최대 렌더링 수를 넘어서 로드되었거나 강제 리로드시 리로드 카메라노드랑 커서노드는 빼야 됨
+        Log.d("bimoon","c size : ${sceneView.children.size}")
+        if(sceneView.children.size > 2 + renderLimit.toInt() || forced){
             isLoading = true
             // 최대 렌더링 수보다 SceneView 에 자식노드가 많으면 카메라랑 커서 빼고 잘라버림
             for(child in sceneView.children){
+                Log.d("bimoon","child is ${child}")
                 if(child !is Camera && child !=cursorNode){
                     Log.d("target",child.toString())
                     child.destroy()
@@ -662,7 +676,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             }
             resolvedTreeMap.clear()
         }
-        if(forced){
+        if(forced&&feedBack){
             // 강제 리셋시에는 리셋해서 로드중이라는 피드백 제공
             Toast.makeText(requireContext(), "Loading Trees Around...", Toast.LENGTH_SHORT).show()
         }
@@ -672,10 +686,17 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
      * 전역변수인 resolvedTreeSet 을 확인하여 등록되지 않은 나무의 경우만 심어 줌
      * */
     private fun resolveNotResolvedAnchor(arTree: GetAroundTreeResponseDTO){
-        clearView(false)
         if (arTree.treeId !in resolvedTreeMap.keys){
+            if(sceneView.children.size > renderLimit.toInt() + 1){
+                // 새로 로드하면 제한 넘어갈 예정이라면
+                clearView(forced= true, feedBack = true)
+            }
+            else{
+                clearView(forced= false, feedBack = false)
+            }
             resolveAnchor(arTree)
             // 등록은 api 해시맵에 등록은 모델 로드까지 완료되면
+
         }
     }
 
@@ -724,8 +745,8 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                 //TODO("여기 물주기 "), 클라우드 앵커 아이디 재발급받아서 서버에 등록하기
                 //Toast.makeText(requireContext(), "물주기 반환값 : $treeId", Toast.LENGTH_SHORT).show()
                 refreshCloudAnchorId(treeId)
-                // 물 주고 나면 갱신 필수 (레벨 업 할 수도 있으니)
-                clearView(true)
+                // 물 주고 나면 갱신 필수 (레벨 업 할 수도 있으니) 다른 문구 있으니 로드 피드백은 안 줌
+                clearView(forced = true, feedBack = false)
                 arViewModel.listAroundTrees(mLastLocation!!.latitude,mLastLocation!!.longitude,localUserId)
             }
         })

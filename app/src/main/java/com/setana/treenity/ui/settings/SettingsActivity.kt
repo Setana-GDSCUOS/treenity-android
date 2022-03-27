@@ -110,24 +110,28 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
     private fun setupViewModel() {
 
         // get name
-        settingsViewModel.userNameLiveData.observe(this, { user ->
+        settingsViewModel.userNameLiveData.observe(this) { user ->
             mypageSettingsActivityMainBinding.apply {
                 newName.text = user.username
 
             }
             hideLoadingAnimation()
-        })
+        }
 
         // put name
-        settingsViewModel.userLiveData.observe(this@SettingsActivity, { response ->
+        settingsViewModel.userLiveData.observe(this@SettingsActivity) { response ->
             response.let {
                 if (it.isSuccessful) { // put 요청 잘 되었으면, 유저 정보 가져옴
-                    Toast.makeText(this@SettingsActivity, "New Name has been successfully saved", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@SettingsActivity,
+                        "New Name has been successfully saved",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
                     throw IllegalArgumentException("Error has been occurred or you haven't changed your name")
                 }
             }
-        })
+        }
     }
 
     private fun checkUser() {

@@ -194,46 +194,37 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
             }
         }
 
-        mypageSettingsActivityMainBinding.physicalActivityPermissionCheck.setOnCheckedChangeListener { _, isChecked ->
-            if(!isChecked) { // 신체 활동 권한 체크 switch 가 OFF 일때
-                // test
-                Log.d(TAG, "setupUI: physicalActivityPermissionCheck is unchecked")
+        mypageSettingsActivityMainBinding.physicalActivityPermissionCheck.setOnClickListener {
 
+            builder.setIcon(R.drawable.ic_baseline_settings_24)    // 제목 아이콘
+            builder.setTitle("AUTHORIZATION")    // 제목
+            builder.setView(layoutInflater.inflate(R.layout.mypage_goto_application_settings, null))
 
-                builder.setIcon(R.drawable.ic_baseline_settings_24)    // 제목 아이콘
-                builder.setTitle("AUTHORIZATION")    // 제목
-                builder.setView(layoutInflater.inflate(R.layout.mypage_goto_application_settings, null))
+            builder.setPositiveButton("GO To APP SETTINGS") { _, _ ->
+                val intent = Intent()
+                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                val uri = Uri.fromParts("package", packageName, null)
+                intent.data = uri
+                startActivity(intent)
+            }
 
-                builder.setPositiveButton("GO To APP SETTINGS") { _, _ ->
-                    val intent = Intent()
-                    intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                    val uri = Uri.fromParts("package", packageName, null)
-                    intent.data = uri
-                    startActivity(intent)
-                }
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACTIVITY_RECOGNITION
+                ) != PackageManager.PERMISSION_GRANTED) {
 
-            } else { // 신체 활동 권한 체크 switch 가 ON 일때
-                // test
-                Log.d(TAG, "setupUI: physicalActivityPermissionCheck is checked")
-
-                if (ContextCompat.checkSelfPermission(this,
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.ACTIVITY_RECOGNITION
-                    ) != PackageManager.PERMISSION_GRANTED) {
+                    )) {
+                    // 1. 사용자가 승인 거절을 모두 한 적이 없는 경우, 권한 요청
+                    ActivityCompat.requestPermissions(this, permission, PERMISSION_PHYSICAL_ACTIVITY)
 
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                            Manifest.permission.ACTIVITY_RECOGNITION
-                        )) {
-                        // 1. 사용자가 승인 거절을 모두 한 적이 없는 경우, 권한 요청
-                        ActivityCompat.requestPermissions(this, permission, PERMISSION_PHYSICAL_ACTIVITY)
-
-                    } else {
-                        // 2. 사용자가 거절을 누른 경우, 요청을 다시 해봤자 다이얼로그가 안뜨기에, 설정 창으로 갈 수 있는 다이얼로그를 띄움
-                        builder.show()
-                    }
                 } else {
-                    // 3. 권한이 승인된 상태, 승인 되었다고 Toast 메시지 띄우기
-                    Toast.makeText(this, "Activity Sensor is Activated", Toast.LENGTH_SHORT).show()
+                    // 2. 사용자가 거절을 누른 경우, 요청을 다시 해봤자 다이얼로그가 안뜨기에, 설정 창으로 갈 수 있는 다이얼로그를 띄움
+                    builder.show()
                 }
+            } else {
+                // 3. 권한이 승인된 상태, 승인 되었다고 Toast 메시지 띄우기
+                Toast.makeText(this, "Activity Sensor is Activated", Toast.LENGTH_SHORT).show()
             }
         }
 

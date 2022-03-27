@@ -183,13 +183,15 @@
                             android:textColor="@color/black" />
                     </LinearLayout>
 
-                    <Switch
+                    <TextView
                         android:id="@+id/physicalActivityPermissionCheck"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:checked="false"
-                        android:gravity="center" />
+                        android:layout_height="match_parent"
+                        android:gravity="center|end"
+                        android:paddingEnd="10dp"
+                        android:text="✔"
+                        android:textColor="@color/black"
+                        android:textSize="25sp" />
 
                 </LinearLayout>
 

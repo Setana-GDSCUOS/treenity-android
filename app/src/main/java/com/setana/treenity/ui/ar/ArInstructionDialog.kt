@@ -2,6 +2,7 @@ package com.setana.treenity.ui.ar
 
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
 import android.graphics.ImageDecoder
 import android.os.Build.VERSION.SDK_INT
 import android.util.Log
@@ -9,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.core.view.isGone
 import coil.ComponentRegistry
 import coil.ImageLoader
 import coil.decode.GifDecoder
@@ -66,12 +68,19 @@ class ArInstructionDialog(context: Context) {
 
         when(page){
           0 -> {
+              arInstructionDialogBinding.buttonPrevious.isEnabled = false
+              arInstructionDialogBinding.buttonNext.isEnabled = true
+              arInstructionDialogBinding.buttonClose.isEnabled = false
               arInstructionDialogBinding.instruction.load("https://ifh.cc/g/SfNsk8.gif",imageLoader){
                   crossfade(true)
                   crossfade(500)
               }
           }
           1 -> {
+
+              arInstructionDialogBinding.buttonPrevious.isEnabled = true
+              arInstructionDialogBinding.buttonNext.isEnabled = false
+              arInstructionDialogBinding.buttonClose.isEnabled = true
               arInstructionDialogBinding.instruction.load("https://ifh.cc/g/pVpD0f.gif",imageLoader){
                   crossfade(true)
                   crossfade(500)

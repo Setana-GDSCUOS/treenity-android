@@ -21,4 +21,8 @@
     <string name="tutorial_1">models/sample.glb</string>
     <string name="basic_1">models/acorn_sample.glb</string>
     <string name="instruction_ar">To load trees fast and accurate, you have to carefully give your phone information of the place to plant. \n Please see the video upside.</string>
+    <string name="sakura_1">models/sakura1.glb</string>
+    <string name="sakura_2">models/sakura2.glb</string>
+    <string name="sakura_3">models/sakura3.glb</string>
+    <string name="sakura_4">models/sakura4.glb</string>
 </resources>

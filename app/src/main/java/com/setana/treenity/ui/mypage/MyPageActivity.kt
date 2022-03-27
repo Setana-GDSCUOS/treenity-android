@@ -92,9 +92,12 @@ class MyPageActivity : AppCompatActivity() {
 
     private val br = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent) {
-            intent.extras?.let {
+            intent.extras?.let { it ->
                 todaySteps += it.getInt("NEWLY_DETECTED_STEP")
                 mypageActivityMainBinding.dailyWalk.text = todaySteps.toString()
+                // TODO: 오늘 얻은 포인트도 알려줄 것!
+                ((mypageActivityMainBinding.dailyWalk.text.toString().toFloat()/100F).toInt().toString()
+                + "P").also { mypageActivityMainBinding.dailyUpdatedPoint.text = it }
             }
         }
     }
@@ -287,6 +290,17 @@ class MyPageActivity : AppCompatActivity() {
                 point.text = user.point.toString()
                 bucket.text = user.buckets.toString()
                 dailyWalk.text = user.dailyWalks.toString()
+
+                // showing daily total points user have earned
+                ((mypageActivityMainBinding.dailyWalk.text.toString().toFloat()/100F).toInt().toString()
+                + "P").also { mypageActivityMainBinding.dailyUpdatedPoint.text = it }
+
+                // TODO: totalWalks 받아서 줄인 탄소배출량 알려주기
+                // using CO2 emissions per km of vehicles in Europe (6/16) [2018] and assume the step width is 50 cm
+                val reducedCarbonEmission = user.totalWalks*0.0005/32.836
+                (carbonEmission.text.toString() + reducedCarbonEmission.toString() + "g").also { carbonEmission.text = it }
+
+                // test
                 Log.d(TAG, "setUpViewModel: This is your dailyWalk: ${dailyWalk.text}")
             }
             hideLoadingAnimation()
@@ -300,6 +314,8 @@ class MyPageActivity : AppCompatActivity() {
                     DAILY_WALK_LOG.clear()
 
                     // dailyWalk 갱신
+                    mypageActivityMainBinding.barChart.clear()
+                    mypageActivityMainBinding.barChart.notifyDataSetChanged()
                     myPageViewModel.getMyWalkLogs(localUserId)  // Chart
                     myPageViewModel.getUserInfo(localUserId)    // user info
                 } else {
@@ -337,6 +353,10 @@ class MyPageActivity : AppCompatActivity() {
             }?.walks ?: 0
 
             val dailyWalkLogsMap: HashMap<Float, String> = hashMapOf()
+
+            mypageActivityMainBinding.barChart.clear()
+            mypageActivityMainBinding.barChart.notifyDataSetChanged()
+            mypageActivityMainBinding.barChart.invalidate()
 
             // test
             Log.d(
@@ -420,7 +440,7 @@ class MyPageActivity : AppCompatActivity() {
                     }  // MM/dd 형태로 날짜 모두 표시
                 }
 
-                notifyDataSetChanged()
+                // notifyDataSetChanged()
                 axisRight.isEnabled = false // 오른쪽 Y축을 안보이게 설정
                 axisLeft.isEnabled = false // 왼쪽 Y축을 안보이게 설정
                 animateY(2000) // 애니메이션 추가

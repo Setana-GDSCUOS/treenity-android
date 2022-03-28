@@ -4,21 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
-    >
+    android:orientation="horizontal">
 
     <FrameLayout
         android:id="@+id/frame_lottie_holder"
-        android:animateLayoutChanges="true"
-        android:visibility="gone"
+
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:visibility="gone">
 
         <View
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:alpha="0.9"
-            android:background="@color/black"/>
+            android:background="@color/black" />
 
         <LinearLayout
             android:layout_width="200dp"
@@ -28,11 +28,11 @@
 
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/lottie_loading"
-                android:alpha="1.0"
+
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                />
+                android:alpha="1.0" />
 
         </LinearLayout>
 
@@ -40,95 +40,84 @@
 
     <ImageView
         android:id="@+id/itemImage"
+
         android:layout_width="match_parent"
         android:layout_height="370dp"
-        android:scaleType="centerInside"
-
-        android:background="@drawable/store_custom_big_box" />
+        android:background="@drawable/store_custom_big_box"
+        android:scaleType="centerInside" />
 
     <TextView
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:background="@drawable/store_tree_icon"
-
         android:layout_marginStart="30dp"
         android:layout_marginTop="390dp"
-
+        android:background="@drawable/store_tree_icon"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/seedName"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:text="{SEED NAME}"
-        android:textSize="18sp"
-        android:fontFamily="@font/comfortaa_bold"
-
         android:layout_marginStart="90dp"
-        android:layout_marginTop="415dp" />
+        android:layout_marginTop="415dp"
+        android:fontFamily="@font/comfortaa_bold"
+        android:text="{SEED NAME}"
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/cost"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:text="{COST}"
-        android:textSize="18sp"
-
         android:layout_marginStart="300dp"
-        android:layout_marginTop="415dp" />
+        android:layout_marginTop="415dp"
+        android:text="{COST}"
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/description"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
-        android:text="{DESCRIPTION}"
-        android:textSize="15sp"
-
         android:layout_marginHorizontal="30dp"
-        android:layout_marginTop="500dp" />
+        android:layout_marginTop="500dp"
+        android:text="{DESCRIPTION}"
+        android:textSize="15sp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:text="Treatment"
-        android:fontFamily="@font/comfortaa_bold"
-
         android:layout_marginStart="30dp"
         android:layout_marginTop="650dp"
-        />
+        android:fontFamily="@font/comfortaa_bold"
+        android:text="Treatment" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:background="@drawable/store_treatment_sun"
         android:layout_marginStart="60dp"
-        android:layout_marginTop="700dp"/>
+        android:layout_marginTop="700dp"
+        android:background="@drawable/ic_baseline_wb_sunny_24" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:background="@drawable/store_treatment_water"
         android:layout_marginStart="100dp"
-        android:layout_marginTop="700dp"/>
+        android:layout_marginTop="700dp"
+        android:background="@drawable/store_treatment_water" />
 
     <TextView
         android:id="@+id/bring_confirmation"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:background="@drawable/store_custom_small_box"
         android:layout_gravity="center"
         android:layout_marginTop="370dp"
+        android:background="@drawable/store_custom_small_box"
+        android:gravity="center"
         android:text="BUY"
         android:textSize="17sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        />
+        android:textStyle="bold" />
 
 </FrameLayout>

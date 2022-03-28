@@ -260,8 +260,7 @@ class MyPageActivity : AppCompatActivity() {
             } else { // if the user permitted
                 val intent = Intent(this, TreenityForegroundService::class.java)
                 startService(intent)
-
-                Toast.makeText(this, "Activity Sensor is Activated", Toast.LENGTH_SHORT).show()
+                // Toast.makeText(this, "Activity Sensor is Activated", Toast.LENGTH_SHORT).show()
             }
         }
     }

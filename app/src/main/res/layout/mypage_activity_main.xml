@@ -86,7 +86,6 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginTop="10dp"
-                        android:text="{이름}"
                         android:textColor="@color/white"
                         android:textSize="25sp"
                         android:textStyle="bold" />

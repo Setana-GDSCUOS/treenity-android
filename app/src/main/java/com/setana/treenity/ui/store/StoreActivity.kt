@@ -25,8 +25,8 @@ import kotlin.collections.ArrayList
 @AndroidEntryPoint
 class StoreActivity : AppCompatActivity() {
     lateinit var storeAdapter: StoreAdapter
-    private lateinit var storeActivityMainBinding : StoreActivityMainBinding
-    private lateinit var storeConfirmationMainBinding : StoreConfirmationMainBinding
+    private lateinit var storeActivityMainBinding: StoreActivityMainBinding
+    private lateinit var storeConfirmationMainBinding: StoreConfirmationMainBinding
 
     // animation
     private lateinit var loadingAnimationFrameLayout: FrameLayout
@@ -55,20 +55,20 @@ class StoreActivity : AppCompatActivity() {
         showLoadingAnimation()
         initRecyclerView()
 
-        // 이벤트 등록 : Seeds의 아이템을 누르면, 해당 아이템의 itemId 을 상세페이지로 전달해줌
+        // If user click on an seed item, the itemId of the item is delivered to the detail page
         storeAdapter.setOnItemClickListener(object : StoreAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
 
                 val nextIntent = Intent(this@StoreActivity, PurchaseActivity::class.java)
 
-                // 선택한 아이템의 itemId 를 넘겨준다 (itemId 는 1부터 시작하고, 1번인 물을 제외하면 모두 씨앗이다
+                //
                 nextIntent.putExtra("ChosenItemId", position + 2)
                 startActivity(nextIntent)
             }
         })
 
-        // 이벤트 등록 : Water 의 아이템을 누르면, 물의 itemId 을 상세페이지로 화면 전환
-        storeActivityMainBinding.water.setOnClickListener{
+        // Passes the itemId of the selected item (itemId starts at 1, and all of them are seeds except water, which is number 1)
+        storeActivityMainBinding.water.setOnClickListener {
 
             val intent = Intent(this@StoreActivity, PurchaseActivity::class.java)
             intent.putExtra("ChosenItemId", 1)
@@ -127,17 +127,17 @@ class StoreActivity : AppCompatActivity() {
 
         })
 
-        storeViewModel.storeItemLiveData.observe(this, {items ->
+        storeViewModel.storeItemLiveData.observe(this, { items ->
 
-            val seedList =  ArrayList<StoreItem>()
-            for(index in 1 until items.size) // subList 로도 만들어봤는데 그렇게 하니 메모리 누수 생김
+            val seedList: MutableList<StoreItem> = mutableListOf()
+            for (index in 1 until items.size)
                 seedList.add(items[index])
 
-             val water = items[0]
+            val water = items[0]
 
-            storeAdapter.itemList = seedList // adapter 에서 binding
+            storeAdapter.itemList = seedList
 
-            storeActivityMainBinding.apply { // 물은 따로 바인딩 해주어야 함
+            storeActivityMainBinding.apply { // Water item must be bound separately because it is not in horizontal recyclerview
                 (water.cost.toString() + " P").also { bucketPrice.text = it }
                 bucketImage.load(water.imagePath)
             }
@@ -148,13 +148,14 @@ class StoreActivity : AppCompatActivity() {
 
     private fun initRecyclerView() {
         // init adapter
-        val item = StoreItem(0,"", "", 0L, "", "")
+        val item = StoreItem(0, "", "", 0L, "", "")
         storeAdapter = StoreAdapter(listOf(item))
 
         storeActivityMainBinding.storeRecycler.layoutManager = LinearLayoutManager(
             this,
             LinearLayoutManager.HORIZONTAL,
-            false)
+            false
+        )
         storeActivityMainBinding.storeRecycler.adapter = storeAdapter
 
     }

@@ -24,7 +24,7 @@ class StoreViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _storeItemLiveData: MutableLiveData<List<StoreItem>> = MutableLiveData()
-    val storeItemLiveData:LiveData<List<StoreItem>> = _storeItemLiveData
+    val storeItemLiveData: LiveData<List<StoreItem>> = _storeItemLiveData
 
     private val _userLiveData: MutableLiveData<User> = MutableLiveData()
     val userLiveData: LiveData<User> = _userLiveData
@@ -37,10 +37,10 @@ class StoreViewModel @Inject constructor(
     }
 
 
-    fun getStoreItems() = viewModelScope.launch(Dispatchers.Main){
+    fun getStoreItems() = viewModelScope.launch(Dispatchers.Main) {
 
         val handler = CoroutineExceptionHandler { _, throwable ->
-            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            setToastMessage("Error has been occurred bringing store items")
             throwable.message?.let { Log.d("StoreViewModel.kt", it) }
         }
 
@@ -49,7 +49,7 @@ class StoreViewModel @Inject constructor(
             val response = storeRepository.getStoreItems()
 
             if (response.isSuccessful) {
-                setToastMessage("success bringing store items!!")
+                setToastMessage("success bringing store items")
                 _storeItemLiveData.postValue(response.body())
             } else {
                 Log.d("tag", "getMyTrees: has an error receiving data")
@@ -59,10 +59,10 @@ class StoreViewModel @Inject constructor(
     }
 
 
-    fun getUserInfo(userId:Long) = viewModelScope.launch(Dispatchers.Main) {
+    fun getUserInfo(userId: Long) = viewModelScope.launch(Dispatchers.Main) {
 
         val handler = CoroutineExceptionHandler { _, throwable ->
-            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            setToastMessage("Error has been occurred bringing user info")
             throwable.message?.let { Log.d("StoreViewModel.kt", it) }
         }
 
@@ -70,7 +70,7 @@ class StoreViewModel @Inject constructor(
 
             userRepository.getUserData(userId.toString()).let { response ->
                 if (response.isSuccessful) {
-                    setToastMessage("success bringing user data!!")
+                    setToastMessage("success bringing user data")
                     _userLiveData.postValue(response.body())
                 } else {
                     Log.d("tag", "getUserInfo: has an error receiving data")
@@ -78,7 +78,6 @@ class StoreViewModel @Inject constructor(
             }
         }
     }
-
 
 
 }

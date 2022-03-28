@@ -73,13 +73,4 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="325dp"
-        android:layout_marginTop="80dp"
-        android:background="@drawable/mypage_treelist_item_recycler"
-        android:contentDescription="@string/item_classification_button"
-        android:elevation="5dp" />
-
 </FrameLayout>

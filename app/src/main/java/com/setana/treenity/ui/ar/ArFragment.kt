@@ -16,7 +16,6 @@ import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -35,12 +34,10 @@ import com.google.ar.core.Anchor
 import com.google.ar.core.Anchor.CloudAnchorState
 import com.google.ar.core.Config
 import com.google.ar.sceneform.Camera
-import com.google.ar.sceneform.rendering.ViewRenderable
 import com.gorisse.thomas.lifecycle.doOnCreate
 import com.setana.treenity.R
 import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.data.api.dto.*
-import com.setana.treenity.data.model.ArTree
 import com.setana.treenity.databinding.ArFragmentBinding
 import com.setana.treenity.ui.loading.LoadingActivity
 import com.setana.treenity.ui.map.MapActivity
@@ -49,7 +46,6 @@ import com.setana.treenity.util.AuthUtils
 import com.setana.treenity.util.CloudAnchorManager
 import com.setana.treenity.util.EventObserver
 import com.setana.treenity.util.PreferenceManager
-import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sceneview.ar.ArSceneView
 import io.github.sceneview.ar.arcore.depthEnabled
@@ -61,7 +57,6 @@ import io.github.sceneview.ar.node.PlacementMode
 import io.github.sceneview.ar.scene.PlaneRenderer
 import io.github.sceneview.math.Position
 import io.github.sceneview.math.Scale
-import io.github.sceneview.utils.doOnApplyWindowInsets
 import java.lang.Integer.min
 
 
@@ -108,7 +103,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
     // 식별
     //PREFS.getLong(USER_ID_KEY, -1)
-    private val renderLimit = PREFS.getString(PreferenceManager.RENDER_TREE_NO, "4")
+    private val renderLimit = PREFS.getString(PreferenceManager.RENDER_TREE_NO_KEY, "4")
     private var localUserId = -1L
     //private var isLoggedIn: Boolean = false
     private var once:Boolean = true

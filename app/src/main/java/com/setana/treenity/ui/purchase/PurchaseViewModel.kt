@@ -34,10 +34,10 @@ class PurchaseViewModel @Inject constructor(
         _showErrorToast.postValue(Event(content))
     }
 
-    fun getStoreItems() = viewModelScope.launch(Dispatchers.Main){
+    fun getStoreItems() = viewModelScope.launch(Dispatchers.Main) {
 
         val handler = CoroutineExceptionHandler { _, throwable ->
-            setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+            setToastMessage("Error has been occurred bringing store items")
             throwable.message?.let { Log.d("StoreViewModel.kt", it) }
         }
 
@@ -59,7 +59,7 @@ class PurchaseViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Main) {
 
             val handler = CoroutineExceptionHandler { _, throwable ->
-                setToastMessage("데이터를 불러오는 중 오류가 발생하였습니다.")
+                setToastMessage("Error has been occurred buying store items")
                 throwable.message?.let { Log.d("StoreViewModel.kt", it) }
             }
 

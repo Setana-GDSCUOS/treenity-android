@@ -19,8 +19,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
 import com.airbnb.lottie.LottieDrawable
 import com.setana.treenity.R
 import com.setana.treenity.TreenityApplication.Companion.PREFS
@@ -30,7 +32,8 @@ import com.setana.treenity.service.PushNotificationWorker
 import com.setana.treenity.service.TreenityForegroundService
 import com.setana.treenity.ui.loading.LoadingActivity
 import com.setana.treenity.util.AuthUtils
-import com.setana.treenity.util.PreferenceManager.Companion.RENDER_TREE_NO
+import com.setana.treenity.util.PreferenceManager.Companion.ENABLE_PUSH_KEY
+import com.setana.treenity.util.PreferenceManager.Companion.RENDER_TREE_NO_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
 
@@ -47,18 +50,6 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
     // sensor permission
     private val PERMISSION_PHYSICAL_ACTIVITY = 100
     val permission = arrayOf(Manifest.permission.ACTIVITY_RECOGNITION)
-
-    private val constraints = androidx.work.Constraints.Builder()
-        .setRequiresCharging(false)
-        .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
-        .setRequiresBatteryNotLow(true)
-        .build()
-
-    private val alarmRequest = PeriodicWorkRequest.Builder(
-        PushNotificationWorker::class.java,
-        15, // 최소 시간이 15분 -> TODO 나중에 1시간으로 설정할 것
-        TimeUnit.MINUTES
-    ).setConstraints(constraints).build()
 
     companion object {
         private const val TAG = "MyPageActivity"
@@ -228,26 +219,19 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
             }
         }
 
-        // TODO: 종규님 workManager 작성란
         mypageSettingsActivityMainBinding.alarmNotificationCheck.setOnCheckedChangeListener { _, isChecked ->
-            if(isChecked) { // 알람 설정 switch 가 ON 일때
-                // test
-                Log.d(TAG, "setupUI: alarmNotificationCheck is checked")
-
-            } else { // 알람 설정 switch 가 OFF 일때
-                // test
-                Log.d(TAG, "setupUI: alarmNotificationCheck is unchecked")
-            }
+            PREFS.setBoolean(ENABLE_PUSH_KEY, isChecked)
+            updatePushNotificationWorker()
         }
 
         mypageSettingsActivityMainBinding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) { // 조작하고 있는 중에 발생
 
                 mypageSettingsActivityMainBinding.renderTreeNo.text = progress.toString()
-                PREFS.setString(RENDER_TREE_NO, progress.toString())
+                PREFS.setString(RENDER_TREE_NO_KEY, progress.toString())
 
                 // test
-                Log.d(TAG, "onProgressChanged: your number of rendering tree is ${PREFS.getString(RENDER_TREE_NO, "")}")
+                Log.d(TAG, "onProgressChanged: your number of rendering tree is ${PREFS.getString(RENDER_TREE_NO_KEY, "")}")
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) { // 처음 터치했을 때 발생
@@ -258,5 +242,28 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
         })
     }
 
+    private fun updatePushNotificationWorker() {
+        if (PREFS.getBoolean(ENABLE_PUSH_KEY, true)) {
+            val constraints = androidx.work.Constraints.Builder()
+                .setRequiresCharging(false)
+                .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+                .setRequiresBatteryNotLow(true)
+                .build()
+
+            val periodicWorkRequest = PeriodicWorkRequest.Builder(
+                PushNotificationWorker::class.java,
+                1, TimeUnit.HOURS,
+                5, TimeUnit.MINUTES
+            ).setConstraints(constraints).build()
+
+            WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+                PushNotificationWorker.WORK_NAME,
+                ExistingPeriodicWorkPolicy.KEEP,
+                periodicWorkRequest
+            )
+        } else {
+            WorkManager.getInstance(applicationContext).cancelAllWork()
+        }
+    }
 
 }

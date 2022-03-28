@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import coil.load
@@ -47,6 +48,7 @@ import com.setana.treenity.ui.ar.ArActivity
 import com.setana.treenity.ui.map.MapActivity
 import com.setana.treenity.util.EventObserver
 import com.setana.treenity.util.PermissionUtils
+import com.setana.treenity.util.PreferenceManager
 import com.setana.treenity.util.PreferenceManager.Companion.DAILY_WALK_LOG_KEY
 import com.setana.treenity.util.PreferenceManager.Companion.USER_EMAIL_KEY
 import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
@@ -88,7 +90,7 @@ class LoadingActivity : AppCompatActivity() {
 
     private fun startMainApplicationWorks() {
         startStepDetectorService()
-        startPushNotificationWorker()
+        updatePushNotificationWorker()
         startArActivity()
         //startMapActivity()
         finish()
@@ -111,19 +113,28 @@ class LoadingActivity : AppCompatActivity() {
         startService(intent)
     }
 
-    private fun startPushNotificationWorker() {
-        val periodicWorkRequest = PeriodicWorkRequest.Builder(
-            PushNotificationWorker::class.java,
-            15, TimeUnit.MINUTES,
-            5, TimeUnit.MINUTES
-        ).build()
+    private fun updatePushNotificationWorker() {
+        if (PREFS.getBoolean(PreferenceManager.ENABLE_PUSH_KEY, true)) {
+            val constraints = androidx.work.Constraints.Builder()
+                .setRequiresCharging(false)
+                .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+                .setRequiresBatteryNotLow(true)
+                .build()
 
-        // TODO 설정 값 확인
-        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
-            PushNotificationWorker.WORK_NAME,
-            ExistingPeriodicWorkPolicy.REPLACE,
-            periodicWorkRequest
-        )
+            val periodicWorkRequest = PeriodicWorkRequest.Builder(
+                PushNotificationWorker::class.java,
+                1, TimeUnit.HOURS,
+                5, TimeUnit.MINUTES
+            ).setConstraints(constraints).build()
+
+            WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+                PushNotificationWorker.WORK_NAME,
+                ExistingPeriodicWorkPolicy.KEEP,
+                periodicWorkRequest
+            )
+        } else {
+            WorkManager.getInstance(applicationContext).cancelAllWork()
+        }
     }
 
     /**

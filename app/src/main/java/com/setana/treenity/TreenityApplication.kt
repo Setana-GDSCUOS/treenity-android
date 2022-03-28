@@ -15,9 +15,6 @@ class TreenityApplication : Application(), Configuration.Provider {
     companion object {
         lateinit var PREFS: PreferenceManager
         val DAILY_WALK_LOG = hashMapOf<String, String>()
-
-
-//        var dd = "" // date
     }
 
     override fun onCreate() {

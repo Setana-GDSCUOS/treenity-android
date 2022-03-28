@@ -9,12 +9,12 @@
     android:layout_margin="5dp"
     app:cardCornerRadius="10dp"
     android:clickable="true"
-    android:backgroundTint="?attr/colorSurface"
+    android:backgroundTint="?attr/colorSecondary"
     >
 
     <LinearLayout
         android:background="@color/white"
-        android:backgroundTint="?attr/colorSurface"
+        android:backgroundTint="?attr/colorSecondary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">

@@ -1,5 +1,6 @@
 package com.setana.treenity.ui.mytreelist.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -23,10 +24,13 @@ class TreeListAdapter(treeList: List<MyTreeItem>): RecyclerView.Adapter<TreeList
         RecyclerView.ViewHolder(itemView.root) {
 
         fun bind(tree: MyTreeItem) {
+
             binding.itemName.text = tree.treeName
+            //.slice(IntRange(0,9))
             ("Planted Date : " + tree.createdDate).also { binding.plantedDate.text = it.substring(0,25) }
             ("LEV : " + tree.level.toString()).also { binding.level.text = it } // assignment 방식으로 concat 하는 것을 권장(ide)
-            ("EXP : " + tree.bucket.toString()).also { binding.exp.text = it }
+            val exp = 3000*((tree.item.itemId.toInt()-1)*((tree.level - 1)*(tree.level)/2) + tree.bucket)
+            ("EXP : $exp").also { binding.exp.text = it }
 
             // coil 이미지 로더 사용
             binding.imagePath.load(tree.item.imagePath) {

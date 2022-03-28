@@ -4,7 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:background="@drawable/ar_dialog_shape"
+    android:backgroundTint="?android:attr/colorBackground"
+    >
 
     <ImageView
         android:layout_width="match_parent"

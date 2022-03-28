@@ -316,6 +316,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             }
             createCloudAnchorWithAnchor(seedNode!!,anchor)
             isSeeding = false
+            isLoading = true
             // modelNode!!.destroy()
         }
         builder.setNegativeButton("Cancel"){
@@ -334,7 +335,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     private fun createCloudAnchorWithAnchor(currentNode: ArModelNode,anchor:Anchor?){
         //ttl 여기
         sceneView.arSession?.let{
-            cloudAnchorManager.hostCloudAnchor(it,anchor,30,
+            cloudAnchorManager.hostCloudAnchor(it,anchor,300,
                 object : CloudAnchorManager.CloudAnchorResultListener {
                     override fun onCloudTaskComplete(anchor: Anchor?) {
                         onHostedAnchor(currentNode,anchor)
@@ -360,7 +361,6 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                     selectedUserItemId = 0
                     //val postedTreeId = arViewModel.postHostedTree(userId,postTreeDTO)
                     arViewModel.postHostedTree(localUserId,postTreeDTO)
-                    isLoading = true // 서버 연락 받을 때 까지 로딩
                     clearView(forced =false, feedBack = false) // 이거 Forced 안 되게 해야 나무 심고 안 없어진다.
                     arViewModel.listAroundTrees(mLastLocation!!.latitude,mLastLocation!!.longitude,localUserId)
                     seedNode = currentNode // 전역변수로 뷰모델 onTouch설정에 사용
@@ -663,12 +663,10 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
     private fun clearView(forced : Boolean, feedBack:Boolean){
         // 어떻게든 최대 렌더링 수를 넘어서 로드되었거나 강제 리로드시 리로드 카메라노드랑 커서노드는 빼야 됨
-        Log.d("bimoon","c size : ${sceneView.children.size}")
         if(sceneView.children.size > 2 + renderLimit.toInt() || forced){
             isLoading = true
             // 최대 렌더링 수보다 SceneView 에 자식노드가 많으면 카메라랑 커서 빼고 잘라버림
             for(child in sceneView.children){
-                Log.d("bimoon","child is ${child}")
                 if(child !is Camera && child !=cursorNode){
                     Log.d("target",child.toString())
                     child.destroy()

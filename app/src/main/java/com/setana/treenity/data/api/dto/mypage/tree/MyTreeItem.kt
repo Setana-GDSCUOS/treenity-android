@@ -7,5 +7,5 @@ data class MyTreeItem (
     val item: Item,
     val bucket: Int,
     val level: Int,
-    val createdDate: String,
+    val createdDate: String
 )

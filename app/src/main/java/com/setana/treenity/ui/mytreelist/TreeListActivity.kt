@@ -54,7 +54,7 @@ class TreeListActivity : AppCompatActivity() {
 
     private fun initRecyclerView() {
         // init adapter
-        val item = Item("")
+        val item = Item("",0)
         val treeItem = MyTreeItem(0,"", item, 0, 0, "")
         myTreeListAdapter = TreeListAdapter(listOf(treeItem))
 

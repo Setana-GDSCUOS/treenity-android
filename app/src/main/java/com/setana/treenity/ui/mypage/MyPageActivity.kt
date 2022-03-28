@@ -213,7 +213,7 @@ class MyPageActivity : AppCompatActivity() {
 
     private fun initRecyclerView() {
         // init adapter
-        val item = Item("")
+        val item = Item("",0)
         val myTreeItem = MyTreeItem(0, "", item, 0, 0, "")
         myTreeAdapter = MyTreeAdapter(listOf(myTreeItem))
 
@@ -316,7 +316,7 @@ class MyPageActivity : AppCompatActivity() {
 
             // hosting image is free for 180 days. update it in July 12th
             val lastItem =
-                MyTreeItem(0, "Goto TreeList", Item("https://ifh.cc/g/eA7BXD.jpg"), 0, 0, "")
+                MyTreeItem(0, "Goto TreeList", Item("https://ifh.cc/g/eA7BXD.jpg",0), 0, 0, "")
             val arrayList = ArrayList<MyTreeItem>()
             for (i in myTrees.indices)
                 arrayList.add(myTrees[i])

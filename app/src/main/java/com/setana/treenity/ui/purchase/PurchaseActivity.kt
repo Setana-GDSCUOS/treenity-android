@@ -53,6 +53,7 @@ class PurchaseActivity : AppCompatActivity() {
             builder.setTitle("CONFIRMATION")    // 제목
             builder.setView(layoutInflater.inflate(R.layout.store_confirmation_dialog, null))
 
+
             // BUY 버튼 눌렀을 때 이벤트 -> TODO: POST 요청
             builder.setPositiveButton("BUY") { _, _ ->
 
@@ -63,7 +64,7 @@ class PurchaseActivity : AppCompatActivity() {
 
                 purchaseViewModel.buyItem(localUserId, item)
                 // POST
-                purchaseViewModel.buyItemResponseLiveData.observe(this, {response ->
+                purchaseViewModel.buyItemResponseLiveData.observe(this) { response ->
                     response.let {
                         if (it.code() == 409) //  409면 구매개수제한, 406이면 잔액 부족
                             Toast.makeText(
@@ -77,12 +78,15 @@ class PurchaseActivity : AppCompatActivity() {
                                 "Not enough points. Shall we go for a walk?",
                                 Toast.LENGTH_LONG
                             ).show()
-                        } else if(it.code() == 200) {
-                            Toast.makeText(
-                                this@PurchaseActivity,
-                                "Successfully purchased",
-                                Toast.LENGTH_LONG
-                            ).show()
+                        } else if (it.code() == 200) {
+                            // 구매성공
+                            val confirmBuilder = AlertDialog.Builder(this)
+                            confirmBuilder.setIcon(R.drawable.store_tree_icon)    // 제목 아이콘
+                            confirmBuilder.setTitle("Purchase Succeed!")    // 제목
+                            confirmBuilder.setView(layoutInflater.inflate(R.layout.confirm_dialog, null))
+                            confirmBuilder.setPositiveButton("OK"){_,_ ->
+                            }
+                            confirmBuilder.show()
                         } else {
                             Toast.makeText(
                                 this@PurchaseActivity,
@@ -91,14 +95,15 @@ class PurchaseActivity : AppCompatActivity() {
                             ).show()
                         }
                     }
-                })
+                }
 
                 // 구매 버튼 누르고 나면, 상점페이지로 화면 전환
-                val intent = Intent(this@PurchaseActivity, StoreActivity::class.java)
+                //val intent = Intent(this@PurchaseActivity, StoreActivity::class.java)
                 // 호출하는 Activity 가 스택에 있을 경우, 해당 Activity 를 최상위로 올리면서, 그 위에 있던 Activity들을 모두 삭제하는 Flag
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
-                finish()
+                //intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                //startActivity(intent)
+                //finish()
+
             }
             builder.show()
         }

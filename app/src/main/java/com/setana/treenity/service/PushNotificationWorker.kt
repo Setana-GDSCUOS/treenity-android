@@ -23,6 +23,9 @@ import com.setana.treenity.ui.loading.LoadingActivity
 import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 
 @HiltWorker
 class PushNotificationWorker @AssistedInject constructor(
@@ -35,36 +38,38 @@ class PushNotificationWorker @AssistedInject constructor(
 
     companion object {
         const val WORK_NAME = "PERIODIC_PUSH_NOTIFICATION_WORK"
-        const val CHANNEL_ID = "channel_id"
+        const val CHANNEL_ID = "treenity_push"
         const val NOTIFICATION_ID = 1
     }
 
     @SuppressLint("MissingPermission")
-    override suspend fun doWork(): Result {
-        Log.d("success", "doWork: Success function called")
-        val result = runCatching {
-            val fusedLocationClient = LocationServices.getFusedLocationProviderClient(applicationContext)
-            val task = fusedLocationClient.getCurrentLocation(
-                LocationRequest.PRIORITY_HIGH_ACCURACY,
-                cancellationTokenSource.token
-            )
-            Tasks.await(task, 10, java.util.concurrent.TimeUnit.SECONDS)
-        }
-
-        val location = result.getOrNull()
-        val userId = PREFS.getLong(USER_ID_KEY, -1)
-        if (userId != -1L && location != null) {
-            val response = treeRepository.getAroundTrees(location.latitude, location.longitude, userId)
-            if (response.isSuccessful) {
-                response.body()?.let { treeList ->
-                    showNotification(treeList.size, treeList.maxOf { it.distance }.toInt())
-                }
-                return Result.success()
-            } else {
-                return Result.failure()
+    override suspend fun doWork(): Result = coroutineScope  {
+        withContext(Dispatchers.IO) {
+            Log.d("success", "doWork: Success function called")
+            val result = runCatching {
+                val fusedLocationClient = LocationServices.getFusedLocationProviderClient(applicationContext)
+                val task = fusedLocationClient.getCurrentLocation(
+                    LocationRequest.PRIORITY_HIGH_ACCURACY,
+                    cancellationTokenSource.token
+                )
+                Tasks.await(task, 10, java.util.concurrent.TimeUnit.SECONDS)
             }
-        } else {
-            return Result.failure()
+
+            val location = result.getOrNull()
+            val userId = PREFS.getLong(USER_ID_KEY, -1)
+            if (userId != -1L && location != null) {
+                val response = treeRepository.getAroundTrees(location.latitude, location.longitude, userId)
+                if (response.isSuccessful) {
+                    response.body()?.let { treeList ->
+                        showNotification(treeList.size, treeList.maxOf { it.distance }.toInt())
+                    }
+                    return@withContext Result.success()
+                } else {
+                    return@withContext Result.failure()
+                }
+            } else {
+                return@withContext Result.failure()
+            }
         }
     }
 

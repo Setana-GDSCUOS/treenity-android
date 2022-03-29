@@ -22,7 +22,7 @@ object ServiceModule {
     fun provideNotification(@ApplicationContext app: Context): Notification =
         NotificationCompat.Builder(
             app,
-            "CHANNEL_ID"
+            "treenity_foreground"
         ).apply {
             val notificationIntent = Intent(app, LoadingActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

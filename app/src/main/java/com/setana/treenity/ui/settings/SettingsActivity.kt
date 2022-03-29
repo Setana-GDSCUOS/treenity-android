@@ -244,24 +244,21 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
 
     private fun updatePushNotificationWorker() {
         if (PREFS.getBoolean(ENABLE_PUSH_KEY, true)) {
-            val constraints = androidx.work.Constraints.Builder()
-                .setRequiresCharging(false)
-                .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
-                .setRequiresBatteryNotLow(true)
-                .build()
-
+            Log.d("bimoon","worker set")
             val periodicWorkRequest = PeriodicWorkRequest.Builder(
                 PushNotificationWorker::class.java,
-                1, TimeUnit.HOURS,
+                15, TimeUnit.MINUTES,
                 5, TimeUnit.MINUTES
-            ).setConstraints(constraints).build()
+            ).setInitialDelay(1,TimeUnit.MINUTES)
+                .build()
 
             WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
                 PushNotificationWorker.WORK_NAME,
-                ExistingPeriodicWorkPolicy.KEEP,
+                ExistingPeriodicWorkPolicy.REPLACE,
                 periodicWorkRequest
             )
         } else {
+            Log.d("bimoon","worker cancel")
             WorkManager.getInstance(applicationContext).cancelAllWork()
         }
     }

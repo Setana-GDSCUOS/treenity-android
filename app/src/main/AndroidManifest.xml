@@ -25,7 +25,9 @@
 
         <activity android:name=".ui.map.MapActivity" />
 
-        <activity android:name=".ui.ar.ArActivity" />
+        <activity android:name=".ui.ar.ArActivity"
+            android:launchMode="singleInstance"
+            />
 
         <activity android:name=".ui.settings.SettingsActivity" />
 

@@ -115,21 +115,17 @@ class LoadingActivity : AppCompatActivity() {
 
     private fun updatePushNotificationWorker() {
         if (PREFS.getBoolean(PreferenceManager.ENABLE_PUSH_KEY, true)) {
-            val constraints = androidx.work.Constraints.Builder()
-                .setRequiresCharging(false)
-                .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
-                .setRequiresBatteryNotLow(true)
-                .build()
-
             val periodicWorkRequest = PeriodicWorkRequest.Builder(
                 PushNotificationWorker::class.java,
-                1, TimeUnit.HOURS,
-                5, TimeUnit.MINUTES
-            ).setConstraints(constraints).build()
+                15, TimeUnit.MINUTES,
+                1, TimeUnit.MINUTES
+            ).setInitialDelay(1,TimeUnit.MINUTES)
+
+                .build()
 
             WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
                 PushNotificationWorker.WORK_NAME,
-                ExistingPeriodicWorkPolicy.KEEP,
+                ExistingPeriodicWorkPolicy.REPLACE,
                 periodicWorkRequest
             )
         } else {

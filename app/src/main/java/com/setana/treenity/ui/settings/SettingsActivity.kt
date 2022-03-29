@@ -26,6 +26,7 @@ import androidx.work.WorkManager
 import com.airbnb.lottie.LottieDrawable
 import com.setana.treenity.R
 import com.setana.treenity.TreenityApplication.Companion.PREFS
+import com.setana.treenity.databinding.ConfirmDialogBinding
 import com.setana.treenity.databinding.MypageSettingsActivityMainBinding
 import com.setana.treenity.databinding.MypageSettingsNameDialogBinding
 import com.setana.treenity.service.PushNotificationWorker
@@ -50,6 +51,11 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
     // sensor permission
     private val PERMISSION_PHYSICAL_ACTIVITY = 100
     val permission = arrayOf(Manifest.permission.ACTIVITY_RECOGNITION)
+
+    // location permission
+    private val REQUEST_PERMISSION_LOCATION = 10
+    private val REQUEST_PERMISSION_BACKGROUND_LOCATION = 1000
+
 
     companion object {
         private const val TAG = "MyPageActivity"
@@ -244,26 +250,55 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
 
     private fun updatePushNotificationWorker() {
         if (PREFS.getBoolean(ENABLE_PUSH_KEY, true)) {
-            val constraints = androidx.work.Constraints.Builder()
-                .setRequiresCharging(false)
-                .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
-                .setRequiresBatteryNotLow(true)
-                .build()
-
-            val periodicWorkRequest = PeriodicWorkRequest.Builder(
-                PushNotificationWorker::class.java,
-                1, TimeUnit.HOURS,
-                5, TimeUnit.MINUTES
-            ).setConstraints(constraints).build()
-
-            WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
-                PushNotificationWorker.WORK_NAME,
-                ExistingPeriodicWorkPolicy.KEEP,
-                periodicWorkRequest
-            )
+            requestBackgroundLocationPermission()
         } else {
+            Log.d("bimoon","worker cancel")
             WorkManager.getInstance(applicationContext).cancelAllWork()
         }
+
+    }
+
+    private fun requestBackgroundLocationPermission(){
+        val permissionAccessCoarseLocationApproved = ActivityCompat
+            .checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED
+        if (permissionAccessCoarseLocationApproved) {
+            val backgroundLocationPermissionApproved = ActivityCompat
+                .checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED
+
+            if (backgroundLocationPermissionApproved) {
+                Log.d("bimoon","worker set")
+                setWork()
+            } else {
+                Toast.makeText(applicationContext, "Please select 'allow all the time' to get push message", Toast.LENGTH_LONG).show()
+                ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                    REQUEST_PERMISSION_BACKGROUND_LOCATION
+                )
+            }
+        } else {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                REQUEST_PERMISSION_LOCATION
+            )
+        }
+    }
+
+    private fun setWork(){
+        val periodicWorkRequest = PeriodicWorkRequest.Builder(
+            PushNotificationWorker::class.java,
+            15, TimeUnit.MINUTES,
+        )
+            .build()
+
+        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+            PushNotificationWorker.WORK_NAME,
+            ExistingPeriodicWorkPolicy.REPLACE,
+            periodicWorkRequest
+        )
+
     }
 
 }

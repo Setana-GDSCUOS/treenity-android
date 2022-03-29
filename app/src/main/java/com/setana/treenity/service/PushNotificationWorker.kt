@@ -23,6 +23,9 @@ import com.setana.treenity.ui.loading.LoadingActivity
 import com.setana.treenity.util.PreferenceManager.Companion.USER_ID_KEY
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 
 @HiltWorker
 class PushNotificationWorker @AssistedInject constructor(
@@ -32,56 +35,61 @@ class PushNotificationWorker @AssistedInject constructor(
 ) : CoroutineWorker(appContext, workerParams) {
 
     private val cancellationTokenSource = CancellationTokenSource()
+    private var fusedLocationClient = LocationServices.getFusedLocationProviderClient(appContext)
+    private var appContext = appContext
 
     companion object {
         const val WORK_NAME = "PERIODIC_PUSH_NOTIFICATION_WORK"
-        const val CHANNEL_ID = "channel_id"
+        const val CHANNEL_ID = "treenity_push"
         const val NOTIFICATION_ID = 1
     }
 
     @SuppressLint("MissingPermission")
-    override suspend fun doWork(): Result {
-        Log.d("success", "doWork: Success function called")
-        val result = runCatching {
-            val fusedLocationClient = LocationServices.getFusedLocationProviderClient(applicationContext)
-            val task = fusedLocationClient.getCurrentLocation(
-                LocationRequest.PRIORITY_HIGH_ACCURACY,
-                cancellationTokenSource.token
-            )
-            Tasks.await(task, 10, java.util.concurrent.TimeUnit.SECONDS)
-        }
-
-        val location = result.getOrNull()
-        val userId = PREFS.getLong(USER_ID_KEY, -1)
-        if (userId != -1L && location != null) {
-            val response = treeRepository.getAroundTrees(location.latitude, location.longitude, userId)
-            if (response.isSuccessful) {
-                response.body()?.let { treeList ->
-                    showNotification(treeList.size, treeList.maxOf { it.distance }.toInt())
-                }
-                return Result.success()
-            } else {
-                return Result.failure()
+    override suspend fun doWork(): Result  = coroutineScope {
+        withContext(Dispatchers.IO){Log.d("bimoon", "doWork: Success function called")
+            val result = runCatching {
+                //val fusedLocationClient = fusedLocationClient
+                val task = fusedLocationClient.getCurrentLocation(
+                    LocationRequest.PRIORITY_HIGH_ACCURACY,
+                    cancellationTokenSource.token
+                )
+                Tasks.await(task, 10, java.util.concurrent.TimeUnit.SECONDS)
             }
-        } else {
-            return Result.failure()
+            Log.d("bimoon", "result :$result")
+            val location = result.getOrNull()
+            val userId = PREFS.getLong(USER_ID_KEY, -1)
+            Log.d("bimoon", "branch :$userId and $location")
+            return@withContext if (userId != -1L && location != null) {
+                val response = treeRepository.getAroundTrees(location.latitude, location.longitude, userId)
+                Log.d("bimoon", "response :$response")
+                if (response.isSuccessful) {
+                    response.body()?.let { treeList ->
+                        showNotification(treeList.size, treeList.maxOf { it.distance }.toInt())
+                    }
+                    Result.success()
+                } else {
+                    Result.failure()
+                }
+            } else {
+                Result.failure()
+            }
         }
     }
 
     private fun showNotification(numTrees: Int, maxDistance: Int) {
-        val intent = Intent(applicationContext, LoadingActivity::class.java).apply {
+        val intent = Intent(appContext, LoadingActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
 
         val pendingIntent = PendingIntent.getActivity(
-            applicationContext,
+            appContext,
             0,
             intent,
             PendingIntent.FLAG_IMMUTABLE
         )
 
         val notification = NotificationCompat.Builder(
-            applicationContext,
+            appContext,
             CHANNEL_ID
         )
             .setSmallIcon(R.drawable.store_tree_icon)
@@ -99,13 +107,13 @@ class PushNotificationWorker @AssistedInject constructor(
             description = channelDescription
         }
 
-        val notificationManager = applicationContext.getSystemService(
+        val notificationManager = appContext.getSystemService(
             Context.NOTIFICATION_SERVICE
         ) as NotificationManager
 
         notificationManager.createNotificationChannel(channel)
 
-        with(NotificationManagerCompat.from(applicationContext)) {
+        with(NotificationManagerCompat.from(appContext)) {
             notify(NOTIFICATION_ID, notification.build())
         }
 

@@ -77,7 +77,7 @@ class TreenityForegroundService : Service(), SensorEventListener {
         ) {
             startForegroundServiceWithNotification()
         }
-        return START_NOT_STICKY
+        return START_STICKY
     }
 
     override fun onBind(p0: Intent?): IBinder? {

@@ -117,9 +117,8 @@ class LoadingActivity : AppCompatActivity() {
         if (PREFS.getBoolean(PreferenceManager.ENABLE_PUSH_KEY, true)) {
             val periodicWorkRequest = PeriodicWorkRequest.Builder(
                 PushNotificationWorker::class.java,
-                15, TimeUnit.MINUTES,
-                1, TimeUnit.MINUTES
-            ).setInitialDelay(1,TimeUnit.MINUTES)
+                15, TimeUnit.MINUTES
+            )
 
                 .build()
 
@@ -399,5 +398,6 @@ class LoadingActivity : AppCompatActivity() {
     private fun showMissingPermissionError() {
         PermissionUtils.PermissionDeniedDialog.newInstance(true)
             .show(supportFragmentManager, "Missing Permission")
+        finish()
     }
 }

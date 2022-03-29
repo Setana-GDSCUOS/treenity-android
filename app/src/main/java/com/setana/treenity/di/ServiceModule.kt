@@ -30,8 +30,8 @@ object ServiceModule {
             val pendingIntent =
                 PendingIntent.getActivity(app, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
             setContentTitle("Treenity")
-            setContentText("Pedometer service is running")
-            setSmallIcon(com.setana.treenity.R.drawable.mypage_settings_alarm_icon)
+            setContentText("Collecting your steps \uD83D\uDC63")
+            setSmallIcon(com.setana.treenity.R.drawable.store_tree_icon)
             priority = NotificationCompat.PRIORITY_HIGH
             setContentIntent(pendingIntent)
             setDefaults(Notification.FLAG_NO_CLEAR) // swipe 해도 지워지지 않음

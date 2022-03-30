@@ -7,6 +7,7 @@
     android:backgroundTint="?android:attr/colorBackground"
     android:layout_marginLeft="20dp"
     android:layout_marginRight="20dp"
+    android:fontFamily="@font/treenityfont"
     >
     <!--TextView
         android:id="@+id/text"

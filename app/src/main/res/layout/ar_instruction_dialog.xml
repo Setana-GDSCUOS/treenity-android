@@ -21,7 +21,7 @@
         android:padding="20dp"
         />
     <TextView
-        android:fontFamily="@font/comfortaa_bold"
+        android:fontFamily="@font/treenityfont"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/instruction_text"
@@ -35,7 +35,7 @@
         app:layout_constraintVertical_bias="0"
         />
     <Button
-        android:fontFamily="@font/comfortaa_bold"
+        android:fontFamily="@font/treenityfont"
         android:layout_marginBottom="30dp"
         android:id="@+id/button_previous"
         android:layout_width="wrap_content"
@@ -47,7 +47,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         />
     <Button
-        android:fontFamily="@font/comfortaa_bold"
+        android:fontFamily="@font/treenityfont"
         android:layout_marginBottom="30dp"
         android:id="@+id/button_next"
         android:layout_width="wrap_content"
@@ -59,7 +59,7 @@
         app:layout_constraintLeft_toRightOf="@id/button_close"
         />
     <Button
-        android:fontFamily="@font/comfortaa_bold"
+        android:fontFamily="@font/treenityfont"
         android:layout_marginBottom="30dp"
         android:id="@+id/button_close"
         android:layout_width="wrap_content"

@@ -6,7 +6,7 @@
 
     android:layout_width="150dp"
     android:layout_height="240dp"
-    android:layout_margin="5dp"
+    android:layout_margin="10dp"
     android:clickable="true"
     android:elevation="10dp"
     app:cardCornerRadius="10dp">
@@ -18,10 +18,10 @@
 
         <ImageView
             android:id="@+id/treeImage"
-
+            android:backgroundTint="?android:attr/colorBackground"
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:scaleType="fitCenter"
+            android:scaleType="fitXY"
             tools:srcCompat="@tools:sample/avatars" />
 
         <TextView
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="8dp"
-            android:fontFamily="@font/comfortaabold"
+            android:fontFamily="@font/treenityfont"
             android:text="TextView"
             android:textAlignment="center"
             android:textSize="18sp" />

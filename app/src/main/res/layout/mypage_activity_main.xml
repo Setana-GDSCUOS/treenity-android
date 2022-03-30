@@ -138,7 +138,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/colorPrimaryVariant"
                 android:padding="20dp"
-                android:layout_marginTop="260dp">
+                android:layout_marginTop="250dp">
 
 
 

@@ -433,7 +433,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     private fun bindBottomSheetData(tree: GetAroundTreeResponseDTO, marker: Marker) {
         activityMapBinding.bottomSheet.apply {
             bsTvTreeName.text = tree.treeName
-            bsTvCreatedDate.text = tree.createdDate
+            bsTvCreatedDate.text = tree.createdDate.substring(0,10)
             bsTvOwner.text = tree.user.username
             bsTvLevel.text = "Lv.${tree.level}"
             bsTvDistance.text = tree.distance.toInt().toString().plus("m")

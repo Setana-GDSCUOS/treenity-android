@@ -29,7 +29,7 @@
             android:text="Tree Name"
             android:textColor="#444"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:fontFamily="@font/treenityfont" />
 
         <ImageView
             android:id="@+id/btn_bookmark"
@@ -57,13 +57,14 @@
                 android:layout_height="wrap_content"
                 android:text="Owner"
                 android:textColor="#444"
-                android:textStyle="bold" />
+                android:fontFamily="@font/treenityfont" />
 
             <TextView
                 android:id="@+id/bs_tv_owner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Setana" />
+                android:text="Setana"
+                android:fontFamily="@font/treenityfont"/>
 
         </LinearLayout>
 
@@ -78,13 +79,14 @@
                 android:layout_height="wrap_content"
                 android:text="Distance"
                 android:textColor="#444"
-                android:textStyle="bold" />
+                android:fontFamily="@font/treenityfont" />
 
             <TextView
                 android:id="@+id/bs_tv_distance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="100m" />
+                android:text="100m"
+                android:fontFamily="@font/treenityfont"/>
 
         </LinearLayout>
 
@@ -107,13 +109,14 @@
                 android:layout_height="wrap_content"
                 android:text="Tree Level"
                 android:textColor="#444"
-                android:textStyle="bold" />
+                android:fontFamily="@font/treenityfont" />
 
             <TextView
                 android:id="@+id/bs_tv_level"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Lv. 3" />
+                android:text="Lv. 3"
+                android:fontFamily="@font/treenityfont"/>
 
         </LinearLayout>
 
@@ -128,13 +131,14 @@
                 android:layout_height="wrap_content"
                 android:text="Created Date"
                 android:textColor="#444"
-                android:textStyle="bold" />
+                android:fontFamily="@font/treenityfont" />
 
             <TextView
                 android:id="@+id/bs_tv_created_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="2022.03.22" />
+                android:text="2022-03-22"
+                android:fontFamily="@font/treenityfont"/>
 
         </LinearLayout>
 

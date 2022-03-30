@@ -26,7 +26,7 @@
 
     <TextView
         android:id="@+id/tv_label_sub1"
-        android:text="View tree datas as a list"
+        android:text="View your tree list"
         android:translationX="-20dp"
         android:background="#4D000000"
         android:paddingHorizontal="5dp"

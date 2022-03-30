@@ -290,7 +290,8 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
         val periodicWorkRequest = PeriodicWorkRequest.Builder(
             PushNotificationWorker::class.java,
             15, TimeUnit.MINUTES,
-        )
+            1,TimeUnit.MINUTES
+        ).setInitialDelay(1,TimeUnit.MINUTES)
             .build()
 
         WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(

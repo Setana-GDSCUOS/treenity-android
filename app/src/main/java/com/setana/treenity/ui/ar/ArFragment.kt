@@ -256,6 +256,18 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         super.onPause()
     }
 
+    override fun onDestroy() {
+        sceneView.arSession?.close()
+        super.onDestroy()
+    }
+
+    override fun onResume() {
+        sceneView.arSession?.resume()
+        super.onResume()
+    }
+
+
+
 
     /**
      * 기본적인 상호작용 가능한 노드를 생성하는 함수
@@ -809,11 +821,19 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             2L->{
                 return when(level){
                     1 -> {
-                        getString(R.string.basic_1)
+                        "models/BIG.glb"
+                    }
+                    2 -> {
+                        "models/FINE.glb"
+                    }
+                    3->{
+                        "models/NORM.glb"
+                    }
+                    4->{
+                        "models/PARM.glb"
                     }
                     else -> {
-
-                        getString(R.string.basic_1)
+                        "models/sakura4.glb"
                     }
                 }
             }

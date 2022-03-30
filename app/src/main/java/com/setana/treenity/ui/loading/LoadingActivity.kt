@@ -117,8 +117,9 @@ class LoadingActivity : AppCompatActivity() {
         if (PREFS.getBoolean(PreferenceManager.ENABLE_PUSH_KEY, true)) {
             val periodicWorkRequest = PeriodicWorkRequest.Builder(
                 PushNotificationWorker::class.java,
-                15, TimeUnit.MINUTES
-            )
+                15, TimeUnit.MINUTES,
+                1,TimeUnit.MINUTES
+            ).setInitialDelay(1,TimeUnit.MINUTES)
 
                 .build()
 

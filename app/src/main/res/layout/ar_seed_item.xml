@@ -9,12 +9,12 @@
     android:layout_margin="5dp"
     app:cardCornerRadius="10dp"
     android:clickable="true"
-    android:backgroundTint="?attr/colorSecondary"
+    android:backgroundTint="?attr/colorPrimary"
     >
 
     <LinearLayout
         android:background="@color/white"
-        android:backgroundTint="?attr/colorSecondary"
+        android:backgroundTint="?attr/colorPrimary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -37,7 +37,8 @@
             android:text="itemName"
             android:textAlignment="center"
             android:layout_gravity="center"
-            android:fontFamily="@font/comfortaabold"
+            android:fontFamily="@font/comfortaa_bold"
+            android:textColor="@color/white"
             android:textSize="18sp"
             app:layout_constraintTop_toBottomOf="@id/itemImage"
             app:layout_constraintLeft_toLeftOf="parent"

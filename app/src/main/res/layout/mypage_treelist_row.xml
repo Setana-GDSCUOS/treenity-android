@@ -43,7 +43,7 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:fontFamily="@font/comfortaa_bold"
+            android:fontFamily="@font/comfortaabold"
             android:textSize="20sp" />
 
         <TextView

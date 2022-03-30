@@ -195,6 +195,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         sceneView.onArFrame = {
             cloudAnchorManager.onUpdate()
         }
+
         sceneView.planeRenderer.lifecycle.doOnCreate {
             sceneView.planeRenderer.isShadowReceiver = true
             sceneView.planeRenderer.planeRendererMode = PlaneRenderer.PlaneRendererMode.RENDER_TOP_MOST
@@ -241,10 +242,12 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             requireContext().navigationHeight()
         )
 
+
+
     }
 
+
     override fun onStop(){
-        Log.d("bimoon","onStop")
         // cloudAnchorManager.clearListeners()
         requireActivity().resetStatusBarTransparent()
         stopLocationUpdates()
@@ -265,9 +268,6 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         sceneView.arSession?.resume()
         super.onResume()
     }
-
-
-
 
     /**
      * 기본적인 상호작용 가능한 노드를 생성하는 함수
@@ -496,25 +496,28 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     @SuppressLint("MissingPermission")
     private fun startLocationUpdates() {
         //FusedLocationProviderClient 의 인스턴스를 생성.
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        mFusedLocationProviderClient!!.lastLocation
-            .addOnSuccessListener { location : Location? ->
-                // Got last known location. In some rare situations this can be null.
-                mLastLocation = location
-                if(once){
-                    arViewModel.let {
-                        it.listAroundTrees(mLastLocation!!.latitude,mLastLocation!!.longitude,localUserId)
-                        once = false
+        if(mFusedLocationProviderClient != null){
+            mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+            mFusedLocationProviderClient!!.lastLocation
+                .addOnSuccessListener { location : Location? ->
+                    // Got last known location. In some rare situations this can be null.
+                    mLastLocation = location
+                    if(once){
+                        arViewModel.let {
+                            it.listAroundTrees(mLastLocation!!.latitude,mLastLocation!!.longitude,localUserId)
+                            once = false
+                        }
                     }
                 }
+            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(requireContext(),Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return
             }
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(requireContext(),Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return
+            mFusedLocationProviderClient!!.requestLocationUpdates(mLocationRequest,
+                mLocationCallback,
+                Looper.getMainLooper())
+
         }
-        mFusedLocationProviderClient!!.requestLocationUpdates(mLocationRequest,
-            mLocationCallback,
-            Looper.getMainLooper())
     }
 
     // 시스템으로 부터 위치 정보를 콜백으로 받음
@@ -539,7 +542,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     // 위치 업데이터를 제거 하는 메서드
     private fun stopLocationUpdates() {
         // 지정된 위치 결과 리스너에 대한 모든 위치 업데이트를 제거
-        mFusedLocationProviderClient!!.removeLocationUpdates(mLocationCallback)
+        mFusedLocationProviderClient?.let { it.removeLocationUpdates(mLocationCallback) }
     }
 
 

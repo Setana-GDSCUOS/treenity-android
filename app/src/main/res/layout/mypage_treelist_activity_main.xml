@@ -1,38 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@color/colorPrimaryVariant">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:paddingVertical="30dp"
+        android:fontFamily="@font/treenityfont"
+        android:text="My Tree List"
+        android:textColor="@color/white"
+        android:textSize="30sp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview"
 
         android:layout_width="match_parent"
         android:layout_height="550dp"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginTop="120dp" />
+        android:padding="10dp"
+        android:layout_marginHorizontal="10dp"/>
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="700dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:fontFamily="@font/treenityfont"
         android:gravity="center"
         android:textColor="@color/white"
         android:paddingHorizontal="15dp"
         android:text="Walking 30 to 60 minutes most days of the week drastically lowers your risk of heart disease" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="25dp"
-        android:fontFamily="@font/treenityfont"
-        android:paddingBottom="15dp"
-        android:text="My Tree List"
-        android:textColor="@color/white"
-        android:textSize="30sp" />
-
-</FrameLayout>
+</LinearLayout>

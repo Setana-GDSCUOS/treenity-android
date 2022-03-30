@@ -48,6 +48,7 @@ import com.setana.treenity.util.EventObserver
 import com.setana.treenity.util.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sceneview.ar.ArSceneView
+import io.github.sceneview.ar.arcore.ArSession
 import io.github.sceneview.ar.arcore.depthEnabled
 import io.github.sceneview.ar.arcore.planeFindingEnabled
 import io.github.sceneview.ar.node.ArModelNode
@@ -186,8 +187,8 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
         sceneView.configureSession { _, config ->
             config.planeFindingMode = Config.PlaneFindingMode.HORIZONTAL
             config.planeFindingEnabled = true
-            config.depthMode = Config.DepthMode.AUTOMATIC
-            config.depthEnabled = true
+            //config.depthMode = Config.DepthMode.AUTOMATIC
+            //config.depthEnabled = true
             config.cloudAnchorMode = Config.CloudAnchorMode.ENABLED
             config.lightEstimationMode = Config.LightEstimationMode.ENVIRONMENTAL_HDR
         }
@@ -242,12 +243,31 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        cloudAnchorManager.clearListeners()
+    override fun onStop(){
+        Log.d("bimoon","onStop")
+        // cloudAnchorManager.clearListeners()
         requireActivity().resetStatusBarTransparent()
         stopLocationUpdates()
+        super.onStop()
     }
+
+    override fun onPause() {
+        sceneView.arSession?.pause()
+        super.onPause()
+    }
+
+    override fun onDestroy() {
+        sceneView.arSession?.close()
+        super.onDestroy()
+    }
+
+    override fun onResume() {
+        sceneView.arSession?.resume()
+        super.onResume()
+    }
+
+
+
 
     /**
      * 기본적인 상호작용 가능한 노드를 생성하는 함수
@@ -354,7 +374,6 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                     val postTreeDTO= PostTreeRequestDTO(anchor.cloudAnchorId,mLastLocation!!.latitude,mLastLocation!!.longitude,"No Name",selectedUserItemId)
                     // 시드 선택된 상태 아니므로
                     selectedUserItemId = 0
-                    //val postedTreeId = arViewModel.postHostedTree(userId,postTreeDTO)
                     arViewModel.postHostedTree(localUserId,postTreeDTO)
                     clearView(forced =false, feedBack = false) // 이거 Forced 안 되게 해야 나무 심고 안 없어진다.
                     arViewModel.listAroundTrees(mLastLocation!!.latitude,mLastLocation!!.longitude,localUserId)
@@ -802,11 +821,19 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             2L->{
                 return when(level){
                     1 -> {
-                        getString(R.string.basic_1)
+                        "models/BIG.glb"
+                    }
+                    2 -> {
+                        "models/FINE.glb"
+                    }
+                    3->{
+                        "models/NORM.glb"
+                    }
+                    4->{
+                        "models/PARM.glb"
                     }
                     else -> {
-
-                        getString(R.string.basic_1)
+                        "models/sakura4.glb"
                     }
                 }
             }

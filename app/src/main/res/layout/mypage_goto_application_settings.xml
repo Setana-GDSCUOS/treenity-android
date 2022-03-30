@@ -16,7 +16,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/comfortaa_bold"
+            android:fontFamily="@font/comfortaabold"
 
             android:text="1. Click Permissions tab"
             android:textSize="20sp" />
@@ -24,7 +24,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/comfortaa_bold"
+            android:fontFamily="@font/comfortaabold"
 
             android:text="2. Check Denied part"
             android:textSize="20sp" />
@@ -32,7 +32,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/comfortaa_bold"
+            android:fontFamily="@font/comfortaabold"
 
             android:text="3. Give permission to Physical Activity"
             android:textSize="20sp" />
@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
 
-            android:fontFamily="@font/comfortaa_bold"
+            android:fontFamily="@font/comfortaabold"
             android:text="4. Come back to Treenity"
             android:textSize="20sp" />
 

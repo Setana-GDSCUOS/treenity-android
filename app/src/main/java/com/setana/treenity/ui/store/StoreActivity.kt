@@ -138,7 +138,7 @@ class StoreActivity : AppCompatActivity() {
             storeAdapter.itemList = seedList
 
             storeActivityMainBinding.apply { // Water item must be bound separately because it is not in horizontal recyclerview
-                (water.cost.toString() + " P").also { bucketPrice.text = it }
+                (water.cost.toString() + "P").also { bucketPrice.text = it }
                 bucketImage.load(water.imagePath)
             }
             storeActivityMainBinding.water.visibility = View.VISIBLE

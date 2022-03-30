@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="8dp"
-                android:fontFamily="@font/comfortaa_bold"
+                android:fontFamily="@font/comfortaabold"
                 android:text="TextView"
                 android:textAlignment="center"
                 android:textSize="18sp" />

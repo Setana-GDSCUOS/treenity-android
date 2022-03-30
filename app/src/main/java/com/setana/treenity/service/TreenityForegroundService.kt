@@ -2,6 +2,7 @@ package com.setana.treenity.service
 
 import android.Manifest
 import android.app.Notification
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -9,6 +10,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -30,9 +32,7 @@ import javax.inject.Inject
  */
 
 @AndroidEntryPoint
-class TreenityForegroundService : LifecycleService(), SensorEventListener {
-    @Inject
-    lateinit var treeRepository: TreeRepository
+class TreenityForegroundService : Service(), SensorEventListener {
     @Inject
     lateinit var fServiceNotification: Notification
     private var stepCountSensor: Sensor? = null
@@ -41,7 +41,7 @@ class TreenityForegroundService : LifecycleService(), SensorEventListener {
     private var stepsBeforeDetection = 0
 
     companion object {
-        const val CHANNEL_ID = "CHANNEL_ID"
+        const val CHANNEL_ID = "treenity_foreground"
     }
 
     /**
@@ -49,9 +49,9 @@ class TreenityForegroundService : LifecycleService(), SensorEventListener {
      * 서비스 이미 실행 중에 다시 startService 수행된다면 onCreate 생략하고 onStartCommand 부터 수행
      * 센서 중복해서 가져올 필요 없으므로 onCreate 에서 수행하도록 구현
      */
-    override fun onCreate() {
-        super.onCreate()
 
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
         // Restore mSteps
         mSteps = loadStepFromSharedPreference()
 
@@ -77,28 +77,11 @@ class TreenityForegroundService : LifecycleService(), SensorEventListener {
         ) {
             startForegroundServiceWithNotification()
         }
-
-//        // 현재시간을 가져오기 TODO: 창구님이 dailyWalks 초기화 시켜주시면 필요 없는 부분!
-//        val now = System.currentTimeMillis()
-//
-//        // 현재 시간을 Date 타입으로 변환
-//        val date = Date(now)
-//
-//        // 날짜만 가져올 예정 (us 기준)
-//        val dateFormat = SimpleDateFormat("dd", Locale.US)
-//
-//        /*
-//         현재 시간을 dateFormat 에 선언한 형태의 String 으로 변환한 후, 날짜를 가지는 전역변수에 저장!
-//         -> 후에 마이페이지에서 broadcast 된 신호를 받을 때, 날짜를 구별하여
-//         기존 데이터에 걸음 수를 1씩 더할 것인 지, 0으로 초기화 한 후 1씩 더할 것인 지 정할 예정
-//         */
-//        val str_date = dateFormat.format(date)
-//        dd = str_date
+        return START_STICKY
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        super.onStartCommand(intent, flags, startId)
-        return START_NOT_STICKY
+    override fun onBind(p0: Intent?): IBinder? {
+        TODO("Not yet implemented")
     }
 
     private fun startForegroundServiceWithNotification() {

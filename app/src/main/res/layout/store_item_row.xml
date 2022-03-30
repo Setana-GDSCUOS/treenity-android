@@ -9,7 +9,7 @@
         android:id="@+id/item"
 
         android:layout_width="150dp"
-        android:layout_height="240dp"
+        android:layout_height="220dp"
         android:layout_margin="5dp"
         android:elevation="10dp"
         app:cardCornerRadius="10dp">
@@ -20,10 +20,10 @@
             android:orientation="vertical">
 
             <ImageView
+                android:backgroundTint="?android:attr/colorBackground"
                 android:id="@+id/treeImage"
-
                 android:layout_width="match_parent"
-                android:layout_height="190dp"
+                android:layout_height="150dp"
                 android:scaleType="fitXY"
                 tools:srcCompat="@tools:sample/avatars" />
 
@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="8dp"
-                android:fontFamily="@font/comfortaabold"
+                android:fontFamily="@font/treenityfont"
                 android:text="TextView"
                 android:textAlignment="center"
                 android:textSize="18sp" />

@@ -167,6 +167,7 @@
     </androidx.cardview.widget.CardView>
 
     <TextView
+        android:fontFamily="@font/comfortaa_bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="170dp"

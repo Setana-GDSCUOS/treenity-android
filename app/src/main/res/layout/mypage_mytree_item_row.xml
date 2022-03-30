@@ -20,8 +20,8 @@
             android:id="@+id/treeImage"
 
             android:layout_width="match_parent"
-            android:layout_height="190dp"
-            android:scaleType="fitXY"
+            android:layout_height="150dp"
+            android:scaleType="fitCenter"
             tools:srcCompat="@tools:sample/avatars" />
 
         <TextView

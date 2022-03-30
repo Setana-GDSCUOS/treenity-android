@@ -94,7 +94,15 @@ class MyPageViewModel @Inject constructor(
 
             if (response.isSuccessful) {
                 setToastMessage("success bringing WalkLog data!!")
-                _myWalkLogsLiveData.postValue(response.body())
+                val size = response.body()?.size!!
+                if(size > 6) {
+                    val walkLogList : MutableList<WalkLog> = mutableListOf()
+                    for(i in size-6 until size)
+                        walkLogList.add(response.body()!![i])
+                        _myWalkLogsLiveData.postValue(walkLogList)
+                } else {
+                    _myWalkLogsLiveData.postValue(response.body())
+                }
             } else {
                 Log.d("tag", "getMyWalkLogs: has an error receiving data")
             }

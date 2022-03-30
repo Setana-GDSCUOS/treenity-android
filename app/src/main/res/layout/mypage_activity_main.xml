@@ -338,7 +338,7 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="830dp"
+                android:layout_marginTop="770dp"
                 android:paddingHorizontal="15dp">
 
                 <TextView
@@ -376,13 +376,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:layout_marginTop="1300dp"
+                android:layout_marginTop="1260dp"
+                android:layout_marginBottom="30dp"
                 android:paddingHorizontal="20dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="20dp"
                     android:fontFamily="@font/treenityfont"
 
                     android:text="The total amount of carbon you've saved not using a car"
@@ -404,12 +405,13 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="30dp"
                     android:layout_marginBottom="20dp"
                     android:fontFamily="@font/treenityfont"
                     android:text="U.S. carbon emissions per mile are capped at 224 grams in 2025"
                     android:textAlignment="center"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    />
 
             </LinearLayout>
         </FrameLayout>

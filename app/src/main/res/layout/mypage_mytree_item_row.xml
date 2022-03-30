@@ -5,7 +5,7 @@
     android:id="@+id/card"
 
     android:layout_width="150dp"
-    android:layout_height="240dp"
+    android:layout_height="180dp"
     android:layout_margin="5dp"
     android:clickable="true"
     android:elevation="10dp"
@@ -18,10 +18,10 @@
 
         <ImageView
             android:id="@+id/treeImage"
-
+            android:padding="10dp"
             android:layout_width="match_parent"
-            android:layout_height="190dp"
-            android:scaleType="fitXY"
+            android:layout_height="120dp"
+            android:scaleType="fitCenter"
             tools:srcCompat="@tools:sample/avatars" />
 
         <TextView

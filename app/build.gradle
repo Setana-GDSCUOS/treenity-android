@@ -82,10 +82,6 @@ dependencies {
     // Also declare the dependency for the Google Play services library and specify its version
     implementation 'com.google.android.gms:play-services-auth:20.0.1'
 
-//    // Hilt
-//    implementation "com.google.dagger:hilt-android:2.28-alpha"
-//    kapt "com.google.dagger:hilt-android-compiler:2.28-alpha"
-
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
@@ -115,7 +111,6 @@ dependencies {
     //coil : image load
     implementation("io.coil-kt:coil:1.1.1")
     implementation('io.coil-kt:coil-gif:1.1.1')
-    //Used coroutine image loader instead of Glide.
 
     // AR + 3D
     implementation 'io.github.sceneview:arsceneview:0.2.0'

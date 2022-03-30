@@ -10,11 +10,11 @@ This is an application that provides an AR-based social networking/exercising ex
 
 ## 📖 Explanation
 
- We propose a way for you how to reduce your carbon footprint through fun-filled walking.
+ We propose a way to reduce your carbon footprint through fun-filled walking.
 As users walk while using the app, the app records their steps.
 The number of steps recorded is converted into points for buying seeds and buckets of water,
 Users can plant seeds and water trees in places they frequently visit through AR technology and build up their efforts toward nature and health.
-Not just this! Users can share their hard work with other users and also see and touch the world directly from their Android smartphones!
+Not just this! Users can share their hard work with other users and also interact with the world directly from their Android smartphones!
 
 By walking and watering, you will be filled with the power of steady exercise.
 
@@ -26,9 +26,9 @@ By walking and watering, you will be filled with the power of steady exercise.
 - Realtime step-counting service
 
 - Google ARCore CloudAnchor based spatial information sharing system
- 
+
 - Marking hosted ar trees of all users on Google Maps
- 
+
 - Push Notification of hosted ar trees lists sorted via distance
 
 ## 🖥️ Build Environment
@@ -66,7 +66,7 @@ This project is built on : `Gradle 7.0.2` with `JDK 11`
 
 **<details><summary>Expand the possibility of interaction between users.</summary>** Even though society is one of the main components of our project, related features are currently reduced than initially thought. In the next step, interactions between users will take place with trees in between as they are now. For example, we can add features like users picking fruits from another user’s tree, or cutting another user’s tree. And if the obtained item could configure the tree to grow again from the item, not only the interaction but also the completeness of the app will increase.</details>
 
-**<details><summary>Add motivating elements by creating a rewarding system.</summary>** Currently points that users could get from the number of steps and trees that could be purchased with points are the only motivations that make users walk. Suppose that we have added an achievement system that gives rewards to users when they find new kinds of trees and fruits. Users will try to discover more trees for rewards, and this could be another motivation for them to walk more. The more users walk, the fewer carbon emissions will occur than using transportation. Additionally, the quality of individual health and the overall health of society will be improved.</details>
+**<details><summary>Add motivating elements by creating a rewarding system.</summary>** Currently, points that users could get from the number of steps and trees that could be purchased with points are the only ways to motivate users to walk. Suppose that we have added an achievement system that gives rewards to users when they find new kinds of trees and fruits. Users will try to discover more trees for rewards, and this could be another motivation for them to walk more. The more users walk, the fewer carbon emissions will occur than using transportation. Additionally, the quality of individual health and the overall health of society will be improved.</details>
 
 **<details><summary> Provide users rich experience</summary>** With a variety of types of seeds such as flowers or crops. It could make users’ experience richer when planting plants.</details>
 

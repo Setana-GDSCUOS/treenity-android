@@ -66,7 +66,7 @@
                         android:layout_marginTop="20dp"
                         android:fontFamily="@font/treenityfont"
                         android:text="My Page"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:textSize="30sp" />
 
                     <View
@@ -82,6 +82,7 @@
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="10dp"
                         android:background="@drawable/ic_baseline_storefront_24"
+                        android:backgroundTint="@color/white"
                         android:elevation="5dp" />
 
                     <TextView
@@ -90,6 +91,7 @@
                         android:layout_width="35dp"
                         android:layout_height="35dp"
                         android:layout_marginTop="10dp"
+                        android:backgroundTint="@color/white"
                         android:background="@drawable/ic_baseline_settings_24"
                         android:elevation="5dp" />
 
@@ -122,10 +124,10 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
                         android:textColor="@color/white"
                         android:textSize="25sp"
-                        android:textStyle="bold"
-                        android:layout_marginBottom="10dp"/>
+                        android:fontFamily="@font/treenityfont" />
 
                 </LinearLayout>
 
@@ -140,129 +142,132 @@
 
 
 
-                    <FrameLayout
-                        android:layout_width="100dp"
+                <FrameLayout
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start">
+
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="start">
+                        android:background="@drawable/mypage_custom_small_box"
+                        android:gravity="center|top"
+                        android:paddingVertical="7dp"
+                        android:text="Point"
+                        android:textColor="@color/white"
+                        android:textSize="15sp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|start"
+                        android:orientation="horizontal"
+                        android:paddingStart="10dp"
+                        android:paddingBottom="10dp">
 
                         <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/mypage_custom_small_box"
-                            android:gravity="center|top"
-                            android:paddingVertical="7dp"
-                            android:text="Point"
-                            android:textColor="@color/white"
-                            android:textSize="15sp" />
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="bottom|start"
-                            android:orientation="horizontal"
-                            android:paddingStart="10dp"
-                            android:paddingBottom="10dp">
-
-                            <TextView
-                                android:layout_width="28dp"
-                                android:layout_height="27dp"
-                                android:background="@drawable/mypage_point" />
-
-                            <TextView
-                                android:id="@+id/point"
-
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="10dp"
-                                android:text="{P}"
-                                android:textColor="@color/black"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-                    </FrameLayout>
-
-                    <FrameLayout
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        >
+                            android:layout_width="28dp"
+                            android:layout_height="27dp"
+                            android:background="@drawable/mypage_point" />
 
                         <TextView
+                            android:id="@+id/point"
+
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/mypage_custom_small_box"
-                            android:gravity="center|top"
-                            android:paddingVertical="7dp"
-                            android:text="Bucket"
-                            android:textColor="@color/white"
-                            android:textSize="15sp" />
+                            android:layout_marginStart="10dp"
+                            android:layout_gravity="center_vertical"
+                            android:text="{P}"
+                            android:textColor="@color/black"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </FrameLayout>
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="bottom|start"
-                            android:orientation="horizontal"
-                            android:paddingStart="10dp"
-                            android:paddingBottom="10dp">
+                <FrameLayout
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    >
 
-                            <TextView
-                                android:layout_width="28dp"
-                                android:layout_height="27dp"
-                                android:background="@drawable/mypage_bucket" />
-
-                            <TextView
-                                android:id="@+id/bucket"
-
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="10dp"
-                                android:text="{P}"
-                                android:textColor="@color/black"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-                    </FrameLayout>
-
-                    <FrameLayout
-                        android:layout_width="100dp"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end">
+                        android:background="@drawable/mypage_custom_small_box"
+                        android:gravity="center|top"
+                        android:paddingVertical="7dp"
+                        android:text="Bucket"
+                        android:textColor="@color/white"
+                        android:textSize="15sp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|start"
+                        android:orientation="horizontal"
+                        android:paddingStart="10dp"
+                        android:paddingBottom="10dp">
 
                         <TextView
+                            android:layout_width="28dp"
+                            android:layout_height="27dp"
+                            android:background="@drawable/mypage_bucket" />
+
+                        <TextView
+                            android:id="@+id/bucket"
+
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/mypage_custom_small_box"
-                            android:gravity="center|top"
-                            android:paddingVertical="7dp"
-                            android:text="Step"
-                            android:textColor="@color/white"
-                            android:textSize="15sp" />
+                            android:layout_marginStart="10dp"
+                            android:text="{P}"
+                            android:layout_gravity="center_vertical"
+                            android:textColor="@color/black"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </FrameLayout>
 
-                        <LinearLayout
+                <FrameLayout
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/mypage_custom_small_box"
+                        android:gravity="center|top"
+                        android:paddingVertical="7dp"
+                        android:text="Step"
+                        android:textColor="@color/white"
+                        android:textSize="15sp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|start"
+                        android:orientation="horizontal"
+                        android:paddingStart="10dp"
+                        android:paddingBottom="10dp">
+
+                        <TextView
+                            android:layout_width="28dp"
+                            android:layout_height="27dp"
+                            android:background="@drawable/mypage_step" />
+
+                        <TextView
+                            android:id="@+id/dailyWalk"
+
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="bottom|start"
-                            android:orientation="horizontal"
-                            android:paddingStart="10dp"
-                            android:paddingBottom="10dp">
-
-                            <TextView
-                                android:layout_width="28dp"
-                                android:layout_height="27dp"
-                                android:background="@drawable/mypage_step" />
-
-                            <TextView
-                                android:id="@+id/dailyWalk"
-
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="10dp"
-                                android:text="{P}"
-                                android:textColor="@color/black"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-                    </FrameLayout>
+                            android:layout_marginStart="10dp"
+                            android:text="{P}"
+                            android:layout_gravity="center_vertical"
+                            android:textColor="@color/black"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </FrameLayout>
 
             </FrameLayout>
 
@@ -284,7 +289,7 @@
 
                 <TextView
                     android:id="@+id/dailyUpdatedPoint"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:fontFamily="@font/treenityfont"

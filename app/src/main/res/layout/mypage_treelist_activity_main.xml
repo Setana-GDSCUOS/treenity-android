@@ -17,9 +17,11 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="720dp"
+        android:layout_marginTop="700dp"
         android:fontFamily="@font/comfortaabold"
         android:gravity="center"
+        android:textColor="@color/white"
+        android:paddingHorizontal="15dp"
         android:text="Walking 30 to 60 minutes most days of the week drastically lowers your risk of heart disease" />
 
     <TextView
@@ -28,8 +30,9 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="25dp"
         android:fontFamily="@font/comfortaabold"
+        android:paddingBottom="15dp"
         android:text="My Tree List"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="30sp" />
 
 </FrameLayout>

@@ -2,6 +2,7 @@ package com.setana.treenity.ui.purchase
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.Toast
@@ -81,7 +82,7 @@ class PurchaseActivity : AppCompatActivity() {
                             val confirmBuilder = AlertDialog.Builder(this)
                             confirmBuilder.setIcon(R.drawable.store_tree_icon)    // 제목 아이콘
                             confirmBuilder.setTitle("Purchase Succeed!")    // 제목
-                            confirmBuilder.setView(layoutInflater.inflate(R.layout.confirm_dialog, null))
+
                             confirmBuilder.setPositiveButton("OK"){_,_ ->
                             }
                             confirmBuilder.show()
@@ -105,6 +106,8 @@ class PurchaseActivity : AppCompatActivity() {
             }
             builder.show()
         }
+
+        storeConfirmationMainBinding.description.movementMethod = ScrollingMovementMethod()
     }
 
     private fun setupViewBinding() {

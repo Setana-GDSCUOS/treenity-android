@@ -23,7 +23,12 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.airbnb.lottie.LottieDrawable
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.setana.treenity.R
 import com.setana.treenity.TreenityApplication.Companion.PREFS
 import com.setana.treenity.databinding.ConfirmDialogBinding
@@ -40,6 +45,8 @@ import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener, View.OnClickListener{
+
+    private lateinit var auth: FirebaseAuth
 
     private lateinit var mypageSettingsActivityMainBinding: MypageSettingsActivityMainBinding
     private val settingsViewModel: SettingsViewModel by viewModels()
@@ -131,6 +138,16 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
         }
     }
 
+    private fun setSettingPageProfileFromGoogleProfile() {
+        auth = Firebase.auth
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            mypageSettingsActivityMainBinding.userprofile.load(currentUser.photoUrl) {
+                transformations(CircleCropTransformation())
+            }
+        }
+    }
+
     private fun checkUser() {
         if (AuthUtils.userId <= 0) {
             Toast.makeText(this, "Invalid user credentials!", Toast.LENGTH_SHORT).show()
@@ -167,6 +184,7 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
     @SuppressLint("InflateParams")
     private fun setupUI() {
         setupViewBinding()
+        setSettingPageProfileFromGoogleProfile()
         setupLoadingAnimationFrameLayout()
         showLoadingAnimation()
 

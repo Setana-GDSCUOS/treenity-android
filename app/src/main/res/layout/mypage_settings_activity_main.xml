@@ -41,9 +41,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -52,12 +54,12 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
                     android:layout_gravity="center"
                     android:layout_marginTop="20dp"
                     android:background="@drawable/ic_baseline_settings_24"
-                    android:backgroundTint="@color/black" />
+                    android:backgroundTint="@color/white" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -66,7 +68,7 @@
                     android:fontFamily="@font/comfortaabold"
                     android:paddingBottom="20dp"
                     android:text="Setting"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="30sp" />
 
             </LinearLayout>
@@ -74,14 +76,13 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="140dp"
                 android:orientation="vertical"
                 android:paddingHorizontal="15dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="50dp"
+                    android:layout_marginTop="40dp"
                     android:fontFamily="@font/comfortaabold"
                     android:text="Update"
                     android:textColor="@color/black"
@@ -92,14 +93,20 @@
                     android:layout_height="100dp"
                     android:layout_marginTop="10dp"
                     android:background="@color/colorPrimaryLight"
+                    android:paddingStart="10dp"
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="match_parent"
-                        android:scaleType="fitCenter"
-                        app:srcCompat="@drawable/ic_baseline_edit_24"
-                        app:tint="@color/black" />
+                        android:id="@+id/userprofile"
+
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:background="@xml/loading_registration_imageview_bg"
+                        android:paddingHorizontal="10dp"
+                        android:paddingStart="10dp"
+                        android:scaleType="centerCrop" />
+
 
                     <LinearLayout
                         android:layout_width="100dp"
@@ -125,16 +132,19 @@
                             android:textColor="@color/black" />
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/name_Dialog"
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
 
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:id="@+id/name_Dialog"
+                        android:layout_width="60dp"
                         android:layout_height="match_parent"
-                        android:gravity="center|end"
-                        android:paddingEnd="10dp"
-                        android:text=">"
-                        android:textColor="@color/black"
-                        android:textSize="35sp" />
+                        android:padding="15dp"
+                        android:scaleType="fitCenter"
+                        app:srcCompat="@drawable/ic_baseline_edit_24"
+                        app:tint="@color/black" />
 
                 </LinearLayout>
 
@@ -159,6 +169,7 @@
                         android:layout_width="60dp"
                         android:layout_height="match_parent"
                         app:srcCompat="@drawable/ic_baseline_directions_walk_24"
+                        android:paddingHorizontal="10dp"
                         app:tint="@color/black" />
 
                     <LinearLayout
@@ -184,16 +195,20 @@
                             android:textColor="@color/black" />
                     </LinearLayout>
 
-                    <TextView
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <ImageView
                         android:id="@+id/physicalActivityPermissionCheck"
 
-                        android:layout_width="match_parent"
+                        android:layout_width="60dp"
                         android:layout_height="match_parent"
-                        android:gravity="center|end"
-                        android:paddingEnd="10dp"
-                        android:text="✔"
-                        android:textColor="@color/black"
-                        android:textSize="25sp" />
+                        android:padding="15dp"
+                        android:scaleType="fitCenter"
+                        app:srcCompat="@drawable/ic_baseline_check_24"
+                        app:tint="@color/black" />
 
                 </LinearLayout>
 
@@ -209,6 +224,7 @@
                         android:layout_width="60dp"
                         android:layout_height="match_parent"
                         app:srcCompat="@drawable/ic_baseline_alarm_24"
+                        android:paddingHorizontal="10dp"
                         app:tint="@color/black" />
 
                     <LinearLayout
@@ -239,6 +255,7 @@
 
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:paddingEnd="10dp"
                         android:layout_gravity="center"
                         android:checked="true"
                         android:gravity="center" />
@@ -258,6 +275,7 @@
                         android:layout_width="60dp"
                         android:layout_height="match_parent"
                         app:srcCompat="@drawable/ic_baseline_add_location_alt_24"
+                        android:paddingHorizontal="10dp"
                         app:tint="@color/black" />
 
                     <LinearLayout
@@ -299,7 +317,8 @@
                 </LinearLayout>
 
             </LinearLayout>
-        </FrameLayout>
+
+        </LinearLayout>
     </ScrollView>
 </LinearLayout>
 

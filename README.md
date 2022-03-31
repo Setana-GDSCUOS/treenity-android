@@ -64,56 +64,62 @@ This project is built on : `Gradle 7.0.2` with `JDK 11`
 #### 🍀 Space recognization
 
 Application detects plane and **recognizes space** from video
+<br>
 ![plane_detection](https://user-images.githubusercontent.com/37829895/161015860-3302d646-58d4-4fd7-b18e-78927bcada7c.gif)
 
 #### 🍀 Planting tree
 
 Just **select seed** and **touch the screen** to plant trees on the AR space
+<br>
 ![planting](https://user-images.githubusercontent.com/37829895/161019749-4b2a2f99-7dc9-4f97-89f4-63c9971afb3f.gif)
 
 #### 🍀 Enter Information
 
 You can **add descriptions** for your own AR tree
+<br>
 ![enter_information](https://user-images.githubusercontent.com/37829895/161016939-504a43e7-49b5-4780-8b0f-d83ee08a871c.gif)
 
 #### 🍀 List trees
 
 Check your trees on your **My Page** or **My Tree List**
+<br>
 ![my_tree](https://user-images.githubusercontent.com/37829895/161017577-3a3b50fd-f830-45bd-bb31-520b369c0964.gif)
 
 #### 🍀 Find trees of the other users
 
 Use map pages to **find** or **bookmark** trees of other users
+<br>
 ![map_with_bookmark](https://user-images.githubusercontent.com/37829895/161017975-183c0997-eef2-4c30-9edd-92e7051cbc2b.gif)
 
 #### 🍀 Bring shared trees to your space
 
 **Point your phone** to a specific place to bring another user's trees!
+<br>
 ![resolve_shared_tree](https://user-images.githubusercontent.com/37829895/161018816-ec75695f-560b-4cda-91bf-a40490a47c7c.gif)
 
 #### 🍀 Check your "Mypage"
 
 The application will **count your steps and record** them **in real-time**
 You can also check your walk records, the total amount of carbon you've reduced in **Mypage**
+<br>
 ![walks](https://user-images.githubusercontent.com/37829895/161020316-02c65522-9cba-4a24-93ba-d079351b25c7.gif)
 
 #### 🍀 Buy items for planting
 
 Recorded steps will be converted into points to buy **water buckets** or **seeds**
+<br>
 ![store](https://user-images.githubusercontent.com/37829895/161021053-32289864-03fb-46d2-a4b6-e820589b3b52.gif)
 
 #### 🍀 Personalize your experience
 
 You can **set your name** or control features like **step counting** and **Push alarm** that automatically detects trees around,
 **set number of trees to render** on the **setting page**
-
+<br>
 ![setting](https://user-images.githubusercontent.com/37829895/161021308-98216ca6-aac9-4e65-852f-76d80719c568.gif)
 
 ### 🔭 Future Visions
 
 **<details><summary>Expand the possibility of interaction between users.</summary>** Even though society is one of the main components of our project, related features are currently reduced than initially thought. In the next step, interactions between users will take place with trees in between as they are now. For example, we can add features like users picking fruits from another user’s tree, or cutting another user’s tree. And if the obtained item could configure the tree to grow again from the item, not only the interaction but also the completeness of the app will increase.</details>
-<br>
-
 
 **<details><summary>Add motivating elements by creating a rewarding system.</summary>** Currently, points that users could get from the number of steps and trees that could be purchased with points are the only ways to motivate users to walk. Suppose that we have added an achievement system that gives rewards to users when they find new kinds of trees and fruits. Users will try to discover more trees for rewards, and this could be another motivation for them to walk more. The more users walk, the fewer carbon emissions will occur than using transportation. Additionally, the quality of individual health and the overall health of society will be improved.</details>
 

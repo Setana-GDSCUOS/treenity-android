@@ -114,6 +114,9 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     // 로드된 나무들을 treeId 기준으로 저장하여 다시 로드되는 일 없이 관리. 최대 렌더링수와 분리할 수 있게
     private var resolvedTreeMap: HashMap<Long,Anchor> = hashMapOf()
 
+    // 상수
+    private val LOCATION_TRIGGER_DISTANCE = 15
+    private val LOAD_TREE_DISTANCE = 10
 
     /** 로딩뷰 + 액션 버튼 상호작용 활성/비활성 조작용 */
     private var isLoading = false
@@ -444,10 +447,6 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
                     // Place the model origin at the bottom center
                     centerOrigin = Position(x=+0.3f,y=-0.1f,z=+0.3f)
                 ){
-                    if(itemId!=2L){
-                        // 하드코딩 모델마다 리스케일이 좀 필요할 것 같습니다.
-                        //modelNode!!.modelScale = Scale(0.3f,0.3f,0.3f)
-                    }
                     modelNode!!.modelScale = Scale(2f,2f,2f)
                     modelNode!!.onTouched = { _, _ ->
                         arViewModel.treeListLiveData.value?.find { it.treeId == treeId }
@@ -529,8 +528,7 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
     fun onLocationChanged(location: Location) {
         val distance = location.distanceTo(mLastLocation)
         // 위치 정확도 관련해서도 추가하면 좋을 듯
-        // Todo 하드코딩 나무로드조건
-        if (distance > 15) {
+        if (distance > LOCATION_TRIGGER_DISTANCE) {
             // 일정 거리 이상 이동시 주변의 나무 불러옴
             arViewModel.listAroundTrees(location.latitude,location.longitude, localUserId)
         }
@@ -706,8 +704,11 @@ class ArFragment : Fragment(R.layout.ar_fragment) {
             else{
                 clearView(forced= false, feedBack = false)
             }
-            resolveAnchor(arTree)
-            // 등록은 api 해시맵에 등록은 모델 로드까지 완료되면
+            if (arTree.distance <= LOAD_TREE_DISTANCE) {
+                resolveAnchor(arTree)
+                // 등록은 api 해시맵에 등록은 모델 로드까지 완료되면
+            }
+
 
         }
     }

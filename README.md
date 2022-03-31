@@ -59,7 +59,7 @@ This project is built on : `Gradle 7.0.2` with `JDK 11`
   - [Hilt](https://dagger.dev/hilt/) provides a standard way to incorporate Dagger dependency injection into an Android application
   - [MPAndroidChart 3](https://github.com/PhilJay/MPAndroidChart) is a powerful & easy to use chart library for Android
 
-## Install
+## 👷‍♂️ Install
 
 Please download **APK file** <a href="https://drive.google.com/file/d/10QIdxzayWGN6b9ZpV7ODKDwN9LhPcAOu/view?usp=sharing"><img src="https://img.shields.io/badge/download-4285F4?style=flat-square&logo=googledrive&logoColor=white"/></a>
 

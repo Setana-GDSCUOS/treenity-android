@@ -309,7 +309,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                                     myLocation.longitude
                                 )
                             )
-                            .radius(500.0)
+                            .radius(100.0)
                             .strokeColor(0xFF7FB414.toInt())
                             .fillColor(0x22A0E418)
                     )

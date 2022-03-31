@@ -117,6 +117,13 @@ You can **set your name** or control features like **step counting** and **Push 
 <br>
 ![setting](https://user-images.githubusercontent.com/37829895/161021308-98216ca6-aac9-4e65-852f-76d80719c568.gif)
 
+#### 🍀 Push alarm
+
+ Application will find trees around and make alarm
+ <br>
+![Push](https://user-images.githubusercontent.com/37829895/161036284-e97b866d-b10d-478f-9e39-c67242254636.jpg)
+
+
 ### 🔭 Future Visions
 
 **<details><summary>Expand the possibility of interaction between users.</summary>** Even though society is one of the main components of our project, related features are currently reduced than initially thought. In the next step, interactions between users will take place with trees in between as they are now. For example, we can add features like users picking fruits from another user’s tree, or cutting another user’s tree. And if the obtained item could configure the tree to grow again from the item, not only the interaction but also the completeness of the app will increase.</details>

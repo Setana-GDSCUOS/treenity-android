@@ -247,7 +247,8 @@ class SettingsActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
             PREFS.setBoolean(ENABLE_PUSH_KEY, isChecked)
             updatePushNotificationWorker()
         }
-
+        mypageSettingsActivityMainBinding.seekBar.progress = PREFS.getString(RENDER_TREE_NO_KEY,"4").toInt()
+        mypageSettingsActivityMainBinding.renderTreeNo.text =  mypageSettingsActivityMainBinding.seekBar.progress.toString()
         mypageSettingsActivityMainBinding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) { // 조작하고 있는 중에 발생
 

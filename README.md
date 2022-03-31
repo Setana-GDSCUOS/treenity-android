@@ -1,12 +1,12 @@
-# 🌲 Treenity (2022 Google Solution Challenge)
-
-![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=flat-square&logo=kotlin&logoColor=white)
-![Firebase](https://img.shields.io/badge/Firebase-FFCC00?style=flat-square&logo=Firebase&logoColor=white&textCol...)
+# 🌲 Treenity (2022 Google Solution Challenge)<br>
 
 video coming soon!
 [![](https://yt-embed.herokuapp.com/embed?v=y9kkXTucnLU)](https://www.youtube.com/watch?v=y9kkXTucnLU)
 
 This is an application that provides an AR-based social networking/exercising experience.
+
+APK File
+<a href="https://drive.google.com/file/d/10QIdxzayWGN6b9ZpV7ODKDwN9LhPcAOu/view?usp=sharing"><img src="https://img.shields.io/badge/download-4285F4?style=flat-square&logo=googledrive&logoColor=white"/></a>
 
 ## 📖 Explanation
 

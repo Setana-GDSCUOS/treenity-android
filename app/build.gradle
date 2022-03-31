@@ -32,6 +32,11 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField("String", "AR_API_KEY", properties.getProperty("AR_API_KEY"))
+            buildConfigField("String", "GOOGLE_MAPS_API_KEY", properties.getProperty("GOOGLE_MAPS_API_KEY"))
+            buildConfigField("String", "OAUTH_WEB_CLIENT_KEY", properties.getProperty("OAUTH_WEB_CLIENT_KEY"))
+            buildConfigField("String", "OAUTH_ANDROID_CLIENT_KEY", properties.getProperty("OAUTH_ANDROID_CLIENT_KEY"))
+            buildConfigField("String", "SETANA_BACKEND_BASE_URL", properties.getProperty("SETANA_BACKEND_BASE_URL"))
         }
 
         debug {

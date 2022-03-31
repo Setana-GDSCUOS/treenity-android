@@ -1,7 +1,6 @@
 # 🌲 Treenity (2022 Google Solution Challenge)<br>
 
-video coming soon!
-[![](https://yt-embed.herokuapp.com/embed?v=y9kkXTucnLU)](https://www.youtube.com/watch?v=y9kkXTucnLU)
+[![](https://yt-embed.herokuapp.com/embed?v=sC3n-boUmvk)](https://www.youtube.com/watch?v=y9kkXTucnLU)
 
 This is an application that provides an AR-based social networking/exercising experience.
 

@@ -44,41 +44,42 @@ This project is built on : `Gradle 7.0.2` with `JDK 11`
 
 - ### Android Architecture Components
 
-  - [Lifecycles](https://developer.android.com/topic/libraries/architecture/lifecycle) - Allows control and respond lifecycles of events.
-  - [LiveData](https://developer.android.com/topic/libraries/architecture/livedata) - Allows immediate response of view on changes of data to show.
-  - [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) - Stores UI-related data that does not volatilize even when the screen is rotated.
+  - [Lifecycles](https://developer.android.com/topic/libraries/architecture/lifecycle) - Lifecycle-aware components perform actions in response to a change in the lifecycle status of another component.
+  - [LiveData](https://developer.android.com/topic/libraries/architecture/livedata) -  An observable data holder class allows updating app components in an active lifecycle state.
+  - [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) - Stores and manages UI-related data that does not volatilize even under the configuration changes of application (ex. rotation of screen).
   - [WorkManager](https://developer.android.com/topic/libraries/architecture/workmanager) - Manage Android background jobs and schedule periodic works.
 
 - ### Dependency Injection
 
-  - [Hilt](https://dagger.dev/hilt) provides a standard way to incorporate Dagger dependency injection into an Android application.
+  - [Hilt](https://dagger.dev/hilt) - Provides a standard way to incorporate Dagger dependency injection into an Android application. Hilt includes extensions for providing classes from other Jetpack libraries like `ViewModel` or `WorkManager`, etc.
 
 - ### Asynchronous Programming
 
-  - [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) are implementation of coroutine in Kotlin language.
+  - [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) - Implementation of coroutine in the Kotlin language.
 
 - ### Network
 
-  - [Retrofit 2](https://square.github.io/retrofit) is a type-safe HTTP client for Android and Java.
-  - [OkHttp 3](https://square.github.io/okhttp) is an efficient HTTP client helps to request/response data with HTTP.
+  - [Retrofit 2](https://square.github.io/retrofit) - A type-safe HTTP client for Android and Java.
+  - [OkHttp 3](https://square.github.io/okhttp) - An efficient HTTP client that helps to request/respond to data with HTTP.
 
 - ### Authentication
 
-  - [Firebase](https://firebase.google.com) is Google's platform for mobile application development.
+  - [Firebase](https://firebase.google.com) - Google's platform for mobile application development.
 
 - ### AR
 
-  - [ARCore API](https://developers.google.com/ar/reference) is Google’s platform for building augmented reality experiences.
+  - [ARCore API](https://developers.google.com/ar/reference) - Google’s platform for building augmented reality experiences.
 
 - ### Google Maps
 
-  - [Google Maps Platform](https://mapsplatform.google.com) is Google’s platform for map-related tasks.
+  - [Google Maps Platform](https://mapsplatform.google.com) - Google’s platform for map-related tasks.
 
-- ### Third Party
-  - [Coil](https://coil-kt.github.io/coil) is image loading library for Android backed by Kotlin Coroutines.
-  - [Lottie](https://github.com/airbnb/lottie-android) is library that renders After Effects animations natively on Android.
-  - [SceneView 0.2.0](https://github.com/SceneView/sceneview-android) is a 3D/AR Android View with ARCore and Google Filament.
-  - [MPAndroidChart 3](https://github.com/PhilJay/MPAndroidChart) is a powerful & easy to use chart library for Android.
+- ### Third-Party
+  
+  - [Coil](https://coil-kt.github.io/coil) - An image loading library for Android backed by Kotlin Coroutines.
+  - [Lottie](https://github.com/airbnb/lottie-android) - A library that renders After Effects animations natively on Android.
+  - [SceneView 0.2.0](https://github.com/SceneView/sceneview-android) - A 3D/AR Android View with ARCore and Google Filament.
+  - [MPAndroidChart 3](https://github.com/PhilJay/MPAndroidChart) - A powerful & easy to use chart library for Android.
 
 ## 👷‍♂️ Install
 

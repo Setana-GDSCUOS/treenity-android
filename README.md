@@ -42,23 +42,43 @@ This project is built on : `Gradle 7.0.2` with `JDK 11`
 
 ## 🏛️ Libraries Used
 
-- ### Architecture
+- ### Android Architecture Components
 
   - [Lifecycles](https://developer.android.com/topic/libraries/architecture/lifecycle) - Allows control and respond lifecycles of events.
   - [LiveData](https://developer.android.com/topic/libraries/architecture/livedata) - Allows immediate response of view on changes of data to show.
-  - [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) - Stores UI-related data that does not volatilize even when the screen is rotated. Can be applied to set up asynchronous operations
+  - [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) - Stores UI-related data that does not volatilize even when the screen is rotated.
   - [WorkManager](https://developer.android.com/topic/libraries/architecture/workmanager) - Manage Android background jobs and schedule periodic works.
 
-- ### Third Party
+- ### Dependency Injection
 
-  - [Retrofit 2](https://square.github.io/retrofit/) is a type-safe HTTP client for Android and Java
-  - [OkHttp 3](https://square.github.io/okhttp/) is an efficient HTTP client helps to request/response data with HTTP
-  - [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) manages async tasks with background threads
-  - [ARCore API](https://developers.google.com/ar/reference) is Google’s platform for building augmented reality experiences
-  - [Google Maps Platform](https://developers.google.com/ar/reference) is Google’s platform for implement map-related tasks
+  - [Hilt](https://dagger.dev/hilt) provides a standard way to incorporate Dagger dependency injection into an Android application.
+
+- ### Asynchronous Programming
+
+  - [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) are implementation of coroutine in Kotlin language.
+
+- ### Network
+
+  - [Retrofit 2](https://square.github.io/retrofit) is a type-safe HTTP client for Android and Java.
+  - [OkHttp 3](https://square.github.io/okhttp) is an efficient HTTP client helps to request/response data with HTTP.
+
+- ### Authentication
+
+  - [Firebase](https://firebase.google.com) is Google's platform for mobile application development.
+
+- ### AR
+
+  - [ARCore API](https://developers.google.com/ar/reference) is Google’s platform for building augmented reality experiences.
+
+- ### Google Maps
+
+  - [Google Maps Platform](https://mapsplatform.google.com) is Google’s platform for map-related tasks.
+
+- ### Third Party
+  - [Coil](https://coil-kt.github.io/coil) is image loading library for Android backed by Kotlin Coroutines.
+  - [Lottie](https://github.com/airbnb/lottie-android) is library that renders After Effects animations natively on Android.
   - [SceneView 0.2.0](https://github.com/SceneView/sceneview-android) is a 3D/AR Android View with ARCore and Google Filament.
-  - [Hilt](https://dagger.dev/hilt/) provides a standard way to incorporate Dagger dependency injection into an Android application
-  - [MPAndroidChart 3](https://github.com/PhilJay/MPAndroidChart) is a powerful & easy to use chart library for Android
+  - [MPAndroidChart 3](https://github.com/PhilJay/MPAndroidChart) is a powerful & easy to use chart library for Android.
 
 ## 👷‍♂️ Install
 

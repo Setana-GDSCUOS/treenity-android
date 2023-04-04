@@ -81,31 +81,6 @@ This project is built on : `Gradle 7.0.2` with `JDK 11`
   - [SceneView 0.2.0](https://github.com/SceneView/sceneview-android) - A 3D/AR Android View with ARCore and Google Filament.
   - [MPAndroidChart 3](https://github.com/PhilJay/MPAndroidChart) - A powerful & easy to use chart library for Android.
 
-## 👷‍♂️ Install
-
-Please download **APK file** <a href="https://drive.google.com/file/d/10QIdxzayWGN6b9ZpV7ODKDwN9LhPcAOu/view?usp=sharing"><img src="https://img.shields.io/badge/download-4285F4?style=flat-square&logo=googledrive&logoColor=white"/></a>
-
-1. Select apk files on file manager<br>
-![1_select_apk](https://user-images.githubusercontent.com/37829895/161111997-33edb3a6-6b80-4c04-a820-8552e09b30ce.jpg)
-
-2. Go to settings to allow installing apps from unknown source.<br>
-![2_allow_unknow_source](https://user-images.githubusercontent.com/37829895/161112001-9bf1f385-4088-4513-aa9c-9af92f22a847.jpg)
-
-3. Allow your file manager application to install unknown apps<br>
-![3_allow_install](https://user-images.githubusercontent.com/37829895/161112003-30d32802-6855-4ed7-8f91-18e309de8fea.jpg)
-
-4. Tap install button<br>
-![4_install](https://user-images.githubusercontent.com/37829895/161112004-b4a8e24b-e149-497e-9031-653ab5cf5197.jpg)
-
-5. Select `INSTALL ANYWAY`<br>
-![5_install_continue](https://user-images.githubusercontent.com/37829895/161112012-8749926b-343d-453a-b1fc-9b21f6538c61.jpg)
-
-
-6. Please don't send app for play protect scanning!<br>
-![5 5_Dont](https://user-images.githubusercontent.com/37829895/161112005-728c9541-f4ac-4e94-8e9b-3270373055cf.jpg)
-
-7. You're Done!<br>
-![6_finish](https://user-images.githubusercontent.com/37829895/161112010-d671fa8d-b8ca-43d5-957c-e025f1b2a229.jpg)
 
 ## 📸 Usage
 
@@ -170,6 +145,33 @@ You can **set your name** or control features like **step counting** and **Push 
  Application will find trees around and make alarm
  <br>
 ![Push](https://user-images.githubusercontent.com/37829895/161036284-e97b866d-b10d-478f-9e39-c67242254636.jpg)
+
+## 👷‍♂️ Install (closed currently)
+
+Please download **APK file** <a href="https://drive.google.com/file/d/10QIdxzayWGN6b9ZpV7ODKDwN9LhPcAOu/view?usp=sharing"><img src="https://img.shields.io/badge/download-4285F4?style=flat-square&logo=googledrive&logoColor=white"/></a>
+
+1. Select apk files on file manager<br>
+![1_select_apk](https://user-images.githubusercontent.com/37829895/161111997-33edb3a6-6b80-4c04-a820-8552e09b30ce.jpg)
+
+2. Go to settings to allow installing apps from unknown source.<br>
+![2_allow_unknow_source](https://user-images.githubusercontent.com/37829895/161112001-9bf1f385-4088-4513-aa9c-9af92f22a847.jpg)
+
+3. Allow your file manager application to install unknown apps<br>
+![3_allow_install](https://user-images.githubusercontent.com/37829895/161112003-30d32802-6855-4ed7-8f91-18e309de8fea.jpg)
+
+4. Tap install button<br>
+![4_install](https://user-images.githubusercontent.com/37829895/161112004-b4a8e24b-e149-497e-9031-653ab5cf5197.jpg)
+
+5. Select `INSTALL ANYWAY`<br>
+![5_install_continue](https://user-images.githubusercontent.com/37829895/161112012-8749926b-343d-453a-b1fc-9b21f6538c61.jpg)
+
+
+6. Please don't send app for play protect scanning!<br>
+![5 5_Dont](https://user-images.githubusercontent.com/37829895/161112005-728c9541-f4ac-4e94-8e9b-3270373055cf.jpg)
+
+7. You're Done!<br>
+![6_finish](https://user-images.githubusercontent.com/37829895/161112010-d671fa8d-b8ca-43d5-957c-e025f1b2a229.jpg)
+
 
 
 ### 🔭 Future Visions
